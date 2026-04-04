@@ -649,4 +649,35 @@ public class LoginServices {
 
 	}
 
+	public Iterable<UserProfile> getUsersList(String ROLEIDAC) {
+		Iterable<UserProfile> users = Collections.emptyList(); // Default fallback
+
+		if (ROLEIDAC.equals("Superadmin")) {
+			users = userProfileRep.findAll();
+		} else if (ROLEIDAC.equals("DCD_ADMIN") || ROLEIDAC.equals("DCD_BRANCH")) {
+			users = userProfileRep.getUsersListByecdd(); // Filtered list for ECDD roles
+		} else if (ROLEIDAC.equals("RBR_ADMIN") || ROLEIDAC.equals("RBR_BRANCH")) {
+			users = userProfileRep.getUsersListByrbr(); // Filtered list for RBR roles
+		} else if (ROLEIDAC.equals("BRC")) {
+			users = userProfileRep.getUsersListBybrc(); // Filtered list for BRC role
+		}
+
+		return users;
+	}
+
+	public UserProfile getUser(String id) {
+		logger.info(id);
+		if (userProfileRep.existsById(id)) {
+			UserProfile up = userProfileRep.findById(id).get();
+			logger.info(up.getEntity_flg());
+			return up;
+		} else {
+			UserProfile UserProfile = new UserProfile();
+			UserProfile.setLogin_low("09:00");
+			UserProfile.setLogin_high("19:00");
+			return UserProfile;
+		}
+
+	};
+
 }

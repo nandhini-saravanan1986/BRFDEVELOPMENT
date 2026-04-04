@@ -1,15 +1,23 @@
 package com.bornfire.BRF.services;
 
 import java.util.Date;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.bornfire.BRF.entities.BRFReportsMasterRep;
 
 @Service
 @Transactional
 @ConfigurationProperties("output")
 public class ReportServices {
+
+	@Autowired
+	BRFReportsMasterRep brfReportsMasterRep;
+
 	public class ReportTitle {
 
 		String reportName;
@@ -85,4 +93,10 @@ public class ReportServices {
 		}
 
 	}
+
+	public List<String> getDomainList() {
+
+		return brfReportsMasterRep.getDomainList();
+	}
+
 }

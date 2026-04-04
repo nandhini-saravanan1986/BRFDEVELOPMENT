@@ -29,5 +29,8 @@ public interface UserProfileRep extends CrudRepository<UserProfile, String> {
 
 	@Query(value = "select * from BRF_USER_PROFILE_TABLE where role_id in ('BRC')", nativeQuery = true)
 	Iterable<UserProfile> getUsersListBybrc();
+	
+	@Query(value = "select * from BRF_USER_PROFILE_TABLE where role_id=?1 ", nativeQuery = true)
+	List<UserProfile> accessrole(String role_id);
 
 }

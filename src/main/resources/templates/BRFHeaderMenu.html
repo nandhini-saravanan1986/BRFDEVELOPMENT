@@ -404,7 +404,7 @@
 
 <body>
 	<input type="hidden" id="activemenu" th:value="${menu}" />
-	<input type="hidden" id="activemenu" th:value="${session.DOMAINID}" />
+	<input type="text" id="activemenu" th:value="${session.DOMAINID}" />
 
 
 	<nav class="navbar fixed-top navbar-expand-md"
@@ -458,10 +458,10 @@
 			</li>
 
 
-			<li class="nav-item"
+			<!-- <li class="nav-item"
 				th:if="${session.ROLEID == 'IT' or session.ROLEID == 'HR' or session.ROLEID == 'OP' or session.ROLEID == 'AC'}">
 				<a class="nav-link" id="ManualAudittrailvalue" href="#" onclick="contentLoad(this)">Audit Services</a>
-			</li>
+			</li> -->
 			<!-- <li class="nav-item" th:if="${session.ROLEID == 'ADM'  or session.ROLEID == 'RBR'  or session.ROLEID == 'RBR_BRANCH' or session.ROLEID == 'BRC'}"><a
  
  	
@@ -475,7 +475,7 @@
 
 				<div id="adminsubmenu" class="collapse submenu1 ">
 					<ul class="nav flex-column">
-						<li class="nav-item" th:if="${session.ROLEID == 'Superadmin' or session.ROLEID == 'RBR_ADMIN' or session.ROLEID == 'DCD_ADMIN'}">
+						<li class="nav-item" th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'admin')}">
 							<a class="nav-link" id="UserProfile" style="padding-left: 30px;" href="#"
 								onclick="contentLoad(this)">User
 								Profile </a></li>
@@ -487,7 +487,7 @@
 								Roles</a></li>
 
 
-
+<!-- 
 						<li class="nav-item"><a class="nav-link" id="BankMaster" style="padding-left: 30px;" href="#"
 								onclick="contentLoad(this)"
 								th:if="${session.ROLEID == 'Superadmin'}">Bank
@@ -518,7 +518,7 @@
 						<li class="nav-item" th:if="${session.ROLEID == 'Superadmin'}">
 							<a class="nav-link" id="GLBalanceRecon" href="#" style="padding-left: 30px;" onclick="contentLoad(this)">
 								GL Reconciliation</a>
-						</li>
+						</li> -->
 
 
 
@@ -527,7 +527,7 @@
 				class="nav-link" id="RBSCONTACT" href="#"
 				style="padding-left: 30px;" onclick="contentLoad(this)"> Contact
 					Information</a></li>  -->
-
+<!-- 
 						<li class="nav-item" th:if="${session.ROLEID == 'Superadmin'}"><a class="nav-link"
 								id="AlertNotificationmodel" href="#" style="padding-left: 30px;"
 								onclick="contentLoad(this)"> Alert
@@ -536,19 +536,19 @@
 							<a class="nav-link" id="EtlMonitor" href="#" style="padding-left: 30px;"
 								onclick="contentLoad(this)">ETL
 								Status Monitor</a>
-						</li>
+						</li> -->
 
 
 						<!-- <li class="nav-item"><a class="nav-link" id="RBSAlertParameters" href="#"style="padding-left: 30px;"
 							onclick="contentLoad(this)">Alert Parameter</a></li> -->
 						<!-- <li class="nav-item"><a class="nav-link" id="Userlog"style="padding-left: 30px;"
 							href="#" onclick="contentLoad(this)">User Logs</a></li> -->
-						<li class="nav-item"><a class="nav-link" id="auditlogs" style="padding-left: 30px;" href="#"
+						<!-- <li class="nav-item"><a class="nav-link" id="auditlogs" style="padding-left: 30px;" href="#"
 								onclick="contentLoad(this)"
 								th:if="${session.ROLEID == 'Superadmin'}">Audit
 								Logs</a></li>
-
-						<li class="nav-item"><a class="nav-link" style="padding-left: 30px;" data-toggle="collapse"
+ -->
+					<!-- 	<li class="nav-item"><a class="nav-link" style="padding-left: 30px;" data-toggle="collapse"
 								href="#reportparametersubmenu"
 								th:if="${session.ROLEID == 'Superadmin'}">Report
 								Parameter<i id="dropico" class="fa fa-caret-down" aria-hidden="true"></i>
@@ -556,18 +556,14 @@
 							<div id="reportparametersubmenu" class="collapse submenu1 " th:if="${session.ROLEID == 'Superadmin'}">
 								<ul class="nav flex-column">
 
-									<!-- <li class="nav-item"><a class="nav-link" id="ReportMaster"
-										style="padding-left: 30px;" href="#"
-										onclick="contentLoad(this)">Reports Master</a></li> -->
+							
 									<li class="nav-item"><a class="nav-link" id="ReportReferencecode"
 											style="padding-left: 30px;" href="#" onclick="contentLoad(this)">Report
 											Reference Code</a></li>
 									<li class="nav-item"><a class="nav-link" id="ReportCodeMapping"
 											style="padding-left: 30px;" href="#" onclick="contentLoad(this)">Report Code
 											Mapping</a></li>
-									<!-- <li class="nav-item"><a class="nav-link" id="BRFmapping"
-										style="padding-left: 30px;" href="#"
-										onclick="contentLoad(this)">BRF Mapping</a></li> -->
+								
 
 									<li class="nav-item"><a class="nav-link" id="Referencecodemain"
 											style="padding-left: 30px;" href="#" onclick="contentLoad(this)">Reference
@@ -580,7 +576,7 @@
 
 								</ul>
 							</div>
-						</li>
+						</li> -->
 
 						<!-- 						<li class="nav-item"><a class="nav-link" id="Audit" href="#"
 							style="padding-left: 30px;" onclick="contentLoad(this)">Audit
@@ -595,7 +591,7 @@
 			<!-- 
 th:if="${session.ROLEID == 'GEN' or session.ROLEID == 'ADM' or 
 			  session.ROLEID == 'IT'or session.ROLEID == 'HR' or session.ROLEID == 'OP' or session.ROLEID == 'AC'}" -->
-			<li class="nav-item" th:if="${session.ROLEID == 'Superadmin' or session.ROLEID == 'BRF_SYSTEM'}"><a
+			<li class="nav-item" th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'BRF_REPORTS')}"><a
 					class="nav-link" data-toggle="collapse" href="#brfreportssubmenu">
 					<i class="fa fa-file-excel mr-2"></i>BRF
 					Reports<i id="dropico" class="fa fa-caret-down" aria-hidden="true"></i>
