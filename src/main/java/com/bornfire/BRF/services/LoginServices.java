@@ -661,6 +661,9 @@ public class LoginServices {
 		} else if (ROLEIDAC.equals("BRC")) {
 			users = userProfileRep.getUsersListBybrc(); // Filtered list for BRC role
 		}
+		else {
+			users = userProfileRep.findAll();
+		}
 
 		return users;
 	}

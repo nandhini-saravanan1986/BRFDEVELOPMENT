@@ -1,6 +1,10 @@
 package com.bornfire.BRF.controllers;
 
 import java.math.BigDecimal;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,6 +32,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.bornfire.BRF.services.LoginServices;
 import com.bornfire.BRF.services.ReportServices.ReportTitle;
+import com.bornfire.BRF.config.PasswordEncryption;
+import com.bornfire.BRF.entities.UserProfileRep;
 import com.bornfire.BRF.services.ReportServices;
 import com.bornfire.BRF.entities.UserProfile;
 import com.bornfire.BRF.entities.AccessAndRoles;
@@ -52,6 +58,9 @@ public class BRFNavigationController {
 
 	@Autowired
 	ReportServices reportServices;
+
+	@Autowired
+	UserProfileRep userProfileRep;
 
 	@GetMapping("/systemotp")
 	public String showOtpForm() {
@@ -180,9 +189,10 @@ public class BRFNavigationController {
 		String WORKCLASSAC = (String) req.getSession().getAttribute("WORKCLASS");
 		String ROLEIDAC = (String) req.getSession().getAttribute("ROLEID");
 		md.addAttribute("RuleIDType", accessandrolesrepository.roleidtype());
-		//System.out.println("Size of roleid list : " + accessandrolesrepository.roleidtype().size());
+		 System.out.println("Size of roleid list : " +
+		 accessandrolesrepository.roleidtype().size());
 
-		//System.out.println("work class is : " + WORKCLASSAC);
+		// System.out.println("work class is : " + WORKCLASSAC);
 		// Logging Navigation
 		loginServices.SessionLogging("USERPROFILE", "M2", req.getSession().getId(), loginuserid, req.getRemoteAddr(),
 				"ACTIVE");
@@ -263,5 +273,40 @@ public class BRFNavigationController {
 		System.out.println("role id for fetching is : " + roleId);
 		return accessandrolesrepository.findById(roleId).orElse(null);
 	}
-	
+
+	@RequestMapping(value = "resetPassword1", method = { RequestMethod.GET, RequestMethod.POST })
+	public String showResetPasswordPage(Model md, HttpServletRequest req) {
+		String Passworduser = (String) req.getSession().getAttribute("USERID");
+		String Passwordresest = (String) req.getSession().getAttribute("PASSWORDERROR");
+
+		md.addAttribute("Resetuserid", Passworduser);
+		md.addAttribute("Resetreason", Passwordresest);
+		return "BRFresetPassword"; // Name of the HTML file (resetPassword.html)
+	}
+
+	@PostMapping("/resetPassword")
+	public String resetPassword(@RequestParam String userid, @RequestParam String newPassword)
+			throws ParseException, NoSuchAlgorithmException, InvalidKeySpecException {
+		Optional<UserProfile> userOptional = userProfileRep.findById(userid);
+		String encryptedPassword = PasswordEncryption.getEncryptedPassword(newPassword);
+		if (userOptional.isPresent()) {
+			UserProfile user = userOptional.get();
+			user.setPassword(encryptedPassword); // Encrypt the new password
+			String localdateval = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+			LocalDate date = LocalDate.parse(localdateval);
+			BigDecimal passexpdays = new BigDecimal(user.getPass_exp_days());
+			LocalDate date2 = date.plusDays(passexpdays.intValue());
+			user.setLog_in_count("1");
+			user.setNo_of_attmp(0);
+			user.setUser_status("Active");
+			user.setUser_status("Active");
+			user.setDisable_flg("N");
+			user.setUser_locked_flg("N");
+			user.setPass_exp_date(new SimpleDateFormat("yyyy-MM-dd").parse(date2.toString()));// Reset the flag
+			userProfileRep.save(user);
+			return "redirect:login?resetSuccess";
+		}
+
+		return "redirect:resetPassword1?error=User not found";
+	}
 }
