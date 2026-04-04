@@ -189,8 +189,7 @@ public class BRFNavigationController {
 		String WORKCLASSAC = (String) req.getSession().getAttribute("WORKCLASS");
 		String ROLEIDAC = (String) req.getSession().getAttribute("ROLEID");
 		md.addAttribute("RuleIDType", accessandrolesrepository.roleidtype());
-		 System.out.println("Size of roleid list : " +
-		 accessandrolesrepository.roleidtype().size());
+		//System.out.println("Size of roleid list : " + accessandrolesrepository.roleidtype().size());
 
 		// System.out.println("work class is : " + WORKCLASSAC);
 		// Logging Navigation
@@ -309,4 +308,15 @@ public class BRFNavigationController {
 
 		return "redirect:resetPassword1?error=User not found";
 	}
+
+	@RequestMapping(value = "verifyUser", method = RequestMethod.POST)
+	@ResponseBody
+	public String verifyUser(@ModelAttribute UserProfile userprofile, Model md, HttpServletRequest rq) {
+		String userid = (String) rq.getSession().getAttribute("USERID");
+		String msg = loginServices.verifyUser(userprofile, userid);
+
+		return msg;
+
+	}
+
 }
