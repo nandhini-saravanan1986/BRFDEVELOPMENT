@@ -1,0 +1,377 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" type="text/css"
+        href="/webjars/bootstrap/4.3.1/css/bootstrap.min.css"
+        th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css"
+        href="/webjars/font-awesome/5.9.0/css/all.min.css"
+        th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+    <link rel="stylesheet" type="text/css"
+        href="/webjars/datatables/1.10.19/css/jquery.dataTables.min.css"
+        th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+    <link rel="shortcut icon" th:href="@{/favicon.ico}" type="image/x-icon">
+
+    <script src="/webjars/jquery/3.4.1/jquery.min.js"
+        th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+    <script src="/webjars/popper.js/1.14.7/umd/popper.min.js"
+        th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+    <script src="/webjars/bootstrap/4.3.1/js/bootstrap.min.js"
+        th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+    <script src="/webjars/jquery-ui/1.12.1/jquery-ui.min.js"
+        th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+    <script src="/webjars/datatables/1.10.19/js/jquery.dataTables.min.js"
+        th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+    <script src="/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js"
+        th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+    <title>Report Code Mapping</title>
+
+    <style>
+        /* ── Match project btn-primary ── */
+        .btn-primary {
+            background-color: #E77400;
+            border-color: #0c0c0c;
+        }
+        .btn-primary:hover {
+            background-color: #cc6600;
+            border-color: #0c0c0c;
+        }
+
+        /* ── Match project nav-tab colours (from BRFHeaderMenu) ── */
+        .nav-tabs .nav-link {
+            color: #fff;
+            background-color: #e77400;
+            border-color: #fff;
+            font-family: verdana;
+            font-size: 13px;
+        }
+        .nav-tabs .nav-item.show .nav-link,
+        .nav-tabs .nav-link.active {
+            color: #fff;
+            background-color: #0062cc;
+            border-color: #fff;
+        }
+        .nav-tabs .nav-link:hover:not(.active) {
+            background-color: #cc6200;
+            color: #fff;
+        }
+        .nav-tabs {
+            border-bottom: 2px solid #dee2e6;
+        }
+        .tab-content {
+            border: 1px solid #dee2e6;
+            border-top: none;
+            background: #fff;
+        }
+
+        /* ── Card header label ── */
+        .card-header label {
+            color: #fff;
+            font-family: verdana;
+            font-size: 13px;
+            margin-bottom: 0;
+            font-weight: 600;
+        }
+
+        /* ── Table ── */
+        table.dataTable thead th,
+        .table thead th {
+            background-color: #e9ecf0;
+            font-family: verdana;
+            font-size: 13px;
+            font-weight: bold;
+            color: #333;
+        }
+        table.dataTable tbody td,
+        .table tbody td {
+            font-family: verdana;
+            font-size: 13px;
+            color: #444;
+        }
+        .table tbody tr:hover {
+            background-color: #eef4fb !important;
+        }
+
+        /* ── Card footer ── */
+        .card-footer {
+            background-color: #376275;
+            text-align: center;
+        }
+
+        /* ──────────────────────────────────────────────────────
+           KEY FIX:
+           The header fragment has a fixed sidebar:
+               #menu { width: 240px; position: fixed; top: 70px; }
+           and a fixed navbar:
+               navbar { height: 70px; }
+           So the page content must be offset:
+               top  : 70px  (navbar height)
+               left : 240px (sidebar width)
+           ────────────────────────────────────────────────────── */
+        .page-content-wrapper {
+    margin-left: 240px;     /* sidebar width */
+    margin-top: 100px;      /* push below navbar */
+    padding: 20px;          /* container gap */
+}
+
+.card {
+    margin: 0 auto;
+    max-width: 95%;
+}
+
+.card-body{
+    padding: 5px 10px 0px 10px;
+}
+
+.nav-tabs{
+    margin-top: -5px;
+    margin-bottom: 5px;
+}
+
+.tab-container{
+    background-color:#efefef;
+    padding:10px;
+    border:1px solid #dcdcdc;
+    margin-bottom:10px;
+}
+
+.nav-tabs{
+    border-bottom:none;
+}
+
+.nav-tabs .nav-item{
+    margin-right:6px;
+}
+
+#rcmTabContent{
+	margin-bottom:10px;
+}
+
+
+ </style>
+</head>
+
+<body>
+
+
+<div th:insert="BRFHeaderMenu :: header"></div>
+
+<div class="page-content-wrapper">
+
+    <div class="card" style="width: 100%;">
+
+        <!-- ─── Card Header: Title  |  Report Code + Report Name ─── -->
+        <div class="card-header" style="background-color: #376275;">
+    <div class="d-flex align-items-center justify-content-between" style="gap:10px; width:100%;">
+
+    <h5 style="color: white; font-family: verdana; font-weight: bold;
+               font-size: 18px; margin: 0; white-space: nowrap; flex-shrink:0;">
+        REPORT CODE MAPPING
+    </h5>
+
+    <div class="d-flex align-items-center" style="gap:8px; margin-left:auto;">
+
+        <label style="white-space:nowrap; flex-shrink:0;">Report Code :</label>
+
+        <select id="reportCodeSelect" class="form-control form-control-sm"
+                style="width:120px; flex-shrink:0;" onchange="onReportCodeChange()">
+            <option value="">Select</option>
+            <option value="BRF1">BRF1</option>
+            <option value="BRF2">BRF2</option>
+            <option value="BRF3">BRF3</option>
+            <option value="BRF4">BRF4</option>
+            <option value="BRF7">BRF7</option>
+            <option value="BRF8">BRF8</option>
+            <option value="BRF12">BRF12</option>
+            <option value="BRF60">BRF60</option>
+            <option value="BRF62">BRF62</option>
+            <option value="BRF65">BRF65</option>
+            <option value="BRF67">BRF67</option>
+            <option value="BRF70">BRF70</option>
+            <option value="BRF71">BRF71</option>
+            <option value="BRF74">BRF74</option>
+            <option value="BRF87">BRF87</option>
+            <option value="BRF151">BRF151</option>
+            <option value="BRF0001">BRF0001</option>
+            
+        </select>
+
+        <label style="white-space:nowrap; flex-shrink:0;">Report Name :</label>
+
+        <input type="text" id="reportNameInput" class="form-control form-control-sm"
+               readonly style="width:1000px; flex-shrink:0; display:none;" title="">
+
+    </div>
+
+</div>
+</div><!-- /card-header -->
+
+        <!-- ─── Card Body: Tabs + Table ─── -->
+        <div class="card-body" style="padding: 10px 10px 0 10px;">
+				
+            <!-- Nav Tabs -->
+            <div class="tab-container">
+            <ul class="nav nav-tabs" id="rcmTabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab"
+                       href="#pane-list" role="tab">
+                        Report Code List
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab"
+                       href="#pane-mapping" role="tab">
+                        Mapping Maintenance
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab"
+                       href="#pane-mapped" role="tab">
+                        Mapped Accounts
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab"
+                       href="#pane-unmapped" role="tab">
+                        UnMapped Accounts
+                    </a>
+                </li>
+            </ul>
+            </div>
+
+            <!-- Tab Panes -->
+            <div class="tab-content" id="rcmTabContent">
+
+                <!-- Report Code List -->
+                <div class="tab-pane fade show active" id="pane-list" role="tabpanel">
+                    <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                        <table class="table table-striped table-bordered table-hover"
+                               id="reportCodeTable" style="width:100%; margin-bottom:0;">
+                            <thead>
+                                <tr>
+                                    <th>Report Level 1</th>
+                                    <th>Report Level 2</th>
+                                    <th>FIELD DESCRIPTION</th>
+                                    <th>Report Label</th>
+                                    <th>HEADER</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody">
+                                <!-- populated by JS on dropdown change -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Mapping Maintenance -->
+                <div class="tab-pane fade" id="pane-mapping" role="tabpanel">
+                    <div class="p-3" style="font-family: verdana; color: #555; font-size: 13px;">
+                        <i class="fa fa-info-circle mr-1"></i>
+                        Select a Report Code to view Mapping Maintenance details.
+                    </div>
+                </div>
+
+                <!-- Mapped Accounts -->
+                <div class="tab-pane fade" id="pane-mapped" role="tabpanel">
+                    <div class="p-3" style="font-family: verdana; color: #555; font-size: 13px;">
+                        <i class="fa fa-info-circle mr-1"></i>
+                        Select a Report Code to view Mapped Accounts.
+                    </div>
+                </div>
+
+                <!-- UnMapped Accounts -->
+                <div class="tab-pane fade" id="pane-unmapped" role="tabpanel">
+                    <div class="p-3" style="font-family: verdana; color: #555; font-size: 13px;">
+                        <i class="fa fa-info-circle mr-1"></i>
+                        Select a Report Code to view UnMapped Accounts.
+                    </div>
+                </div>
+
+            </div><!-- /tab-content -->
+        </div><!-- /card-body -->
+
+        <!-- ─── Card Footer ─── -->
+        <div class="card-footer" style="background-color: #376275; text-align: center;">
+            <button type="button" class="btn btn-sm btn-primary"
+                    onclick="home();">Home</button>
+            <button type="button" class="btn btn-sm btn-primary"
+                    onclick="back();">Back</button>
+        </div>
+
+    </div><!-- /card -->
+</div><!-- /page-content-wrapper -->
+
+<script>
+
+   
+    /* ── Dropdown change ─────────────────────────── */
+function onReportCodeChange(){
+
+    var code = document.getElementById("reportCodeSelect").value;
+
+    if(!code){
+        document.getElementById("reportNameInput").style.display="none";
+        document.getElementById("tableBody").innerHTML="";
+        return;
+    }
+
+    fetch("/BRF/Reports/reportTemplate?code="+code)
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        // show report name from excel row 2
+        var reportInput=document.getElementById("reportNameInput");
+        reportInput.style.display="block";
+        reportInput.value=data.reportName;
+        reportInput.title = data.reportName;   // full name visible on hover
+
+        // clear table Removes previous rows
+        var tbody=document.getElementById("tableBody");
+        tbody.innerHTML="";
+
+        // insert rows
+        data.rows.forEach(function(row){
+
+            var tr=document.createElement("tr");
+
+            tr.innerHTML=
+            "<td>"+row.level1+"</td>"+
+            "<td>"+row.level2+"</td>"+
+            "<td>"+row.description+"</td>"+
+            "<td>"+row.label+"</td>"+
+            "<td>"+row.header+"</td>"+
+            "<td>"+row.remarks+"</td>";
+
+            tbody.appendChild(tr);
+
+        });
+
+    })
+
+    .catch(error=>{
+        console.error("Error loading template:", error);
+    });
+
+}
+
+    /* ── Navigation ──────────────────────────────── */
+    function home() {
+        location.href = "/BRF/BRFDashboard";
+    }
+    function back() {
+        window.history.back();
+    }
+
+</script>
+
+</body>
+</html>

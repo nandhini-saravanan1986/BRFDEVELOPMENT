@@ -318,5 +318,10 @@ public class BRFNavigationController {
 		return msg;
 
 	}
+	
+	@GetMapping("/ReportCodeMapping")
+	public String reportCodeMapping() {
+        return "ReportCodeMapping";
+    }
 
 }
