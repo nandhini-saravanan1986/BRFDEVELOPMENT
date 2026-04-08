@@ -2,6 +2,7 @@ package com.bornfire.BRF.services;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +38,9 @@ public class ReportServices {
 	@Autowired
 	BRFReportsMasterRep brfReportsMasterRep;
 	
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+	
 	@Value("${output.exportpathtemp}")
 	private String templateFolder;
 	
@@ -45,6 +50,9 @@ public class ReportServices {
     // ── Header labels to skip (B column) ──────────────────────────────────────────
     private static final java.util.Set<String> HEADER_LABELS = new java.util.HashSet<>(
             java.util.Arrays.asList("no", "s.n.", "s.no", "s.no.", "sn"));
+    
+    private final org.apache.poi.ss.usermodel.DataFormatter DATA_FORMATTER =
+            new org.apache.poi.ss.usermodel.DataFormatter();
 
 	public class ReportTitle {
 
@@ -170,28 +178,13 @@ public class ReportServices {
         if (cell == null) return "";
  
         CellType type = cell.getCellTypeEnum();
-// 
-//        if (type == CellType.FORMULA) {
-//            try {
-//                CellValue cv = evaluator.evaluate(cell);
-//                switch (cv.getCellTypeEnum()) {
-//                    case NUMERIC: {
-//                        double n = cv.getNumberValue();
-//                        return (n == (long) n) ? String.valueOf((long) n) : String.valueOf(n);
-//                    }
-//                    case STRING:  return cv.getStringValue().trim();
-//                    case BOOLEAN: return String.valueOf(cv.getBooleanValue());
-//                    default:      return "";
-//                }
-//            } catch (Exception e) {
-//                // Fallback: return formula string so the cell is never silently blank
-//                return cell.getCellFormula();
-//            }
-//        }
  
         switch (type) {
             case STRING:  return cell.getStringCellValue().trim();
             case NUMERIC: {
+                // DataFormatter respects the cell's display format (e.g. "1.10" stays "1.10")
+                String formatted = DATA_FORMATTER.formatCellValue(cell).trim();
+                if (!formatted.isEmpty()) return formatted;
                 double n = cell.getNumericCellValue();
                 return (n == (long) n) ? String.valueOf((long) n) : String.valueOf(n);
             }
@@ -234,6 +227,39 @@ public class ReportServices {
     private boolean isDecimalLabel(String s) {
         if (s == null || s.trim().isEmpty()) return false;
         return s.trim().matches("^\\d+\\.\\d+.*");
+    }
+    
+    private List<String> getAvailableCols(Row row, int structure) {
+        List<String> cols = new ArrayList<>();
+        int startCol = (structure == 0) ? 2 : 3;; // Column D or like BRF65 starts from C
+
+        for (int col = startCol; col <= 12; col++) {
+            Cell ac = row.getCell(col);
+
+            if (ac == null) continue;
+
+            CellType type = ac.getCellTypeEnum();
+
+            // Skip blank cells
+            if (type == CellType.BLANK) continue;
+
+            // Skip ALL string/text cells — they are labels, not data columns
+            if (type == CellType.STRING) continue;
+
+            // For formula cells: skip only non-trivial computed formulas
+            // (simple =0 or =0.00 are treated as blank data slots and kept)
+            if (type == CellType.FORMULA) {
+                String formula = ac.getCellFormula().trim();
+                if (!formula.matches("^\\d+(\\.\\d+)?$")) {
+                    continue; // skip SUM / reference formulas
+                }
+            }
+
+            // Position-based label: D→A, E→B, F→C …
+            cols.add(String.valueOf((char) ('A' + (col - startCol))));
+        }
+
+        return cols;
     }
  
     // ─────────────────────────────────────────────────────────────────────────────
@@ -331,6 +357,56 @@ public class ReportServices {
          }
          structure = cHasDecimal ? 3 : 2;
      }
+     
+     /* ── Read column headers (rows before firstDataRow, cols E–M = index 4–12) ── */
+     List<Map<String,String>> columns = new ArrayList<>();
+
+     if (firstDataRow >= 0) {
+
+         int startCol = (structure == 0) ? 2 : 3; // D or C;
+         int endCol   = 12;
+
+         int totalCols = endCol - startCol + 1;
+
+         String[] colNames = new String[totalCols];
+         Arrays.fill(colNames, "");
+
+         int headerStart = Math.max(0, firstDataRow - 6);
+
+         for (int r = headerStart; r <= firstDataRow; r++) {
+
+             Row hr = sheet.getRow(r);
+             if (hr == null) continue;
+
+             for (int col = startCol; col <= endCol; col++) {
+
+                 String val = getCellValue(hr.getCell(col));
+
+                 if (!val.isEmpty()) {
+
+                     if (!colNames[col - startCol].isEmpty())
+                         colNames[col - startCol] += " - ";
+
+                     colNames[col - startCol] += val;
+                 }
+             }
+         }
+
+         for (int i = 0; i < colNames.length; i++) {
+
+             if (!colNames[i].isEmpty()) {
+
+                 Map<String, String> cm = new HashMap<>();
+                 cm.put("colCode", String.valueOf((char)('A' + i)));
+                 cm.put("colName", colNames[i]);
+
+                 columns.add(cm);
+             }
+         }
+     }
+
+     result.put("columns", columns);
+//     System.out.println("COLUMNS: " + columns);
  
         /* ═══════════════════════════════════════════════════════════════
            MAIN SCAN  – collect data rows
@@ -345,10 +421,6 @@ public class ReportServices {
             Cell colB = row.getCell(1);
             Cell colC = row.getCell(2);
             Cell colD = row.getCell(3);
- 
-//            String level1      = getCellValue(colB);
-//            String level2      = getCellValue(colC);
-//            String description = getCellValue(colD);
             
             /* ── Map columns → level1 / level2 / description by structure ── */
             String rawB = getCellValue(colB);
@@ -384,9 +456,6 @@ public class ReportServices {
             /* ── Skip "No" / "S.N." / "S.No" header rows ── */
             if (isHeaderLabel(level1)) continue;
  
-            /* ── Skip column-header rows containing "FIELD DESCRIPTION" ── */
-//            if (description.toUpperCase().contains("FIELD DESCRIPTION")) continue;
- 
             /* ── Hard stop: Notes or Form-number line ── */
             if (isStopRow(level1, level2, description)) break;
  
@@ -407,6 +476,7 @@ public class ReportServices {
                     map.put("description", description);
                     map.put("label",       "ROW" + rowLabel++);
                     map.put("header",      "");
+                    map.put("availableCols", getAvailableCols(row, structure));
                     map.put("remarks",     "");
                     rows.add(map);
                 }
@@ -416,23 +486,7 @@ public class ReportServices {
             /* ── Skip fully blank rows inside the data zone ── */
             if (level1.isEmpty() && level2.isEmpty() && description.isEmpty()) continue;
  
-            /* ── Detect formula cell in column D (marks computed/total rows) ── */
-//            String header = "";
-//            int formulaCount = 0;
-//            int nonEmptyCount = 0;
-//            for (int col = 4; col <= 12; col++) {          // columns E(4) → M(12)
-//                Cell c = row.getCell(col);
-//                if (c != null && c.getCellTypeEnum() != CellType.BLANK) {
-//                    nonEmptyCount++;
-//                    if (c.getCellTypeEnum() == CellType.FORMULA) {
-//                        formulaCount++;
-//                    }
-//                }
-//            }
-//            // "Y" only when every non-empty value cell in the row is a formula
-//            if (nonEmptyCount > 0 && formulaCount == nonEmptyCount) {
-//                header = "Y";
-//            }
+            /* ── Detect formula cell in column D (marks computed/total rows) ── */ 
             
             String header = "";
 
@@ -472,8 +526,9 @@ public class ReportServices {
             map.put("description", description);
             map.put("label",       "ROW" + rowLabel++);
             map.put("header",      header);
+            map.put("availableCols", getAvailableCols(row, structure));
             map.put("remarks",     "");
-            rows.add(map);
+            rows.add(map); 
         }
  
         workbook.close();
@@ -481,5 +536,24 @@ public class ReportServices {
         result.put("reportName", reportName);
         result.put("rows",       rows);
         return result;
+    }
+    
+    public List<String> getGLHeads(String dataType) {
+        String sql = "SELECT DISTINCT GL_HEAD FROM BRF_BASE_MAPPING_TABLE " +
+                     "WHERE DATA_TYPE = ? ORDER BY GL_HEAD";
+        return jdbcTemplate.queryForList(sql, String.class, dataType);
+    }
+
+    public List<Map<String, String>> getGLSubHeads(String dataType, String glHead) {
+        String sql = "SELECT DISTINCT GL_SUBHEAD_CODE " +
+                     "FROM BRF_BASE_MAPPING_TABLE " +
+                     "WHERE DATA_TYPE = ? AND GL_HEAD = ? " +
+                     "ORDER BY GL_SUBHEAD_CODE";
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Map<String, String> map = new HashMap<>();
+            map.put("subHeadCode", rs.getString("GL_SUBHEAD_CODE"));
+            return map;
+        }, dataType, glHead);
     }
 }

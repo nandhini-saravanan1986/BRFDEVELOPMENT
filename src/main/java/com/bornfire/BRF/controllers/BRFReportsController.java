@@ -35,6 +35,21 @@ public class BRFReportsController {
 
 	}
 	
+	@GetMapping("/glHeads")
+	@ResponseBody
+	public List<String> getGLHeads(@RequestParam String dataType) {
+	    return reportService.getGLHeads(dataType);
+	}
+
+	@GetMapping("/glSubHeads")
+	@ResponseBody
+	public List<Map<String, String>> getGLSubHeads(@RequestParam String dataType,
+	                                                @RequestParam String glHead) {
+	    return reportService.getGLSubHeads(dataType, glHead);
+	}
+	
+	
+	
 	
 }
 
