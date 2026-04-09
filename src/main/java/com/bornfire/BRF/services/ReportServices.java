@@ -299,41 +299,48 @@ public class ReportServices {
                              B or C carries a numbered label
              firstStopRow  : first row index that is a Note/FormNo line
            ═══════════════════════════════════════════════════════════════ */
-        int     firstDataRow  = -1;
-        int     lastBCNumRow  = -1;
-        int     firstStopRow  = totalRows;   // process up to here
-        boolean fileHasNumB   = false;
- 
+        int     firstDataRow    = -1;
+        int     lastBCNumRow    = -1;
+        int     firstStopRow    = totalRows;
+        boolean fileHasNumB     = false;
+        int     lastAllStringRow = -1; // for structure=0: tracks last all-STRING column-header row
+
         for (int i = 0; i < totalRows; i++) {
             Row row = sheet.getRow(i);
             if (row == null) continue;
- 
+
             String b = getCellValue(row.getCell(1));
             String c = getCellValue(row.getCell(2));
             String d = getCellValue(row.getCell(3));
- 
+
             if (isStopRow(b, c, d)) { firstStopRow = i; break; }
- 
+
             boolean bNum = isNumericLabel(b);
             boolean cNum = isNumericLabel(c);
             if (bNum) fileHasNumB = true;
- 
-            // ── Determine firstDataRow ──
+
             if (firstDataRow == -1) {
                 if (bNum) {
                     firstDataRow = i;
                 } else if (!fileHasNumB) {
-                    // Text-only B files (e.g. BRF-065): start at first row
-                    // that has a numeric value in column C or D
-                    Cell cCell = row.getCell(2);
-                    Cell dCell = row.getCell(3);
-                    boolean cIsNumeric = (cCell != null && cCell.getCellTypeEnum() == CellType.NUMERIC);
-                    boolean dIsNumeric = (dCell != null && dCell.getCellTypeEnum() == CellType.NUMERIC);
-                    if (cIsNumeric || dIsNumeric) firstDataRow = i;
+                    boolean hasAnyCol = false;
+                    boolean allString = true;
+                    for (int col = 2; col <= 12; col++) {
+                        Cell dc = row.getCell(col);
+                        if (dc == null || dc.getCellTypeEnum() == CellType.BLANK) continue;
+                        hasAnyCol = true;
+                        if (dc.getCellTypeEnum() != CellType.STRING) { allString = false; break; }
+                    }
+                    if (hasAnyCol && allString) lastAllStringRow = i;
                 }
             }
- 
+
             if (bNum || cNum) lastBCNumRow = i;
+        }
+
+        // structure=0 (BRF-65 type): firstDataRow = row immediately after the column-header row
+        if (!fileHasNumB && firstDataRow == -1 && lastAllStringRow >= 0) {
+            firstDataRow = lastAllStringRow + 1;
         }
         
         /* ── Detect file column structure ──────────────────────────────────
@@ -371,8 +378,11 @@ public class ReportServices {
          String[] colNames = new String[totalCols];
          Arrays.fill(colNames, "");
 
-         int headerStart = Math.max(0, firstDataRow - 6);
+         int headerStart = (structure == 0 && lastAllStringRow >= 0) 
+                 ? lastAllStringRow 
+                 : Math.max(0, firstDataRow - 6);
 
+      // CHANGE 1: <= instead of <  (include firstDataRow in scan)
          for (int r = headerStart; r <= firstDataRow; r++) {
 
              Row hr = sheet.getRow(r);
@@ -380,13 +390,14 @@ public class ReportServices {
 
              for (int col = startCol; col <= endCol; col++) {
 
-                 String val = getCellValue(hr.getCell(col));
+                 // CHANGE 2: only read STRING cells — skips numeric 0s in data rows
+                 Cell hc = hr.getCell(col);
+                 if (hc == null || hc.getCellTypeEnum() != CellType.STRING) continue;
+                 String val = hc.getStringCellValue().trim();
 
                  if (!val.isEmpty()) {
-
                      if (!colNames[col - startCol].isEmpty())
                          colNames[col - startCol] += " - ";
-
                      colNames[col - startCol] += val;
                  }
              }
@@ -406,7 +417,7 @@ public class ReportServices {
      }
 
      result.put("columns", columns);
-//     System.out.println("COLUMNS: " + columns);
+     System.out.println("COLUMNS: " + columns);
  
         /* ═══════════════════════════════════════════════════════════════
            MAIN SCAN  – collect data rows
@@ -466,7 +477,7 @@ public class ReportServices {
             }
  
             /* ── After the last numbered B/C row: look for a text Total row ── */
-            if (lastBCNumRow >= 0 && i > lastBCNumRow) {
+            if (structure != 0 && lastBCNumRow >= 0 && i > lastBCNumRow) {
                 String combined = (level1 + " " + level2 + " " + description).toUpperCase();
                 if (combined.contains("TOTAL")) {
                     // Include this summary/total row, then stop
@@ -482,6 +493,8 @@ public class ReportServices {
                 }
                 break;   // nothing more to read after the numbered zone
             }
+            
+            
  
             /* ── Skip fully blank rows inside the data zone ── */
             if (level1.isEmpty() && level2.isEmpty() && description.isEmpty()) continue;
@@ -493,7 +506,9 @@ public class ReportServices {
             int formulaCount = 0;
             int nonEmptyCount = 0;
 
-            for (int col = 4; col <= 12; col++) {   // E → M
+         // FIX — start from correct column based on structure:
+            int headerCheckStart = (structure == 0) ? 2 : 4;
+            for (int col = headerCheckStart; col <= 12; col++) {
 
                 Cell c = row.getCell(col);
 
@@ -535,7 +550,9 @@ public class ReportServices {
  
         result.put("reportName", reportName);
         result.put("rows",       rows);
+        System.out.println("ROWS: " + rows.size());
         return result;
+        
     }
     
     public List<String> getGLHeads(String dataType) {

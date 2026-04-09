@@ -125,22 +125,22 @@ public class BRFBaseTableController {
                              + "WHERE ACCOUNT_ID_BACID = ? AND ROW_ID = ? AND COLUMN_ID = ? AND REPORT_CODE = ?";
 
         // Update ACCOUNT_BALANCE_LC for existing record
-        String updateCommon  = "UPDATE BRF_COMMON_MAPPING_TABLE SET ACCOUNT_BALANCE_LC = ? "
-                             + "WHERE ACCOUNT_ID_BACID = ? AND ROW_ID = ? AND COLUMN_ID = ? AND REPORT_CODE = ?";
+        String updateCommon = "UPDATE BRF_COMMON_MAPPING_TABLE SET ACCOUNT_BALANCE_LC = ?, SOL_ID = ? "
+                + "WHERE ACCOUNT_ID_BACID = ? AND ROW_ID = ? AND COLUMN_ID = ? AND REPORT_CODE = ?";
 
         // Insert full row from BRF_BASE_MAPPING_TABLE but override REPORT_CODE, ROW_ID, COLUMN_ID, ACCOUNT_BALANCE_LC
-        String insertSql     = "INSERT INTO BRF_COMMON_MAPPING_TABLE "
-                             + "(GL_HEAD, GL_SUBHEAD_CODE, ACCOUNT_ID_BACID, ACCOUNT_DESCRIPTION, CURRENCY, DATA_TYPE, "
-                             + " ENTITY_FLG, AUTH_FLG, MODIFY_FLG, DEL_FLG, ENTRY_USER, MODIFY_USER, AUTH_USER, "
-                             + " ENTRY_TIME, MODIFY_TIME, AUTH_TIME, REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, "
-                             + " REPORT_CODE, REPORT_DESC, ROW_ID, COLUMN_ID, "
-                             + " REPORT_ADDL_CRITERIA_1, REPORT_ADDL_CRITERIA_2, REPORT_ADDL_CRITERIA_3, ACCOUNT_BALANCE_LC) "
-                             + "SELECT GL_HEAD, GL_SUBHEAD_CODE, ACCOUNT_ID_BACID, ACCOUNT_DESCRIPTION, CURRENCY, DATA_TYPE, "
-                             + "       ENTITY_FLG, AUTH_FLG, MODIFY_FLG, DEL_FLG, ENTRY_USER, MODIFY_USER, AUTH_USER, "
-                             + "       ENTRY_TIME, MODIFY_TIME, AUTH_TIME, REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, "
-                             + "       ?, REPORT_DESC, ?, ?, "
-                             + "       REPORT_ADDL_CRITERIA_1, REPORT_ADDL_CRITERIA_2, REPORT_ADDL_CRITERIA_3, ? "
-                             + "FROM BRF_BASE_MAPPING_TABLE WHERE ACCOUNT_ID_BACID = ?";
+        String insertSql = "INSERT INTO BRF_COMMON_MAPPING_TABLE "
+                + "(GL_HEAD, GL_SUBHEAD_CODE, ACCOUNT_ID_BACID, ACCOUNT_DESCRIPTION, CURRENCY, DATA_TYPE, "
+                + " ENTITY_FLG, AUTH_FLG, MODIFY_FLG, DEL_FLG, ENTRY_USER, MODIFY_USER, AUTH_USER, "
+                + " ENTRY_TIME, MODIFY_TIME, AUTH_TIME, REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, "
+                + " REPORT_CODE, REPORT_DESC, ROW_ID, COLUMN_ID, "
+                + " REPORT_ADDL_CRITERIA_1, REPORT_ADDL_CRITERIA_2, REPORT_ADDL_CRITERIA_3, ACCOUNT_BALANCE_LC, SOL_ID) "  // ← added SOL_ID
+                + "SELECT GL_HEAD, GL_SUBHEAD_CODE, ACCOUNT_ID_BACID, ACCOUNT_DESCRIPTION, CURRENCY, DATA_TYPE, "
+                + "       ENTITY_FLG, AUTH_FLG, MODIFY_FLG, DEL_FLG, ENTRY_USER, MODIFY_USER, AUTH_USER, "
+                + "       ENTRY_TIME, MODIFY_TIME, AUTH_TIME, REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, "
+                + "       ?, REPORT_DESC, ?, ?, "
+                + "       REPORT_ADDL_CRITERIA_1, REPORT_ADDL_CRITERIA_2, REPORT_ADDL_CRITERIA_3, ?, ? "  // ← added extra ?
+                + "FROM BRF_BASE_MAPPING_TABLE WHERE ACCOUNT_ID_BACID = ?";
 
         int totalInserted = 0;
         int totalUpdated  = 0;
@@ -155,10 +155,12 @@ public class BRFBaseTableController {
                     String reportCode = row.get("reportCode");
                     String rowId      = row.get("rowId");
                     String columnId   = row.get("columnId");
+                    String solId      = row.get("solId"); 
                     if (accountId == null || accountId.trim().isEmpty()) continue;
                     if (reportCode == null) reportCode = "";
                     if (rowId      == null) rowId      = "";
                     if (columnId   == null) columnId   = "";
+                    if (solId      == null) solId      = "";  
 
                     // Step 1: check if same ACCOUNT_ID_BACID + ROW_ID + COLUMN_ID exists under a DIFFERENT report code
                     String otherReportCode = null;
@@ -197,10 +199,11 @@ public class BRFBaseTableController {
                         // Update ACCOUNT_BALANCE_LC only
                         try (PreparedStatement upd = conn.prepareStatement(updateCommon)) {
                             upd.setString(1, balanceLc);
-                            upd.setString(2, accountId.trim());
-                            upd.setString(3, rowId.trim());
-                            upd.setString(4, columnId.trim());
-                            upd.setString(5, reportCode.trim());
+                            upd.setString(2, solId != null ? solId.trim() : "");  // ← SOL_ID update
+                            upd.setString(3, accountId.trim());
+                            upd.setString(4, rowId.trim());
+                            upd.setString(5, columnId.trim());
+                            upd.setString(6, reportCode.trim());
                             upd.executeUpdate();
                         }
                         totalUpdated++;
@@ -211,7 +214,8 @@ public class BRFBaseTableController {
                             ins.setString(2, rowId.trim());
                             ins.setString(3, columnId.trim());
                             ins.setString(4, balanceLc);
-                            ins.setString(5, accountId.trim());
+                            ins.setString(5, solId.trim());        // ← ADD THIS (SOL_ID value e.g. "('9001','9002')")
+                            ins.setString(6, accountId.trim());    // ← shift from 5 → 6
                             totalInserted += ins.executeUpdate();
                         }
                     }
