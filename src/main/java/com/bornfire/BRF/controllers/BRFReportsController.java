@@ -51,6 +51,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.bornfire.BRF.config.SequenceGenerator;
 
+
+
 /*import com.bornfire.xbrl.entities.BRBS.BRF60_DETAIL_ENTITY;
 import com.bornfire.xbrl.entities.BRBS.BRF62_DETAIL_ENTITY;*/
 
@@ -67,6 +69,7 @@ import com.bornfire.BRF.services.RegulatoryReportServices;
 import com.bornfire.BRF.services.ReportServices;
 
 import net.sf.jasperreports.engine.JRException;
+import com.bornfire.BRF.services.MappingAccountService;
 
 
 @Controller
@@ -74,12 +77,14 @@ import net.sf.jasperreports.engine.JRException;
 @RequestMapping(value = "Reports")
 public class BRFReportsController {
 	
-	private ReportServices reportService;
-	
-	public BRFReportsController(ReportServices reportService) {
-		super();
-		this.reportService = reportService;
-	}
+	private final ReportServices         reportService;
+    private final MappingAccountService  mappingAccountService;
+ 
+    public BRFReportsController(ReportServices        reportService,
+                                MappingAccountService mappingAccountService) {
+        this.reportService        = reportService;
+        this.mappingAccountService = mappingAccountService;
+    }
 
 
 	@GetMapping("/reportTemplate")
@@ -102,6 +107,28 @@ public class BRFReportsController {
 	                                                @RequestParam String glHead) {
 	    return reportService.getGLSubHeads(dataType, glHead);
 	}
+	
+	 @GetMapping("/mappedAccounts")
+	    @ResponseBody
+	    public List<Map<String, String>> getMappedAccounts(
+	            @RequestParam String reportCode) {
+	 
+	        return mappingAccountService.getMappedAccounts(reportCode);
+	    }
+	 
+	    /**
+	     * GET /Reports/unmappedAccounts?reportCode=BRF1
+	     *
+	     * Returns rows from BRF_BASE_MAPPING_TABLE whose ACCOUNT_ID_BACID is
+	     * NOT present in BRF_COMMON_MAPPING_TABLE for the given report code.
+	     */
+	    @GetMapping("/unmappedAccounts")
+	    @ResponseBody
+	    public List<Map<String, String>> getUnmappedAccounts(
+	            @RequestParam String reportCode) {
+	 
+	        return mappingAccountService.getUnmappedAccounts(reportCode);
+	    }
 	
 	
 	

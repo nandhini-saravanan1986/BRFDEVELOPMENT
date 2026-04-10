@@ -439,7 +439,7 @@ public class ReportServices {
      }
 
      result.put("columns", columns);
-     System.out.println("COLUMNS: " + columns);
+//     System.out.println("COLUMNS: " + columns);
  
         /* ═══════════════════════════════════════════════════════════════
            MAIN SCAN  – collect data rows
@@ -500,26 +500,80 @@ public class ReportServices {
  
             /* ── After the last numbered B/C row: look for a text Total row ── */
             if (structure != 0 && lastBCNumRow >= 0 && i > lastBCNumRow) {
-                String combined = (level1 + " " + level2 + " " + description).toUpperCase();
+            	String combined = (rawB + " " + rawC + " " + level1 + " " + level2 + " " + description).toUpperCase();
                 if (combined.contains("TOTAL")) {
-                    // Include this summary/total row, then stop
+
+                    String header = "";
+
+                    int realFormulaCount = 0;
+                    int headerCheckStart = (structure == 0) ? 2 : 4;
+
+                    for (int col = headerCheckStart; col <= 12; col++) {
+
+                        Cell c = row.getCell(col);
+
+                        if (c == null || c.getCellTypeEnum() == CellType.BLANK) continue;
+                        if (c.getCellTypeEnum() == CellType.STRING) continue;
+
+                        if (c.getCellTypeEnum() == CellType.FORMULA) {
+
+                            String formula = c.getCellFormula().trim();
+
+                            if (!formula.matches("^\\d+(\\.\\d+)?$")) {
+                                realFormulaCount++;
+                            }
+                        }
+                    }
+
+                    if (realFormulaCount > 0) {
+                        header = "Y";
+                    }
+
                     Map<String, Object> map = new HashMap<>();
-                    map.put("level1",      level1);
-                    map.put("level2",      level2);
-                    map.put("description", description);
-                    map.put("label",       "ROW" + rowLabel++);
-                    map.put("header",      "");
+                    map.put("level1", level1);
+                    map.put("level2", level2);
+                    String totalDesc = !description.isEmpty() ? description
+                            : (!rawC.isEmpty() ? rawC : rawB);
+                    map.put("description", totalDesc);
+
+                    map.put("label", "ROW" + rowLabel++);
+                    map.put("header", header);
                     map.put("availableCols", getAvailableCols(row, structure));
-                    map.put("remarks",     "");
+                    map.put("remarks", "");
                     rows.add(map);
                 }
                 break;   // nothing more to read after the numbered zone
             }
             
             
- 
             /* ── Skip fully blank rows inside the data zone ── */
             if (level1.isEmpty() && level2.isEmpty() && description.isEmpty()) continue;
+
+            /* ── NEW LOGIC: skip fake "1" rows with only text ── */
+            boolean hasOnlyText = true;
+
+            int checkStart = (structure == 0) ? 2 : 4;
+
+            for (int col = checkStart; col <= 12; col++) {
+
+                Cell c = row.getCell(col);
+
+                if (c == null || c.getCellTypeEnum() == CellType.BLANK)
+                    continue;
+
+                // If numeric or formula exists → it's real data row
+                if (c.getCellTypeEnum() == CellType.NUMERIC || 
+                    c.getCellTypeEnum() == CellType.FORMULA) {
+                    hasOnlyText = false;
+                    break;
+                }
+            }
+
+            if (level1.trim().equals("1") && hasOnlyText) {
+                continue;
+            }
+
+           
  
             /* ── Detect formula cell in column D (marks computed/total rows) ── */ 
             
@@ -553,9 +607,9 @@ public class ReportServices {
             if (nonEmptyCount > 0 && formulaCount == nonEmptyCount) {
                 header = "Y";
             }
-            if (level1.trim().equals("1") && !header.equals("Y")) {
-                continue;
-            }
+//            if (level1.trim().equals("1") && !header.equals("Y")) {
+//                continue;
+//            }
  
             Map<String, Object> map = new HashMap<>();
             map.put("level1",      level1);

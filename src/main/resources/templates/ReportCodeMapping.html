@@ -136,13 +136,8 @@
             font-weight: bold;
             cursor: pointer;
         }
-        .btn-show-accounts:hover {
-            background-color: #2a4f5e;
-        }
-        .btn-show-accounts:disabled {
-            opacity: 0.65;
-            cursor: not-allowed;
-        }
+        .btn-show-accounts:hover { background-color: #2a4f5e; }
+        .btn-show-accounts:disabled { opacity: 0.65; cursor: not-allowed; }
         #loadingSpinner {
             display: none;
             margin-top: 10px;
@@ -150,10 +145,7 @@
             font-size: 13px;
             color: #376275;
         }
-        #accountsTable {
-            display: none;
-            margin-top: 14px;
-        }
+        #accountsTable { display: none; margin-top: 14px; }
         .form-footer {
             margin-top: 14px;
             padding-top: 10px;
@@ -184,6 +176,64 @@
             cursor: pointer;
         }
         .btn-submit:hover { background-color: #cc6600; }
+
+        /* ── Mapped / Unmapped shared styles ── */
+        .mapped-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .mapped-info {
+            font-family: verdana;
+            font-size: 13px;
+            color: #376275;
+            font-weight: bold;
+        }
+        .mapped-search-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .mapped-search-wrap input {
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 4px 10px;
+            font-size: 0.82rem;
+            color: #495057;
+            width: 220px;
+        }
+        .mapped-search-wrap button {
+            background: none;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+            font-size: 0.8rem;
+            padding: 0 4px;
+        }
+        .tab-spinner {
+            display: none;
+            font-family: verdana;
+            font-size: 13px;
+            color: #376275;
+            padding: 10px 0;
+        }
+        .placeholder-msg {
+            font-family: verdana;
+            font-size: 13px;
+            color: #555;
+        }
+        .badge-count {
+            background-color: #376275;
+            color: #fff;
+            border-radius: 10px;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-family: verdana;
+            margin-left: 6px;
+        }
     </style>
 </head>
 
@@ -192,14 +242,13 @@
 <div th:insert="BRFHeaderMenu :: header"></div>
 
 <div class="page-content-wrapper">
-
     <div class="card" style="width: 100%;">
 
         <!-- ─── Card Header ─── -->
         <div class="card-header" style="background-color: #376275;">
             <div class="d-flex align-items-center justify-content-between" style="gap:10px; width:100%;">
-                <h5 style="color: white; font-family: verdana; font-weight: bold;
-                           font-size: 18px; margin: 0; white-space: nowrap; flex-shrink:0;">
+                <h5 style="color:white; font-family:verdana; font-weight:bold;
+                           font-size:18px; margin:0; white-space:nowrap; flex-shrink:0;">
                     REPORT CODE MAPPING
                 </h5>
                 <div class="d-flex align-items-center" style="gap:8px; margin-left:auto;">
@@ -237,7 +286,7 @@
         </div><!-- /card-header -->
 
         <!-- ─── Card Body ─── -->
-        <div class="card-body" style="padding: 10px 10px 0 10px;">
+        <div class="card-body" style="padding:10px 10px 0 10px;">
 
             <!-- Nav Tabs -->
             <div class="tab-container">
@@ -253,13 +302,19 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#pane-mapped" role="tab">
+                        <a class="nav-link" id="tab-mapped-link"
+                           data-toggle="tab" href="#pane-mapped" role="tab"
+                           onclick="onMappedTabClick()">
                             Mapped Accounts
+                            <span class="badge-count" id="mappedBadge" style="display:none;">0</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#pane-unmapped" role="tab">
+                        <a class="nav-link" id="tab-unmapped-link"
+                           data-toggle="tab" href="#pane-unmapped" role="tab"
+                           onclick="onUnmappedTabClick()">
                             UnMapped Accounts
+                            <span class="badge-count" id="unmappedBadge" style="display:none;">0</span>
                         </a>
                     </li>
                 </ul>
@@ -268,9 +323,11 @@
             <!-- Tab Panes -->
             <div class="tab-content" id="rcmTabContent">
 
-                <!-- Report Code List -->
+                <!-- ══════════════════════════════════════════
+                     TAB 1 – Report Code List
+                ══════════════════════════════════════════ -->
                 <div class="tab-pane fade show active" id="pane-list" role="tabpanel">
-                    <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                    <div class="table-responsive" style="max-height:500px; overflow-y:auto;">
                         <table class="table table-striped table-bordered table-hover"
                                id="reportCodeTable" style="width:100%; margin-bottom:0;">
                             <thead>
@@ -288,7 +345,9 @@
                     </div>
                 </div>
 
-                <!-- Mapping Maintenance -->
+                <!-- ══════════════════════════════════════════
+                     TAB 2 – Mapping Maintenance
+                ══════════════════════════════════════════ -->
                 <div class="tab-pane fade" id="pane-mapping" role="tabpanel">
                     <div class="p-3">
 
@@ -333,7 +392,7 @@
                                 </select>
                             </div>
 
-                            <!-- GL Sub Code (checkbox dropdown) -->
+                            <!-- GL Sub Code -->
                             <div class="col-auto" style="position:relative;">
                                 <label style="font-family:verdana;font-size:13px;font-weight:bold;">GL Sub Code</label><br>
                                 <button type="button" id="glSubCodeBtn"
@@ -354,10 +413,7 @@
                                 </div>
                             </div>
 
-                            <!-- ═══════════════════════════════════════════════
-                                 CHANGE 1 ► SOL ID checkbox dropdown
-                                 Added after GL Sub Code col-auto block
-                            ═══════════════════════════════════════════════ -->
+                            <!-- SOL ID -->
                             <div class="col-auto" style="position:relative;">
                                 <label style="font-family:verdana;font-size:13px;font-weight:bold;">SOL ID</label><br>
                                 <button type="button" id="solIdBtn"
@@ -374,8 +430,6 @@
                                             background:#fff; border:1px solid #ccc; border-radius:4px;
                                             max-height:220px; overflow-y:auto; min-width:200px;
                                             padding:6px 0; box-shadow:0 4px 10px rgba(0,0,0,.15);">
-
-                                    <!-- Select All -->
                                     <div style="padding:5px 14px; border-bottom:1px solid #eee;">
                                         <input type="checkbox" id="chk_solAll" onclick="toggleAllSolIds(this)">
                                         <label for="chk_solAll"
@@ -383,42 +437,37 @@
                                             Select All
                                         </label>
                                     </div>
-
-                                    <!-- Individual SOL ID options -->
-                                    <div style="padding:4px 14px; cursor:pointer;">
+                                    <div style="padding:4px 14px;">
                                         <input type="checkbox" id="chk_sol_9001" value="9001" onchange="onSolIdCheck()">
                                         <label for="chk_sol_9001" style="font-family:verdana;font-size:12px;cursor:pointer;margin:0;">9001</label>
                                     </div>
-                                    <div style="padding:4px 14px; cursor:pointer;">
+                                    <div style="padding:4px 14px;">
                                         <input type="checkbox" id="chk_sol_9002" value="9002" onchange="onSolIdCheck()">
                                         <label for="chk_sol_9002" style="font-family:verdana;font-size:12px;cursor:pointer;margin:0;">9002</label>
                                     </div>
-                                    <div style="padding:4px 14px; cursor:pointer;">
+                                    <div style="padding:4px 14px;">
                                         <input type="checkbox" id="chk_sol_9003" value="9003" onchange="onSolIdCheck()">
                                         <label for="chk_sol_9003" style="font-family:verdana;font-size:12px;cursor:pointer;margin:0;">9003</label>
                                     </div>
-                                    <div style="padding:4px 14px; cursor:pointer;">
+                                    <div style="padding:4px 14px;">
                                         <input type="checkbox" id="chk_sol_9004" value="9004" onchange="onSolIdCheck()">
                                         <label for="chk_sol_9004" style="font-family:verdana;font-size:12px;cursor:pointer;margin:0;">9004</label>
                                     </div>
-                                    <div style="padding:4px 14px; cursor:pointer;">
+                                    <div style="padding:4px 14px;">
                                         <input type="checkbox" id="chk_sol_9005" value="9005" onchange="onSolIdCheck()">
                                         <label for="chk_sol_9005" style="font-family:verdana;font-size:12px;cursor:pointer;margin:0;">9005</label>
                                     </div>
-                                    <div style="padding:4px 14px; cursor:pointer;">
+                                    <div style="padding:4px 14px;">
                                         <input type="checkbox" id="chk_sol_9008" value="9008" onchange="onSolIdCheck()">
                                         <label for="chk_sol_9008" style="font-family:verdana;font-size:12px;cursor:pointer;margin:0;">9008</label>
                                     </div>
                                 </div>
                             </div>
-                            <!-- ═══════════════════════════════════════════════
-                                 END CHANGE 1
-                            ═══════════════════════════════════════════════ -->
 
                         </div><!-- /row-2 -->
 
                         <!-- Show Accounts Button -->
-                        <div class="show-accounts-row" style="margin-top:14px;">
+                        <div style="margin-top:14px;">
                             <button type="button" class="btn-show-accounts" id="btnShowAccounts"
                                     onclick="showAccounts()">
                                 <i class="fas fa-search"></i>&nbsp; Show Accounts
@@ -434,18 +483,12 @@
                         <div id="accountsTable">
                             <div style="display:flex; align-items:center; justify-content:space-between;
                                         margin-bottom:6px; flex-wrap:wrap; gap:8px;">
-                                <div id="resultInfo"
-                                     style="margin:0; font-family:verdana; font-size:13px;
-                                            color:#376275; font-weight:bold;"></div>
-                                <div style="display:flex; align-items:center; gap:6px;">
+                                <div id="resultInfo" class="mapped-info"></div>
+                                <div class="mapped-search-wrap">
                                     <i class="fas fa-search" style="color:#6B7A8F; font-size:0.85rem;"></i>
                                     <input type="text" id="tableSearch" placeholder="Search records…"
-                                           oninput="filterTable()"
-                                           style="border:1px solid #ced4da; border-radius:4px; padding:4px 10px;
-                                                  font-size:0.82rem; color:#495057; width:220px;" />
-                                    <button onclick="clearSearch()" title="Clear search"
-                                            style="background:none; border:none; color:#6c757d;
-                                                   cursor:pointer; font-size:0.8rem; padding:0 4px;">
+                                           oninput="filterTable()" />
+                                    <button onclick="clearSearch()" title="Clear search">
                                         <i class="fas fa-times-circle"></i>
                                     </button>
                                 </div>
@@ -485,7 +528,7 @@
                             </div>
                         </div>
 
-                        <!-- Form Footer: Cancel + Submit -->
+                        <!-- Form Footer -->
                         <div class="form-footer">
                             <button type="button" class="btn-cancel" onclick="cancelAction()">Cancel</button>
                             <button type="button" class="btn-submit" id="btnSubmitAccounts"
@@ -495,27 +538,119 @@
                     </div><!-- /p-3 -->
                 </div><!-- /pane-mapping -->
 
-                <!-- Mapped Accounts -->
+                <!-- ══════════════════════════════════════════
+                     TAB 3 – Mapped Accounts
+                ══════════════════════════════════════════ -->
                 <div class="tab-pane fade" id="pane-mapped" role="tabpanel">
-                    <div class="p-3" style="font-family: verdana; color: #555; font-size: 13px;">
-                        <i class="fa fa-info-circle mr-1"></i>
-                        Select a Report Code to view Mapped Accounts.
-                    </div>
-                </div>
+                    <div class="p-3">
 
-                <!-- UnMapped Accounts -->
-                <div class="tab-pane fade" id="pane-unmapped" role="tabpanel">
-                    <div class="p-3" style="font-family: verdana; color: #555; font-size: 13px;">
-                        <i class="fa fa-info-circle mr-1"></i>
-                        Select a Report Code to view UnMapped Accounts.
+                        <!-- Spinner -->
+                        <div id="mappedSpinner" class="tab-spinner">
+                            <i class="fas fa-spinner fa-spin"></i>&nbsp; Loading mapped accounts…
+                        </div>
+
+                        <!-- Placeholder (shown before a report code is selected) -->
+                        <div id="mappedPlaceholder" class="placeholder-msg">
+                            <i class="fa fa-info-circle mr-1"></i>
+                            Select a Report Code above to view Mapped Accounts.
+                        </div>
+
+                        <!-- Table wrapper (hidden until data loads) -->
+                        <div id="mappedTableWrap" style="display:none;">
+                            <div class="mapped-toolbar">
+                                <div id="mappedInfo" class="mapped-info"></div>
+                                <div class="mapped-search-wrap">
+                                    <i class="fas fa-search" style="color:#6B7A8F; font-size:0.85rem;"></i>
+                                    <input type="text" id="mappedSearch" placeholder="Search records…"
+                                           oninput="filterMappedTable()" />
+                                    <button onclick="clearMappedSearch()" title="Clear">
+                                        <i class="fas fa-times-circle"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div style="max-height:460px; overflow:auto;">
+                                <table class="table table-bordered table-hover table-sm" id="tblMapped">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>GL HEAD</th>
+                                            <th>GL SUBHEAD CODE</th>
+                                            <th>ACCOUNT ID / BACID</th>
+                                            <th>REPORT CODE</th>
+                                            <th>ROW ID</th>
+                                            <th>COLUMN ID</th>
+                                            <th>SOL ID</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="mappedBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
                     </div>
-                </div>
+                </div><!-- /pane-mapped -->
+
+                <!-- ══════════════════════════════════════════
+                     TAB 4 – UnMapped Accounts
+                ══════════════════════════════════════════ -->
+                <div class="tab-pane fade" id="pane-unmapped" role="tabpanel">
+                    <div class="p-3">
+
+                        <!-- Spinner -->
+                        <div id="unmappedSpinner" class="tab-spinner">
+                            <i class="fas fa-spinner fa-spin"></i>&nbsp; Loading unmapped accounts…
+                        </div>
+
+                        <!-- Placeholder -->
+                        <div id="unmappedPlaceholder" class="placeholder-msg">
+                            <i class="fa fa-info-circle mr-1"></i>
+                            Select a Report Code above to view UnMapped Accounts.
+                        </div>
+
+                        <!-- Table wrapper (hidden until data loads) -->
+                        <div id="unmappedTableWrap" style="display:none;">
+                            <div class="mapped-toolbar">
+                                <div id="unmappedInfo" class="mapped-info"></div>
+                                <div class="mapped-search-wrap">
+                                    <i class="fas fa-search" style="color:#6B7A8F; font-size:0.85rem;"></i>
+                                    <input type="text" id="unmappedSearch" placeholder="Search records…"
+                                           oninput="filterUnmappedTable()" />
+                                    <button onclick="clearUnmappedSearch()" title="Clear">
+                                        <i class="fas fa-times-circle"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div style="max-height:460px; overflow:auto;">
+                                <table class="table table-bordered table-hover table-sm" id="tblUnmapped">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>GL HEAD</th>
+                                            <th>GL SUBHEAD CODE</th>
+                                            <th>ACCOUNT ID / BACID</th>
+                                            <th>ACCOUNT DESCRIPTION</th>
+                                            <th>CURRENCY</th>
+                                            <th>DATA TYPE</th>
+                                            <th>REPORT CODE</th>
+                                            <th>REPORT DESC</th>
+                                            <th>ROW ID</th>
+                                            <th>COLUMN ID</th>
+                                            <th>ACCOUNT BALANCE (LC)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="unmappedBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div><!-- /pane-unmapped -->
 
             </div><!-- /tab-content -->
         </div><!-- /card-body -->
 
         <!-- Card Footer -->
-        <div class="card-footer" style="background-color: #376275; text-align: center;">
+        <div class="card-footer" style="background-color:#376275; text-align:center;">
             <button type="button" class="btn btn-sm btn-primary" onclick="home();">Home</button>
             <button type="button" class="btn btn-sm btn-primary" onclick="back();">Back</button>
         </div>
@@ -525,251 +660,423 @@
 
 <script>
 
+/* ══════════════════════════════════════════════════════════════════════════════
+   GLOBAL STATE
+══════════════════════════════════════════════════════════════════════════════ */
 var currentRows    = [];
 var currentColumns = [];
 var currentData    = [];
 
-/* ── Dropdown change ─────────────────────────── */
+// Track which report code has already been loaded for each tab
+// so we don't re-fetch unnecessarily.
+var _mappedLoadedFor   = null;
+var _unmappedLoadedFor = null;
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   REPORT CODE CHANGE
+   – loads Report Code List tab + clears mapped/unmapped cache
+══════════════════════════════════════════════════════════════════════════════ */
 function onReportCodeChange() {
-    var code = document.getElementById("reportCodeSelect").value;
+    var code = $('#reportCodeSelect').val();
+
+    // Invalidate mapped / unmapped caches
+    _mappedLoadedFor   = null;
+    _unmappedLoadedFor = null;
+
+    // Reset mapped tab to placeholder
+    $('#mappedTableWrap').hide();
+    $('#mappedPlaceholder').show();
+    $('#mappedBadge').hide();
+
+    // Reset unmapped tab to placeholder
+    $('#unmappedTableWrap').hide();
+    $('#unmappedPlaceholder').show();
+    $('#unmappedBadge').hide();
+
     if (!code) {
-        document.getElementById("reportNameInput").style.display = "none";
-        document.getElementById("tableBody").innerHTML = "";
+        $('#reportNameInput').hide().val('');
+        $('#tableBody').html('');
         return;
     }
-    fetch("/BRF/Reports/reportTemplate?code=" + code)
-        .then(response => response.json())
-        .then(data => {
-            var reportInput = document.getElementById("reportNameInput");
-            reportInput.style.display = "block";
-            reportInput.value = data.reportName;
-            reportInput.title = data.reportName;
-            var tbody = document.getElementById("tableBody");
-            tbody.innerHTML = "";
+
+    fetch('/BRF/Reports/reportTemplate?code=' + encodeURIComponent(code))
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            var inp = $('#reportNameInput');
+            inp.show().val(data.reportName).attr('title', data.reportName);
+
+            var tbody = $('#tableBody').empty();
             data.rows.forEach(function(row) {
-                var tr = document.createElement("tr");
-                tr.innerHTML =
-                    "<td>" + row.level1 + "</td>" +
-                    "<td>" + row.level2 + "</td>" +
-                    "<td>" + row.description + "</td>" +
-                    "<td>" + row.label + "</td>" +
-                    "<td>" + row.header + "</td>" +
-                    "<td>" + row.remarks + "</td>";
-                tbody.appendChild(tr);
+                tbody.append(
+                    '<tr>' +
+                    '<td>' + nvl(row.level1)       + '</td>' +
+                    '<td>' + nvl(row.level2)       + '</td>' +
+                    '<td>' + nvl(row.description)  + '</td>' +
+                    '<td>' + nvl(row.label)        + '</td>' +
+                    '<td>' + nvl(row.header)       + '</td>' +
+                    '<td>' + nvl(row.remarks)      + '</td>' +
+                    '</tr>'
+                );
             });
+
             currentRows    = data.rows;
             currentColumns = data.columns || [];
             populateRowLabelDropdown();
         })
-        .catch(error => { console.error("Error loading template:", error); });
+        .catch(function(err) { console.error('Error loading template:', err); });
 }
 
+/* ══════════════════════════════════════════════════════════════════════════════
+   TAB CLICK HANDLERS – Mapped & UnMapped
+══════════════════════════════════════════════════════════════════════════════ */
+
+function onMappedTabClick() {
+    var reportCode = $('#reportCodeSelect').val();
+    if (!reportCode) {
+        $('#mappedPlaceholder').show();
+        $('#mappedTableWrap').hide();
+        return;
+    }
+    // Don't reload if already loaded for this report code
+    if (_mappedLoadedFor === reportCode) return;
+    loadMappedAccounts(reportCode);
+}
+
+function onUnmappedTabClick() {
+    var reportCode = $('#reportCodeSelect').val();
+    if (!reportCode) {
+        $('#unmappedPlaceholder').show();
+        $('#unmappedTableWrap').hide();
+        return;
+    }
+    if (_unmappedLoadedFor === reportCode) return;
+    loadUnmappedAccounts(reportCode);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   LOAD MAPPED ACCOUNTS
+   GET /BRF/Reports/mappedAccounts?reportCode=BRF1
+   Columns: GL_HEAD, GL_SUBHEAD_CODE, ACCOUNT_ID_BACID,
+            REPORT_CODE, ROW_ID, COLUMN_ID, SOL_ID
+══════════════════════════════════════════════════════════════════════════════ */
+function loadMappedAccounts(reportCode) {
+    $('#mappedPlaceholder').hide();
+    $('#mappedTableWrap').hide();
+    $('#mappedSpinner').show();
+
+    $.ajax({
+        url  : '/BRF/Reports/mappedAccounts',
+        type : 'GET',
+        data : { reportCode: reportCode },
+        success: function(data) {
+            $('#mappedSpinner').hide();
+            _mappedLoadedFor = reportCode;
+
+            var tbody = $('#mappedBody').empty();
+
+            if (!data || data.length === 0) {
+                tbody.append(
+                    '<tr><td colspan="8" class="text-center text-muted">' +
+                    'No mapped accounts found for report code <strong>' + reportCode + '</strong>.' +
+                    '</td></tr>'
+                );
+                $('#mappedInfo').text('No records found.');
+                $('#mappedBadge').text('0').show();
+            } else {
+                $.each(data, function(i, row) {
+                    tbody.append(
+                        '<tr>' +
+                        '<td>' + (i + 1)                       + '</td>' +
+                        '<td>' + nvl(row['GL_HEAD'])            + '</td>' +
+                        '<td>' + nvl(row['GL_SUBHEAD_CODE'])    + '</td>' +
+                        '<td>' + nvl(row['ACCOUNT_ID_BACID'])   + '</td>' +
+                        '<td>' + nvl(row['REPORT_CODE'])        + '</td>' +
+                        '<td>' + nvl(row['ROW_ID'])             + '</td>' +
+                        '<td>' + nvl(row['COLUMN_ID'])          + '</td>' +
+                        '<td>' + nvl(row['SOL_ID'])             + '</td>' +
+                        '</tr>'
+                    );
+                });
+                $('#mappedInfo').text('Showing ' + data.length + ' mapped record(s) for ' + reportCode + '.');
+                $('#mappedBadge').text(data.length).show();
+            }
+
+            $('#mappedTableWrap').show();
+            $('#mappedSearch').val('');
+        },
+        error: function(xhr, status, err) {
+            $('#mappedSpinner').hide();
+            $('#mappedPlaceholder').show().html(
+                '<i class="fa fa-exclamation-triangle mr-1" style="color:#dc3545;"></i>' +
+                'Error loading mapped accounts: ' + (xhr.responseText || err)
+            );
+        }
+    });
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   LOAD UNMAPPED ACCOUNTS
+   GET /BRF/Reports/unmappedAccounts?reportCode=BRF1
+   Returns rows from BRF_BASE_MAPPING_TABLE whose ACCOUNT_ID_BACID
+   is NOT in BRF_COMMON_MAPPING_TABLE for the given report code.
+══════════════════════════════════════════════════════════════════════════════ */
+function loadUnmappedAccounts(reportCode) {
+    $('#unmappedPlaceholder').hide();
+    $('#unmappedTableWrap').hide();
+    $('#unmappedSpinner').show();
+
+    $.ajax({
+        url  : '/BRF/Reports/unmappedAccounts',
+        type : 'GET',
+        data : { reportCode: reportCode },
+        success: function(data) {
+            $('#unmappedSpinner').hide();
+            _unmappedLoadedFor = reportCode;
+
+            var tbody = $('#unmappedBody').empty();
+
+            if (!data || data.length === 0) {
+                tbody.append(
+                    '<tr><td colspan="12" class="text-center text-muted">' +
+                    'No unmapped accounts found for report code <strong>' + reportCode + '</strong>.' +
+                    '</td></tr>'
+                );
+                $('#unmappedInfo').text('No records found.');
+                $('#unmappedBadge').text('0').show();
+            } else {
+                $.each(data, function(i, row) {
+                    tbody.append(
+                        '<tr>' +
+                        '<td>' + (i + 1)                              + '</td>' +
+                        '<td>' + nvl(row['GL_HEAD'])                   + '</td>' +
+                        '<td>' + nvl(row['GL_SUBHEAD_CODE'])           + '</td>' +
+                        '<td>' + nvl(row['ACCOUNT_ID_BACID'])          + '</td>' +
+                        '<td>' + nvl(row['ACCOUNT_DESCRIPTION'])       + '</td>' +
+                        '<td>' + nvl(row['CURRENCY'])                  + '</td>' +
+                        '<td>' + nvl(row['DATA_TYPE'])                 + '</td>' +
+                        '<td>' + nvl(row['REPORT_CODE'])               + '</td>' +
+                        '<td>' + nvl(row['REPORT_DESC'])               + '</td>' +
+                        '<td>' + nvl(row['ROW_ID'])                    + '</td>' +
+                        '<td>' + nvl(row['COLUMN_ID'])                 + '</td>' +
+                        '<td>' + nvl(row['ACCOUNT_BALANCE_LC'])        + '</td>' +
+                        '</tr>'
+                    );
+                });
+                $('#unmappedInfo').text('Showing ' + data.length + ' unmapped record(s) for ' + reportCode + '.');
+                $('#unmappedBadge').text(data.length).show();
+            }
+
+            $('#unmappedTableWrap').show();
+            $('#unmappedSearch').val('');
+        },
+        error: function(xhr, status, err) {
+            $('#unmappedSpinner').hide();
+            $('#unmappedPlaceholder').show().html(
+                '<i class="fa fa-exclamation-triangle mr-1" style="color:#dc3545;"></i>' +
+                'Error loading unmapped accounts: ' + (xhr.responseText || err)
+            );
+        }
+    });
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   SEARCH / FILTER – Mapped
+══════════════════════════════════════════════════════════════════════════════ */
+function filterMappedTable() {
+    var term = $('#mappedSearch').val().toLowerCase().trim();
+    var total = 0, visible = 0;
+    $('#mappedBody tr').each(function() {
+        total++;
+        var text = $(this).text().toLowerCase();
+        var show = !term || text.indexOf(term) !== -1;
+        $(this).toggle(show);
+        if (show) visible++;
+    });
+    $('#mappedInfo').text(
+        term
+            ? 'Showing ' + visible + ' of ' + total + ' record(s) matching "' + term + '".'
+            : 'Showing ' + total + ' record(s) for ' + nvl($('#reportCodeSelect').val()) + '.'
+    );
+}
+function clearMappedSearch() { $('#mappedSearch').val(''); filterMappedTable(); }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   SEARCH / FILTER – UnMapped
+══════════════════════════════════════════════════════════════════════════════ */
+function filterUnmappedTable() {
+    var term = $('#unmappedSearch').val().toLowerCase().trim();
+    var total = 0, visible = 0;
+    $('#unmappedBody tr').each(function() {
+        total++;
+        var text = $(this).text().toLowerCase();
+        var show = !term || text.indexOf(term) !== -1;
+        $(this).toggle(show);
+        if (show) visible++;
+    });
+    $('#unmappedInfo').text(
+        term
+            ? 'Showing ' + visible + ' of ' + total + ' record(s) matching "' + term + '".'
+            : 'Showing ' + total + ' record(s) for ' + nvl($('#reportCodeSelect').val()) + '.'
+    );
+}
+function clearUnmappedSearch() { $('#unmappedSearch').val(''); filterUnmappedTable(); }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   ROW / COLUMN DROPDOWNS (Mapping Maintenance tab)
+══════════════════════════════════════════════════════════════════════════════ */
 function populateRowLabelDropdown() {
-    var sel = document.getElementById("rowLabelSelect");
-    sel.innerHTML = '<option value="">-- Select Row --</option>';
-    document.getElementById("colLabelSelect").innerHTML =
-        '<option value="">-- Select Column --</option>';
+    var sel = $('#rowLabelSelect').html('<option value="">-- Select Row --</option>');
+    $('#colLabelSelect').html('<option value="">-- Select Column --</option>');
     currentRows.forEach(function(row, idx) {
-        if (row.header === "Y") return;
-        var opt = document.createElement("option");
-        opt.value = idx;
-        opt.text  = row.label + " - " + row.description;
-        sel.appendChild(opt);
+        if (row.header === 'Y') return;
+        sel.append('<option value="' + idx + '">' + row.label + ' - ' + row.description + '</option>');
     });
 }
 
 function onRowLabelChange() {
-    var idx    = document.getElementById("rowLabelSelect").value;
-    var colSel = document.getElementById("colLabelSelect");
-    colSel.innerHTML = '<option value="">-- Select Column --</option>';
-    if (idx === "") return;
+    var idx    = $('#rowLabelSelect').val();
+    var colSel = $('#colLabelSelect').html('<option value="">-- Select Column --</option>');
+    if (idx === '') return;
     var row           = currentRows[parseInt(idx)];
     var availableCols = row.availableCols || [];
     currentColumns.forEach(function(col) {
         if (availableCols.indexOf(col.colCode) === -1) return;
-        var opt   = document.createElement("option");
-        opt.value = row.label + "-" + col.colCode;
-        opt.text  = row.label + "-" + col.colCode + "  -  " + col.colName;
-        colSel.appendChild(opt);
+        colSel.append('<option value="' + row.label + col.colCode + '">' +
+                      row.label + col.colCode + '  -  ' + col.colName + '</option>');
     });
 }
 
-/* ── Navigation ── */
-function home() { location.href = "/BRF/BRFDashboard"; }
-function back() { window.history.back(); }
-
-/* ── Close sol-id menu on outside click ── */
-document.addEventListener("click", function(e) {
-    var menu = document.getElementById("glSubCodeMenu");
-    var btn  = document.getElementById("glSubCodeBtn");
-    if (menu && !menu.contains(e.target) && e.target !== btn) {
-        menu.style.display = "none";
-    }
-
-    // ═══════════════════════════════════════════════
-    // CHANGE 1 ► close SOL ID menu on outside click
-    // ═══════════════════════════════════════════════
-    var solMenu = document.getElementById("solIdMenu");
-    var solBtn  = document.getElementById("solIdBtn");
-    if (solMenu && !solMenu.contains(e.target) && e.target !== solBtn) {
-        solMenu.style.display = "none";
-    }
-});
-
-function toggleSubCodeMenu(e) {
-    e.stopPropagation();
-    var menu = document.getElementById("glSubCodeMenu");
-    menu.style.display = (menu.style.display === "none") ? "block" : "none";
-}
-
-/* ═══════════════════════════════════════════════
-   CHANGE 1 ► SOL ID menu toggle + helpers
-═══════════════════════════════════════════════ */
-function toggleSolIdMenu(e) {
-    e.stopPropagation();
-    var menu = document.getElementById("solIdMenu");
-    menu.style.display = (menu.style.display === "none") ? "block" : "none";
-}
-
-function toggleAllSolIds(masterChk) {
-    document.querySelectorAll("#solIdMenu input[type=checkbox]:not(#chk_solAll)")
-            .forEach(function(cb) { cb.checked = masterChk.checked; });
-    refreshSolIdBtnLabel();
-}
-
-function onSolIdCheck() {
-    var all     = document.querySelectorAll("#solIdMenu input[type=checkbox]:not(#chk_solAll)");
-    var checked = document.querySelectorAll("#solIdMenu input[type=checkbox]:not(#chk_solAll):checked");
-    var master  = document.getElementById("chk_solAll");
-    if (master) master.checked = (checked.length === all.length);
-    refreshSolIdBtnLabel();
-}
-
-function refreshSolIdBtnLabel() {
-    var checked = document.querySelectorAll("#solIdMenu input[type=checkbox]:not(#chk_solAll):checked");
-    var btn     = document.getElementById("solIdBtn");
-    if      (checked.length === 0) btn.textContent = "-- Select SOL ID --";
-    else if (checked.length === 1) btn.textContent = checked[0].value;
-    else                           btn.textContent = checked.length + " selected";
-}
-
-function getSelectedSolIds() {
-    return Array.from(
-        document.querySelectorAll("#solIdMenu input[type=checkbox]:not(#chk_solAll):checked")
-    ).map(function(cb) { return cb.value; });
-}
-/* ═══════════════════════════════════════════════
-   END CHANGE 1 (SOL ID helpers)
-═══════════════════════════════════════════════ */
-
+/* ══════════════════════════════════════════════════════════════════════════════
+   SOURCE / GL CODE / GL SUB CODE
+══════════════════════════════════════════════════════════════════════════════ */
 function onSourceChange() {
-    var source    = document.getElementById("sourceSelect").value;
-    var glCodeSel = document.getElementById("glCodeSelect");
-    glCodeSel.innerHTML = '<option value="">-- Select GL Code --</option>';
-    glCodeSel.disabled  = true;
+    var source = $('#sourceSelect').val();
+    $('#glCodeSelect').html('<option value="">-- Select GL Code --</option>').prop('disabled', true);
     resetGLSubCode();
     if (!source) return;
-    var reportCode = document.getElementById("reportCodeSelect").value;
+    var reportCode = $('#reportCodeSelect').val();
     if (!reportCode) {
-        alert("Please select a Report Code first.");
-        document.getElementById("sourceSelect").value = "";
+        alert('Please select a Report Code first.');
+        $('#sourceSelect').val('');
         return;
     }
-    fetch("/BRF/Reports/glHeads?dataType=" + encodeURIComponent(source))
-        .then(function(r) { return r.json(); })
-        .then(function(heads) {
-            heads.forEach(function(h) {
-                var opt  = document.createElement("option");
-                opt.value = h;
-                opt.text  = h;
-                glCodeSel.appendChild(opt);
-            });
-            glCodeSel.disabled = false;
-        })
-        .catch(function(err) { console.error("Error loading GL heads:", err); });
+    $.get('/BRF/Reports/glHeads', { dataType: source }, function(heads) {
+        var sel = $('#glCodeSelect').prop('disabled', false);
+        heads.forEach(function(h) { sel.append('<option value="' + h + '">' + h + '</option>'); });
+    });
 }
 
 function onGLCodeChange() {
-    var source  = document.getElementById("sourceSelect").value;
-    var glHead  = document.getElementById("glCodeSelect").value;
+    var source = $('#sourceSelect').val();
+    var glHead = $('#glCodeSelect').val();
     resetGLSubCode();
     if (!glHead) return;
-    fetch("/BRF/Reports/glSubHeads?dataType=" + encodeURIComponent(source)
-              + "&glHead=" + encodeURIComponent(glHead))
-        .then(function(r) { return r.json(); })
-        .then(function(rows) { buildSubCodeCheckboxes(rows); })
-        .catch(function(err) { console.error("Error loading GL sub-heads:", err); });
+    $.get('/BRF/Reports/glSubHeads', { dataType: source, glHead: glHead }, function(rows) {
+        buildSubCodeCheckboxes(rows);
+    });
 }
 
 function buildSubCodeCheckboxes(rows) {
-    var menu = document.getElementById("glSubCodeMenu");
-    var btn  = document.getElementById("glSubCodeBtn");
-    menu.innerHTML = "";
+    var menu = $('#glSubCodeMenu').html('');
+    var btn  = $('#glSubCodeBtn');
     if (!rows || rows.length === 0) {
-        menu.innerHTML = '<div style="padding:8px 14px;font-family:verdana;font-size:12px;color:#888;">No records found</div>';
-        btn.disabled = false;
+        menu.html('<div style="padding:8px 14px;font-family:verdana;font-size:12px;color:#888;">No records found</div>');
+        btn.prop('disabled', false);
         return;
     }
-    var allDiv = document.createElement("div");
-    allDiv.style.cssText = "padding:5px 14px; border-bottom:1px solid #eee;";
-    allDiv.innerHTML =
+    menu.append(
+        '<div style="padding:5px 14px; border-bottom:1px solid #eee;">' +
         '<input type="checkbox" id="chk_subAll" onclick="toggleAllSubCodes(this)"> ' +
-        '<label for="chk_subAll" style="font-family:verdana;font-size:12px;font-weight:bold;cursor:pointer;margin:0;">Select All</label>';
-    menu.appendChild(allDiv);
+        '<label for="chk_subAll" style="font-family:verdana;font-size:12px;font-weight:bold;cursor:pointer;margin:0;">Select All</label>' +
+        '</div>'
+    );
     rows.forEach(function(row, i) {
-        var id  = "chk_sub_" + i;
+        var id  = 'chk_sub_' + i;
         var val = row.subHeadCode;
-        var div = document.createElement("div");
-        div.style.cssText = "padding:4px 14px; cursor:pointer;";
-        div.innerHTML =
+        menu.append(
+            '<div style="padding:4px 14px; cursor:pointer;">' +
             '<input type="checkbox" id="' + id + '" value="' + val + '" onchange="onSubCodeCheck()"> ' +
-            '<label for="' + id + '" style="font-family:verdana;font-size:12px;cursor:pointer;margin:0;">' + val + '</label>';
-        menu.appendChild(div);
+            '<label for="' + id + '" style="font-family:verdana;font-size:12px;cursor:pointer;margin:0;">' + val + '</label>' +
+            '</div>'
+        );
     });
-    btn.disabled    = false;
-    btn.textContent = "-- Select GL Sub Code --";
+    btn.prop('disabled', false).text('-- Select GL Sub Code --');
 }
 
 function toggleAllSubCodes(masterChk) {
-    document.querySelectorAll("#glSubCodeMenu input[type=checkbox]:not(#chk_subAll)")
-            .forEach(function(cb) { cb.checked = masterChk.checked; });
+    $('#glSubCodeMenu input[type=checkbox]:not(#chk_subAll)').prop('checked', masterChk.checked);
     refreshSubCodeBtnLabel();
 }
-
 function onSubCodeCheck() {
-    var all     = document.querySelectorAll("#glSubCodeMenu input[type=checkbox]:not(#chk_subAll)");
-    var checked = document.querySelectorAll("#glSubCodeMenu input[type=checkbox]:not(#chk_subAll):checked");
-    var master  = document.getElementById("chk_subAll");
-    if (master) master.checked = (checked.length === all.length);
+    var all     = $('#glSubCodeMenu input[type=checkbox]:not(#chk_subAll)').length;
+    var checked = $('#glSubCodeMenu input[type=checkbox]:not(#chk_subAll):checked').length;
+    $('#chk_subAll').prop('checked', all === checked);
     refreshSubCodeBtnLabel();
 }
-
 function refreshSubCodeBtnLabel() {
-    var checked = document.querySelectorAll("#glSubCodeMenu input[type=checkbox]:not(#chk_subAll):checked");
-    var btn     = document.getElementById("glSubCodeBtn");
-    if      (checked.length === 0) btn.textContent = "-- Select GL Sub Code --";
-    else if (checked.length === 1) btn.textContent = checked[0].value;
-    else                           btn.textContent = checked.length + " selected";
+    var checked = $('#glSubCodeMenu input[type=checkbox]:not(#chk_subAll):checked');
+    var btn = $('#glSubCodeBtn');
+    if      (checked.length === 0) btn.text('-- Select GL Sub Code --');
+    else if (checked.length === 1) btn.text(checked.first().val());
+    else                           btn.text(checked.length + ' selected');
 }
-
 function resetGLSubCode() {
-    var menu = document.getElementById("glSubCodeMenu");
-    var btn  = document.getElementById("glSubCodeBtn");
-    menu.style.display = "none";
-    menu.innerHTML     = "";
-    btn.disabled       = true;
-    btn.textContent    = "-- Select GL Sub Code --";
+    $('#glSubCodeMenu').hide().html('');
+    $('#glSubCodeBtn').prop('disabled', true).text('-- Select GL Sub Code --');
 }
-
 function getSelectedSubCodes() {
-    return Array.from(
-        document.querySelectorAll("#glSubCodeMenu input[type=checkbox]:not(#chk_subAll):checked")
-    ).map(function(cb) { return cb.value; });
+    return $('#glSubCodeMenu input[type=checkbox]:not(#chk_subAll):checked')
+               .map(function() { return this.value; }).get();
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   SHOW ACCOUNTS – AJAX
-═══════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════════════════════
+   SOL ID DROPDOWN
+══════════════════════════════════════════════════════════════════════════════ */
+function toggleSolIdMenu(e) {
+    e.stopPropagation();
+    var menu = $('#solIdMenu');
+    menu.css('display', menu.css('display') === 'none' ? 'block' : 'none');
+}
+function toggleAllSolIds(masterChk) {
+    $('#solIdMenu input[type=checkbox]:not(#chk_solAll)').prop('checked', masterChk.checked);
+    refreshSolIdBtnLabel();
+}
+function onSolIdCheck() {
+    var all     = $('#solIdMenu input[type=checkbox]:not(#chk_solAll)').length;
+    var checked = $('#solIdMenu input[type=checkbox]:not(#chk_solAll):checked').length;
+    $('#chk_solAll').prop('checked', all === checked);
+    refreshSolIdBtnLabel();
+}
+function refreshSolIdBtnLabel() {
+    var checked = $('#solIdMenu input[type=checkbox]:not(#chk_solAll):checked');
+    var btn = $('#solIdBtn');
+    if      (checked.length === 0) btn.text('-- Select SOL ID --');
+    else if (checked.length === 1) btn.text(checked.first().val());
+    else                           btn.text(checked.length + ' selected');
+}
+function getSelectedSolIds() {
+    return $('#solIdMenu input[type=checkbox]:not(#chk_solAll):checked')
+               .map(function() { return this.value; }).get();
+}
+
+function toggleSubCodeMenu(e) {
+    e.stopPropagation();
+    var menu = $('#glSubCodeMenu');
+    menu.css('display', menu.css('display') === 'none' ? 'block' : 'none');
+}
+
+/* ── Close dropdown menus on outside click ── */
+$(document).on('click', function(e) {
+    var $t = $(e.target);
+    if (!$('#glSubCodeMenu').is($t) && !$('#glSubCodeBtn').is($t))
+        $('#glSubCodeMenu').hide();
+    if (!$('#solIdMenu').is($t) && !$('#solIdBtn').is($t))
+        $('#solIdMenu').hide();
+});
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   SHOW ACCOUNTS (Mapping Maintenance tab)
+══════════════════════════════════════════════════════════════════════════════ */
 function showAccounts() {
     var reportCode = $('#reportCodeSelect').val().trim();
     var source     = $('#sourceSelect').val();
@@ -791,12 +1098,8 @@ function showAccounts() {
         return $.ajax({
             url  : '/BRF/BRFBaseTable/showAccounts',
             type : 'GET',
-            data : {
-                reportCode : reportCode,
-                source     : source,
-                glHead     : glHead,
-                glSubHead  : subCode
-            }
+            data : { reportCode: reportCode, source: source,
+                     glHead: glHead, glSubHead: subCode }
         });
     });
 
@@ -806,11 +1109,8 @@ function showAccounts() {
             var responses  = promises.length === 1
                 ? [arguments[0]]
                 : Array.from(arguments).map(function(a) { return a[0]; });
-
             responses.forEach(function(data) {
-                if (Array.isArray(data)) {
-                    data.forEach(function(row) { allResults.push(row); });
-                }
+                if (Array.isArray(data)) data.forEach(function(r) { allResults.push(r); });
             });
 
             // De-duplicate by ACCOUNT_ID_BACID
@@ -825,8 +1125,7 @@ function showAccounts() {
             $('#loadingSpinner').hide();
             $('#btnShowAccounts').prop('disabled', false);
 
-            var tbody = $('#accountsBody');
-            tbody.empty();
+            var tbody = $('#accountsBody').empty();
             $('#tableSearch').val('');
 
             if (!data || data.length === 0) {
@@ -838,37 +1137,26 @@ function showAccounts() {
                 window.currentData = data;
                 $('#resultInfo').text('Showing ' + data.length + ' record(s).');
 
-                // ═══════════════════════════════════════════════════════
-                // CHANGE 2 ► Filter out ACCOUNT_BALANCE_LC from DB keys
-                //            so the extra column after CURRENCY is removed.
-                // CHANGE 3 ► Rename ACCOUNT_ID_BACID → ACCOUNT ID/BACID
-                // ═══════════════════════════════════════════════════════
                 var keys = Object.keys(data[0]).filter(function(k) {
-                    return k.toUpperCase() !== 'ACCOUNT_BALANCE_LC';   // CHANGE 2
+                    return k.toUpperCase() !== 'ACCOUNT_BALANCE_LC';
                 });
 
                 var headerRow = '<tr>' +
                     '<th><input type="checkbox" id="selectAll" title="Select All"></th>' +
                     '<th>#</th>';
                 $.each(keys, function(i, key) {
-                    // CHANGE 3: special label for ACCOUNT_ID_BACID
                     var label = (key.toUpperCase() === 'ACCOUNT_ID_BACID')
-                        ? 'ACCOUNT ID/BACID'
-                        : key.replace(/_/g, ' ');
+                        ? 'ACCOUNT ID/BACID' : key.replace(/_/g, ' ');
                     headerRow += '<th>' + label + '</th>';
                 });
                 headerRow += '<th>Account Balance (LC)</th></tr>';
                 $('#accountsHead').html(headerRow);
-                // ═══════════════════════════════════════════════════════
-                // END CHANGE 2 & 3
-                // ═══════════════════════════════════════════════════════
 
-                // Select All handler
                 $('#selectAll').off('change').on('change', function() {
                     $('.row-select').prop('checked', this.checked);
                 });
 
-                var balanceOptions =
+                var balOpts =
                     '<option value="">-- Select --</option>' +
                     '<option value="<0">&lt; 0</option>' +
                     '<option value=">0">&gt; 0</option>' +
@@ -878,24 +1166,16 @@ function showAccounts() {
                     var tr = '<tr>' +
                         '<td><input type="checkbox" class="row-select" data-idx="' + i + '"></td>' +
                         '<td>' + (i + 1) + '</td>';
-                    // CHANGE 2: iterate filtered keys only (no ACCOUNT_BALANCE_LC cell)
-                    $.each(keys, function(j, key) {
-                        tr += '<td>' + nvl(row[key]) + '</td>';
-                    });
+                    $.each(keys, function(j, key) { tr += '<td>' + nvl(row[key]) + '</td>'; });
                     tr += '<td><select class="balance-select form-control form-control-sm"' +
                           ' data-idx="' + i + '" style="min-width:200px;">' +
-                          balanceOptions + '</select></td>';
-                    tr += '</tr>';
+                          balOpts + '</select></td></tr>';
                     tbody.append(tr);
                 });
             }
 
             $('#accountsTable').show();
-            if (data && data.length > 0) {
-                $('#btnSubmitAccounts').show();
-            } else {
-                $('#btnSubmitAccounts').hide();
-            }
+            $('#btnSubmitAccounts').toggle(data && data.length > 0);
         })
         .fail(function(xhr, status, error) {
             $('#loadingSpinner').hide();
@@ -905,56 +1185,41 @@ function showAccounts() {
         });
 }
 
-/* ═══════════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════════════════════════
    SUBMIT ACCOUNTS
-═══════════════════════════════════════════════════════════════ */
+══════════════════════════════════════════════════════════════════════════════ */
 function submitAccounts() {
     var reportCode = $('#reportCodeSelect').val().trim();
-
-    var rowIdxVal = $('#rowLabelSelect').val();
-    var rowId = '';
+    var rowIdxVal  = $('#rowLabelSelect').val();
+    var rowId      = '';
     if (rowIdxVal !== '' && currentRows[parseInt(rowIdxVal)]) {
         rowId = currentRows[parseInt(rowIdxVal)].label;
     }
-
-    var colVal   = $('#colLabelSelect').val().trim();
-    var columnId = colVal;
-
-    // ═══════════════════════════════════════════════
-    // CHANGE 1 ► Collect selected SOL IDs
-    //            Format: ('9001','9002') or ''
-    // ═══════════════════════════════════════════════
-    var solIds      = getSelectedSolIds();
-    var solIdValue  = solIds.length > 0
-    ? "'" + solIds.join("','") + "'"
-    : '';
-    // ═══════════════════════════════════════════════
+    var columnId   = $('#colLabelSelect').val().trim();
+    var solIds     = getSelectedSolIds();
+    var solIdValue = solIds.length > 0 ? "'" + solIds.join("','") + "'" : '';
 
     var selectedRows = [];
-
     $('.row-select:checked').each(function() {
         var idx       = $(this).data('idx');
         var balanceLc = $('.balance-select[data-idx="' + idx + '"]').val();
         var row       = window.currentData[idx];
-
         if (!balanceLc) {
             alert('Please select Account Balance (LC) for row ' + (idx + 1));
             selectedRows = null;
             return false;
         }
-
         selectedRows.push({
             accountId  : nvl(row['ACCOUNT_ID_BACID'] || row['account_id_bacid']),
             balanceLc  : balanceLc,
             reportCode : reportCode,
             rowId      : rowId,
             columnId   : columnId,
-            solId      : solIdValue   // CHANGE 1 ► solId included in payload
+            solId      : solIdValue
         });
     });
 
     if (selectedRows === null) return;
-
     if (!selectedRows || selectedRows.length === 0) {
         alert('Please select at least one record using the checkbox.');
         return;
@@ -970,6 +1235,9 @@ function submitAccounts() {
         success: function(res) {
             $('#btnSubmitAccounts').prop('disabled', false).text('Submit');
             $('.row-select, #selectAll').prop('checked', false);
+
+            // Invalidate mapped cache so the tab refreshes next time
+            _mappedLoadedFor = null;
 
             var msg = '';
             if (res.inserted > 0) msg += res.inserted + ' record(s) saved successfully.\n';
@@ -991,56 +1259,37 @@ function submitAccounts() {
     });
 }
 
-/* ── Table Search / Filter ── */
+/* ══════════════════════════════════════════════════════════════════════════════
+   SEARCH / FILTER – Mapping Maintenance tab
+══════════════════════════════════════════════════════════════════════════════ */
 function filterTable() {
     var term = $('#tableSearch').val().toLowerCase().trim();
     var total = 0, visible = 0;
     $('#accountsBody tr').each(function() {
         total++;
-        var text = $(this).text().toLowerCase();
-        if (!term || text.indexOf(term) !== -1) {
-            $(this).show();
-            visible++;
-        } else {
-            $(this).hide();
-        }
+        var show = !term || $(this).text().toLowerCase().indexOf(term) !== -1;
+        $(this).toggle(show);
+        if (show) visible++;
     });
-    if (term) {
-        $('#resultInfo').text('Showing ' + visible + ' of ' + total +
-                              ' record(s) matching "' + term + '".');
-    } else {
-        $('#resultInfo').text('Showing ' + total + ' record(s).');
-    }
+    $('#resultInfo').text(
+        term
+            ? 'Showing ' + visible + ' of ' + total + ' record(s) matching "' + term + '".'
+            : 'Showing ' + total + ' record(s).'
+    );
 }
+function clearSearch() { $('#tableSearch').val(''); filterTable(); }
 
-function clearSearch() {
-    $('#tableSearch').val('');
-    filterTable();
-}
-
-/* ── Helpers ── */
-function nvl(val) {
-    return (val !== null && val !== undefined) ? val : '';
-}
-
-function col(row, key) {
-    var v = row[key];
-    if (v === undefined) v = row[key.toLowerCase()];
-    return nvl(v);
-}
-
-/* ── Cancel ── */
+/* ══════════════════════════════════════════════════════════════════════════════
+   CANCEL
+══════════════════════════════════════════════════════════════════════════════ */
 function cancelAction() {
     $('#rowLabelSelect').val('');
     $('#colLabelSelect').html('<option value="">-- Select Column --</option>');
     $('#sourceSelect').val('');
-    $('#glCodeSelect').html('<option value="">-- Select GL Code --</option>')
-                      .prop('disabled', true);
+    $('#glCodeSelect').html('<option value="">-- Select GL Code --</option>').prop('disabled', true);
     resetGLSubCode();
-    // CHANGE 1 ► reset SOL ID checkboxes on cancel
-    document.querySelectorAll("#solIdMenu input[type=checkbox]")
-            .forEach(function(cb) { cb.checked = false; });
-    document.getElementById("solIdBtn").textContent = "-- Select SOL ID --";
+    $('#solIdMenu input[type=checkbox]').prop('checked', false);
+    $('#solIdBtn').text('-- Select SOL ID --');
     $('#tableSearch').val('');
     $('#accountsHead').html(
         '<tr><td class="text-center text-muted">' +
@@ -1052,6 +1301,17 @@ function cancelAction() {
     $('#btnSubmitAccounts').hide();
     window.currentData = [];
 }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════════════════════════════════════════ */
+function home() { location.href = '/BRF/BRFDashboard'; }
+function back() { window.history.back(); }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════════════════════════════════════════ */
+function nvl(val) { return (val !== null && val !== undefined) ? val : ''; }
 
 </script>
 
