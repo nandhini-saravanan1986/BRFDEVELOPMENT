@@ -38,37 +38,18 @@ public class RegulatoryReportServices {
 	@NotNull
 	private String exportpath;
 
-
-
 	@Autowired
 	SessionFactory sessionFactory;
-
-//	@Autowired
-	//CustomRepGeneratorServices customerrptgenserviceexcel;
-
-	/* @Autowired BRF094AReportService BRF094AReportService; */
-
-
 
 	@Autowired
 	BRF001ReportService brf001ReportService;
 
 	@Autowired
 	BRF002ReportService brf002ReportService;
-
-
-
-	//@Autowired
-	//BRF003ReportService brf003ReportService;
-
 	@Autowired
-	//BRF004ReportService brf004ReportService;
-
-
-
-	/*
-	 * @Autowired BRF038ReportService brf038ReportService;
-	 */
+	BRF003ReportService brf003ReportService;
+	@Autowired
+	BRF004ReportService brf004ReportService;
 
 	String getExportpath() {
 		return exportpath;
@@ -87,7 +68,6 @@ public class RegulatoryReportServices {
 		logger.info("Getting View for the Report :" + reportId);
 		switch (reportId) {
 
-
 		case "BRF001":
 			repsummary = brf001ReportService.getBRF001View(reportId, fromdate, todate, currency, dtltype, pageable);
 			break;
@@ -95,10 +75,14 @@ public class RegulatoryReportServices {
 		case "BRF002":
 			repsummary = brf002ReportService.getBRF002View(reportId, fromdate, todate, currency, dtltype, pageable);
 			break;
-		/*
-		 * case "MR3-RES": repsummary = b25baselReportService.getB25BASELView(reportId,
-		 * fromdate, todate, currency, dtltype, pageable); break;
-		 */
+
+		case "BRF003":
+			repsummary = brf003ReportService.getBRF003View(reportId, fromdate, todate, currency, dtltype, pageable);
+			break;
+
+		case "BRF004":
+			repsummary = brf004ReportService.getBRF004View(reportId, fromdate, todate, currency, dtltype, pageable);
+			break;
 
 		}
 
@@ -113,13 +97,19 @@ public class RegulatoryReportServices {
 		logger.info("Getting Summary for the Report :" + reportId);
 		switch (reportId) {
 
-
-
 		case "BRF001":
 			repsummary = brf001ReportService.getBRF001View(reportId, fromdate, todate, currency, dtltype, pageable);
 			break;
 		case "BRF002":
 			repsummary = brf002ReportService.getBRF002View(reportId, fromdate, todate, currency, dtltype, pageable);
+			break;
+
+		case "BRF003":
+			repsummary = brf003ReportService.getBRF003View(reportId, fromdate, todate, currency, dtltype, pageable);
+			break;
+
+		case "BRF004":
+			repsummary = brf004ReportService.getBRF004View(reportId, fromdate, todate, currency, dtltype, pageable);
 			break;
 		}
 
@@ -135,36 +125,28 @@ public class RegulatoryReportServices {
 
 		switch (reportId) {
 
-
 		case "BRF001":
 			repdetail = brf001ReportService.getBRF001currentDtl(reportId, fromdate, todate, currency, dtltype, pageable,
-					Filter,searchVal);
+					Filter, searchVal);
 			break;
 		case "BRF002":
 			repdetail = brf002ReportService.getBRF002currentDtl(reportId, fromdate, todate, currency, dtltype, pageable,
-					Filter,searchVal);
+					Filter, searchVal);
+			break;
+
+		case "BRF003":
+			repdetail = brf003ReportService.getBRF003currentDtl(reportId, fromdate, todate, currency, dtltype, pageable,
+					Filter, searchVal);
+			break;
+
+		case "BRF004":
+			repdetail = brf004ReportService.getBRF004currentDtl(reportId, fromdate, todate, currency, dtltype, pageable,
+					Filter, searchVal);
 			break;
 		}
 		return repdetail;
 	}
 
-	/*
-	 * public ModelAndView getReportDetails1(String reportId, String instanceCode,
-	 * String asondate, String fromdate, String todate, String currency, String
-	 * reportingTime, String dtltype, String subreportid, String secid, Pageable
-	 * pageable, String Filter) {
-	 * 
-	 * ModelAndView repdetail = new ModelAndView();
-	 * logger.info("Getting Details for the Report :" + reportId);
-	 * 
-	 * switch (reportId) {
-	 * 
-	 * case "BRF032A": repdetail = brf32ReportService.getBRF32Details(reportId,
-	 * fromdate, todate, currency, dtltype, pageable, Filter); break;
-	 * 
-	 * } return repdetail; }
-	 
-
 	public File getDownloadFile(String reportId, String asondate, String fromdate, String todate, String currency,
 			String subreportid, String secid, String dtltype, String reportingTime, String filetype,
 			String instancecode, String filter) throws JRException, SQLException, IOException {
@@ -175,75 +157,27 @@ public class RegulatoryReportServices {
 
 		switch (reportId) {
 
-		case "BRF001":
-			repfile = brf001ReportService.getFile(reportId, fromdate, todate, currency, dtltype, filetype, filter);
-			break;
-
-		}
-
-		return repfile;
-
-	}
-
-	public String preCheckReportRBS(String reportid, String fromdate, String todate) {
-
-		String msg = "";
-
-		logger.info("Report precheck : " + reportid);
-
-		switch (reportid) {
-
-		case "BRF001":
-			msg = brf001ReportService.preCheck(reportid, fromdate, todate);
-			break;
-		default:
-			logger.info("default -> preCheck()");
-			msg = "Master - need to process";
-		}
-
-		return msg;
-	}
-
-	/*
-	 * public File getDownloadFile1(String reportId, String asondate, String
-	 * fromdate, String todate, String currency, String subreportid, String secid,
-	 * String dtltype, String reportingTime, String filetype, String instancecode)
-	 * throws FileNotFoundException, JRException, SQLException {
-	 * 
-	 * File repfile = null;
-	 * 
-	 * logger.info("Getting Report File for : " + reportId + " in " + filetype +
-	 * " format");
-	 * 
-	 * switch (reportId) { case "OR1": repfile =
-	 * basel_OR1_ReportService.getFile(reportId, fromdate, todate, currency,
-	 * dtltype, filetype); break;
-	 * 
-	 * } return repfile;
-	 * 
-	 * }
-	 */
-	public File getDownloadFile(String reportId, String asondate, String fromdate, String todate, String currency,
-			String subreportid, String secid, String dtltype, String reportingTime, String filetype,
-			String instancecode, String filter) throws JRException, SQLException, IOException {
-
-		File repfile = null;
-
-		logger.info("Getting Report File for : " + reportId + " in " + filetype + " format");
-
-		switch (reportId) {
-		
 		case "BRF001":
 			repfile = brf001ReportService.getFile(reportId, fromdate, todate, currency, dtltype, filetype, filter);
 			break;
 		case "BRF002":
 			repfile = brf002ReportService.getFile(reportId, fromdate, todate, currency, dtltype, filetype, filter);
 			break;
+/*
+		case "BRF003":
+			repfile = brf003ReportService.getFile(reportId, fromdate, todate, currency, dtltype, filetype, filter);
+			break;
+
+		case "BRF004":
+			repfile = brf004ReportService.getFile(reportId, fromdate, todate, currency, dtltype, filetype, filter);
+			break;
+			*/
 		}
 
 		return repfile;
 
 	}
+
 	/****** arch view ****/
 	public ModelAndView getArchiveReportView(String reportId, String reportDate, String fromdate, String todate,
 			String currency, String dtltype, String subreportid, String secid, String reportingTime, Pageable pageable,
@@ -261,15 +195,18 @@ public class RegulatoryReportServices {
 		case "BRF002":
 			repsummary = brf002ReportService.getArchieveBRF002View(reportId, fromdate, todate, currency, dtltype,
 					pageable);
-			break;		
-		
-		/* Developed by KAMATCHI */
+			break;
 
-		/*
-		 * case "BRF094A": repdetail =
-		 * BRF094AReportService.ARCHgetBRF094currentDtl(reportId, fromdate, todate,
-		 * currency, dtltype, pageable, Filter); break;
-		 */
+		case "BRF003":
+			repsummary = brf003ReportService.getArchieveBRF003View(reportId, fromdate, todate, currency, dtltype,
+					pageable);
+			break;
+
+		case "BRF004":
+			repsummary = brf004ReportService.getArchieveBRF004View(reportId, fromdate, todate, currency, dtltype,
+					pageable);
+			break;
+
 		}
 
 		return repsummary;
@@ -288,6 +225,12 @@ public class RegulatoryReportServices {
 		case "BRF002":
 			msg = brf002ReportService.preCheck(reportid, fromdate, todate);
 			break;
+		case "BRF003":
+			msg = brf003ReportService.preCheck(reportid, fromdate, todate);
+			break;
+		case "BRF004":
+			msg = brf004ReportService.preCheck(reportid, fromdate, todate);
+			break;
 		default:
 			logger.info("default -> preCheck()");
 			msg = "Master - need to process";
@@ -296,25 +239,6 @@ public class RegulatoryReportServices {
 		return msg;
 	}
 
-	/*
-	 * public File getDownloadFile1(String reportId, String asondate, String
-	 * fromdate, String todate, String currency, String subreportid, String secid,
-	 * String dtltype, String reportingTime, String filetype, String instancecode)
-	 * throws FileNotFoundException, JRException, SQLException {
-	 * 
-	 * File repfile = null;
-	 * 
-	 * logger.info("Getting Report File for : " + reportId + " in " + filetype +
-	 * " format");
-	 * 
-	 * switch (reportId) { case "OR1": repfile =
-	 * basel_OR1_ReportService.getFile(reportId, fromdate, todate, currency,
-	 * dtltype, filetype); break;
-	 * 
-	 * } return repfile;
-	 * 
-	 * }
-	 */
 	public ModelAndView ArchgetReportDetails(String reportId, String instanceCode, String asondate, String fromdate,
 			String todate, String currency, String reportingTime, String dtltype, String subreportid, String secid,
 			Pageable pageable, String Filter) throws ParseException {
@@ -329,6 +253,16 @@ public class RegulatoryReportServices {
 			break;
 		case "BRF002":
 			repdetail = brf002ReportService.ARCHgetBRF002currentDtl(reportId, fromdate, todate, currency, dtltype,
+					pageable, Filter);
+			break;
+
+		case "BRF003":
+			repdetail = brf003ReportService.ARCHgetBRF003currentDtl(reportId, fromdate, todate, currency, dtltype,
+					pageable, Filter);
+			break;
+
+		case "BRF004":
+			repdetail = brf004ReportService.ARCHgetBRF004currentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter);
 			break;
 		}

@@ -358,26 +358,6 @@ public class BRFNavigationController {
 		return "RR/RRReports";
 	}
 
-	/*
-	 * @GetMapping("/checkDomainFlag")
-	 * 
-	 * @ResponseBody public ResponseEntity<String> checkDomainFlag(@RequestParam
-	 * String rptcode) {
-	 * 
-	 * Optional<RRReport> report = rrReportRepo.getParticularReport3(rptcode); if
-	 * (report.isPresent()) { String domain = report.get().getDOMAIN(); // Add
-	 * getter in entity if not already if ("Y".equalsIgnoreCase(domain)) { return
-	 * ResponseEntity.ok("ENABLED"); } else { return ResponseEntity.ok("DISABLED");
-	 * } } else { return
-	 * ResponseEntity.status(HttpStatus.NOT_FOUND).body("NOT_FOUND"); }
-	 * List<RRReport> report = rrReportRepo.getParticularReport3list(rptcode); if (
-	 * report==null || !report.equals(null) ) { for (RRReport each : report) {
-	 * String domain = each.getDOMAIN(); if ("Y".equalsIgnoreCase(domain)) { return
-	 * ResponseEntity.ok("ENABLED"); } } return ResponseEntity.ok("DISABLED"); }else
-	 * { return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NOT_FOUND"); }
-	 * 
-	 * }
-	 */
 	@GetMapping("/checkDomainFlag")
 	@ResponseBody
 	public ResponseEntity<String> checkDomainFlag(@RequestParam String rptcode) {
@@ -402,51 +382,7 @@ public class BRFNavigationController {
 	@Autowired
 	CalculationService CalculationService;
 
-	/*
-	 * @RequestMapping(value = "BRFValidations", method = { RequestMethod.GET,
-	 * RequestMethod.POST }) public String BRFValidations(Model
-	 * md, @RequestParam(value = "rptcode", required = false) String rptcode,
-	 * 
-	 * @RequestParam(value = "todate", required = false) String todate,
-	 * HttpServletRequest req) { String roleId = (String)
-	 * req.getSession().getAttribute("ROLEID");
-	 * System.out.println("role id issssssssssssssssssssssssssss" + roleId);
-	 * 
-	 * // md.addAttribute("reportvalue", "RBS Reports"); //
-	 * md.addAttribute("reportid", "RBSReports");
-	 * 
-	 * String domainid = (String) req.getSession().getAttribute("DOMAINID"); //
-	 * md.addAttribute("reportsflag", "reportsflag"); // md.addAttribute("menu",
-	 * "RBS Data Maintenance");
-	 * 
-	 * System.out.println("Report Date : " + todate); DateTimeFormatter
-	 * inputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); DateTimeFormatter
-	 * dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy"); LocalDate
-	 * parsedDate = LocalDate.parse(todate, inputFormatter); String formattedDate =
-	 * parsedDate.format(dateFormatter);
-	 * System.out.println("Report_Date Formatted Date : " + formattedDate);
-	 * 
-	 * // md.addAttribute("reportlist",
-	 * brfValidationsRepo.getValidationList(rptcode));
-	 * md.addAttribute("reportlist1",
-	 * rrReportlist.getReportbyrptcodeandtodate(rptcode, formattedDate)); //
-	 * md.addAttribute("reportlist1", rrReportlist.getReportbyrptcode(rptcode));
-	 * md.addAttribute("RoleId", roleId);
-	 * 
-	 * md.addAttribute("rpt_date", todate); md.addAttribute("rptcode", rptcode);
-	 * List<BRFValidations> list = brfValidationsRepo.getValidationList(rptcode); if
-	 * (list != null && !list.equals(null)) { for (BRFValidations data : list) { if
-	 * (data.getSRC_FORMULA() != null && !data.getSRC_FORMULA().equals(null) &&
-	 * data.getDEST_FORMULA() != null && !data.getDEST_FORMULA().equals(null)) {
-	 * BigDecimal srcvalue = CalculationService.calculate(data.getSRC_FORMULA(),
-	 * formattedDate); BigDecimal destvalue =
-	 * CalculationService.calculate(data.getDEST_FORMULA(), formattedDate);
-	 * System.out.println("Source value = " + srcvalue + " Destination value = " +
-	 * destvalue); if (srcvalue == destvalue || srcvalue.equals(destvalue)) {
-	 * data.setCur_status("Y"); } else { data.setCur_status("N"); } } } }
-	 * md.addAttribute("reportlist", list); return "RR/BRFValidations"; }
-	 */
-	
+
 	@RequestMapping(value = "BRFValidations", method = { RequestMethod.GET, RequestMethod.POST })
 	public String BRFValidations(Model md,
 	        @RequestParam(value = "rptcode", required = false) String rptcode,

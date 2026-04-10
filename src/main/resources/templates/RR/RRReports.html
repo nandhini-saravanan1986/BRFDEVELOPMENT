@@ -734,7 +734,9 @@ document.addEventListener("DOMContentLoaded", function () {
         th:attr="data-rptcode=${userProfile.rpt_code}">
         Loading...
     </td>
-
+	<td> <i class="fas fa-play-circle" th:attr="data-srl_no=${userProfile.srl_no}" th:onclick="executeprocedurePerRow(this);" style="cursor:pointer"></i> </td>
+									
+									
 </tr>
 
 
