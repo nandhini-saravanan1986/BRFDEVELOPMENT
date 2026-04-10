@@ -183,10 +183,15 @@ public interface RRReportRepo extends JpaRepository<RRReport, Integer> {
 			+ " SELECT MAX(t2.END_DATE) " + " FROM BRF_RR_RPT_MAST t2 " + " WHERE t2.RPT_CODE = t.RPT_CODE "
 			+ " AND t2.REMARKS_5 = :remarks5 " + ") " + " ORDER BY t.RPT_CODE", nativeQuery = true)
 	List<RRReport> findReportsByRemarks(@Param("remarks5") String remarks5);
+	/*
+	 * @Query(value = "select * from BRF_RR_RPT_MAST WHERE RPT_CODE =?1",
+	 * nativeQuery = true) List<RRReport> getParticularReport3list(String rptcode);
+	 */
 
+	
 	@Query(value = "select * from BRF_RR_RPT_MAST WHERE RPT_CODE =?1", nativeQuery = true)
 	List<RRReport> getParticularReport3list(String rptcode);
-
+	
 	@Query(value = "select * from BRF_RR_RPT_MAST where rpt_code=?1 AND end_date =?2", nativeQuery = true)
 	RRReport getReportbyrptcodeandtodate(String rpt_code, String todate);
 

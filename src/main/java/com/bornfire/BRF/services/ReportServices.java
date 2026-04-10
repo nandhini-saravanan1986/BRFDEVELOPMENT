@@ -1,13 +1,26 @@
 package com.bornfire.BRF.services;
 
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -30,11 +43,17 @@ import org.apache.poi.ss.usermodel.FormulaEvaluator;
 //import java.util.Set;
 import java.util.regex.Pattern;
 
+import net.sf.jasperreports.engine.JRException;
+
 @Service
 @Transactional
 @ConfigurationProperties("output")
 public class ReportServices {
 
+	private static final Logger logger = LoggerFactory.getLogger(ReportServices.class);
+
+	private static final Object TRANMASTERDETAILPage = null;
+	
 	@Autowired
 	BRFReportsMasterRep brfReportsMasterRep;
 	
@@ -53,6 +72,9 @@ public class ReportServices {
     
     private final org.apache.poi.ss.usermodel.DataFormatter DATA_FORMATTER =
             new org.apache.poi.ss.usermodel.DataFormatter();
+	
+	@Autowired
+	SessionFactory sessionFactory1;
 
 	public class ReportTitle {
 
@@ -573,4 +595,126 @@ public class ReportServices {
             return map;
         }, dataType, glHead);
     }
+	@SuppressWarnings("unchecked")
+	public List<ReportTitle> getReportName(String reportid) {
+
+		logger.info("Getting Report Name :" + reportid);
+
+		Session hs = sessionFactory1.getCurrentSession();
+		List<Object[]> reportName = hs.createNativeQuery(
+				"select distinct a.report_id, a.report_name from report_master_tb a where a.parent_report_id=?1 order by a.report_id")
+				.setParameter(1, reportid).getResultList();
+
+		List<ReportTitle> title = new ArrayList<ReportTitle>();
+
+		for (Object[] a : reportName) {
+
+			String repId = (String) a[0];
+			String repName = (String) a[1];
+
+			title.add(new ReportTitle(repName, repId));
+
+		}
+
+		return title;
+
+	}
+
+	/*
+	 * public String saveFIM0500Report(String reportId, String asondate, String
+	 * fromdate, String todate, String currency, String reportingTime) {
+	 * 
+	 * String msg = null;
+	 * 
+	 * logger.info("Saving the Report : " + reportId);
+	 * 
+	 * try { xbrlProceduresRep.ReportSaveSp(reportId, reportingTime, asondate,
+	 * fromdate, todate, currency);
+	 * 
+	 * logger.info("ReportServices->saveFIM0500Report()->inside try{}"); msg =
+	 * "success";
+	 * 
+	 * } catch (Exception e) {
+	 * logger.info("ReportServices->saveFIM0500Report()->inside catch{}"); msg =
+	 * "failed"; }
+	 * 
+	 * return msg; } public String saveReport(String reportId, String asondate,
+	 * String fromdate, String todate, String currency) {
+	 * 
+	 * String msg = null;
+	 * 
+	 * logger.info("Saving the Report : " + reportId);
+	 * 
+	 * try {
+	 * 
+	 * xbrlProceduresRep.ReportSaveSp(reportId, "0", asondate, fromdate, todate,
+	 * currency);
+	 * 
+	 * logger.info("ReportServices->saveReport()->inside try{}"); msg = "success";
+	 * 
+	 * } catch (Exception e) {
+	 * logger.info("ReportServices->saveReport()->inside catch{}"); msg = "failed";
+	 * }
+	 * 
+	 * return msg; }
+	 */
+	/*
+	 * public String updateReportStatus(String reportid, Date asondate, Date
+	 * fromdate, Date todate, String user, String nilflg) {
+	 * 
+	 * String status = ""; String remarks = ""; String repStatus = "";
+	 * 
+	 * if (nilflg.equals("Y")) { remarks = "Nil Filing"; repStatus = "0";
+	 * 
+	 * } else {
+	 * 
+	 * remarks = "Report Generated"; repStatus = "2"; }
+	 * 
+	 * Session hs = sessionFactory1.getCurrentSession(); try {
+	 * 
+	 * ReportStatusInfo rs = new ReportStatusInfo(new ReportStatusInfoId(reportid,
+	 * asondate), fromdate, todate, repStatus, new Date(), user, remarks);
+	 * hs.saveOrUpdate(rs); status = "Nil Filing Completed Successfully";
+	 * 
+	 * } catch (Exception e) {
+	 * 
+	 * e.printStackTrace(); logger.info("Error While updating report status" +
+	 * e.getMessage()); status = "Update Failed. Please contact Administrator"; }
+	 * 
+	 * return status; }
+	 */
+	/*
+	 * public ByteArrayInputStream getDownloadFileExcel(String userid, String
+	 * ref_id, String input1, String input2, String input3, String input4, String
+	 * input5, String filename, String reportname) throws FileNotFoundException,
+	 * JRException, SQLException, ParseException {
+	 * 
+	 * ByteArrayInputStream repfile = null; repfile =
+	 * customerrptgenserviceexcel.getFileExcel(userid, ref_id, input1, input2,
+	 * input3, input4, input5, filename, reportname); return repfile;
+	 * 
+	 * } public String getDownloadFileFromScript(String userid, String username,
+	 * String ref_id, String input1, String input2, String input3, String input4,
+	 * String input5, String filename, String reportname) throws JRException,
+	 * SQLException, ParseException, IOException {
+	 * 
+	 * String repfile = null; repfile =
+	 * customerrptgenserviceexcel.runSqlReport(userid, username, ref_id, input1,
+	 * input2, input3, input4, input5, filename, reportname); return repfile;
+	 * 
+	 * } public File getDownloadFileFromdata(String userid, String username, String
+	 * ref_id, String filepath, String downloadondelete) throws JRException,
+	 * SQLException, ParseException, IOException {
+	 * 
+	 * File repfile = null; repfile =
+	 * customerrptgenserviceexcel.runSqlReportData(userid, username, ref_id,
+	 * filepath, downloadondelete); return repfile;
+	 * 
+	 * }
+	 */
+	/*
+	 * public List<String> getDomainList() {
+	 * 
+	 * return BRFReportsMasterRep.getDomainList(); }
+	 */
 }
