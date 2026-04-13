@@ -51,7 +51,9 @@ public class MappingAccountService {
             view.put("REPORT_CODE",      nvl(row.getReportCode()));
             view.put("ROW_ID",           nvl(row.getRowId()));
             view.put("COLUMN_ID",        nvl(row.getColumnId()));
-            view.put("SOL_ID",           nvl(row.getSolId()));
+            view.put("REPORT_ADDL_CRITERIA_1", nvl(row.getReportAddlCriteria1()));
+            view.put("REPORT_ADDL_CRITERIA_2", nvl(row.getReportAddlCriteria2()));
+            view.put("REPORT_ADDL_CRITERIA_3", nvl(row.getReportAddlCriteria3()));
 
             result.add(view);
         }
@@ -82,14 +84,12 @@ public class MappingAccountService {
             view.put("GL_HEAD",               nvl(row.getGlHead()));
             view.put("GL_SUBHEAD_CODE",       nvl(row.getGlSubheadCode()));
             view.put("ACCOUNT_ID_BACID",      nvl(row.getAccountIdBacid()));
-            view.put("ACCOUNT_DESCRIPTION",   nvl(row.getAccountDescription()));
-            view.put("CURRENCY",              nvl(row.getCurrency()));
-            view.put("DATA_TYPE",             nvl(row.getDataType()));
             view.put("REPORT_CODE",           nvl(row.getReportCode()));
-            view.put("REPORT_DESC",           nvl(row.getReportDesc()));
             view.put("ROW_ID",                nvl(row.getRowId()));
             view.put("COLUMN_ID",             nvl(row.getColumnId()));
-            view.put("ACCOUNT_BALANCE_LC",    nvl(row.getAccountBalanceLc()));
+            view.put("REPORT_ADDL_CRITERIA_1", nvl(row.getReportAddlCriteria1()));
+            view.put("REPORT_ADDL_CRITERIA_2", nvl(row.getReportAddlCriteria2()));
+            view.put("REPORT_ADDL_CRITERIA_3", nvl(row.getReportAddlCriteria3()));
 
             result.add(view);
         }
