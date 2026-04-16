@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,9 +24,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -39,7 +44,13 @@ import com.bornfire.BRF.entities.UserProfile;
 import com.bornfire.BRF.entities.UserProfileRep;
 import com.bornfire.BRF.services.AccessAndRolesServices;
 import com.bornfire.BRF.services.LoginServices;
+import com.bornfire.BRF.services.MappingAccountService;
 import com.bornfire.BRF.services.ReportServices;
+import com.sun.xml.messaging.saaj.util.FinalArrayList;
+
+import groovyjarjarantlr4.v4.parse.ANTLRParser.finallyClause_return;
+import net.bytebuddy.asm.Advice.Return;
+
 import com.bornfire.BRF.entities.BRFValidations;
 import com.bornfire.BRF.entities.BRFValidationsRepo;
 import com.bornfire.BRF.entities.RRReport;
@@ -75,6 +86,73 @@ public class BRFNavigationController {
 
 	@Autowired
 	BRFValidationsRepo brfValidationsRepo;
+	
+	private final MappingAccountService mappingAccountService;
+	
+	public BRFNavigationController(MappingAccountService mappingAccountService) {
+		this.mappingAccountService = mappingAccountService;
+	}
+	
+	@GetMapping("/BaseMappingParam/list")
+	@ResponseBody
+    public ResponseEntity<Map<String, Object>> list(
+            @RequestParam(defaultValue = "")   String search,
+            @RequestParam(defaultValue = "1")  int    page,
+            @RequestParam(defaultValue = "20") int    size) {
+
+        // guard: page must be >= 1
+        if (page < 1) page = 1;
+        if (size < 1) size = 20;
+
+        Map<String, Object> result = mappingAccountService.getBaseMappingParamList(search, page, size);
+        return ResponseEntity.ok(result);
+    }
+	
+	@PostMapping("/BaseMappingParam/save")
+	@ResponseBody
+	public ResponseEntity<String> save(@RequestBody Map<String, String> body) {
+
+	    String result = mappingAccountService.saveBaseMappingParam(body);
+
+	    // Duplicate check
+	    if (result.startsWith("Account ID already exists")) {
+	        return ResponseEntity.badRequest().body(result);   // 400
+	    }
+
+	    // Validation check
+	    if (result.contains("required")) {
+	        return ResponseEntity.badRequest().body(result);   // 400
+	    }
+
+	    // Insert failure (optional but good)
+	    if (result.startsWith("Insert failed")) {
+	        return ResponseEntity.status(500).body(result);    // 500
+	    }
+
+	    // Success
+	    return ResponseEntity.ok(result);
+	}
+	 
+		@PutMapping("/BaseMappingParam/update")
+		@ResponseBody
+	    public ResponseEntity<String> update(@RequestBody Map<String, String> body) {
+	        String result = mappingAccountService.updateBaseMappingParam(body);
+	        if ("SUCCESS".equals(result)) {
+	            return ResponseEntity.ok(result);
+	        }
+	        return ResponseEntity.badRequest().body(result);
+	    }
+	
+		@DeleteMapping("/BaseMappingParam/delete/{id}")
+		@ResponseBody
+	    public ResponseEntity<String> delete(@PathVariable("id") String accountId) {
+	        String result = mappingAccountService.deleteBaseMappingParam(accountId);
+	        if ("SUCCESS".equals(result)) {
+	            return ResponseEntity.ok(result);
+	        }
+	        return ResponseEntity.badRequest().body(result);
+	    }
+	
 
 	@GetMapping("/systemotp")
 	public String showOtpForm() {
@@ -338,6 +416,11 @@ public class BRFNavigationController {
 	public String reportCodeMapping() {
         return "ReportCodeMapping";
     }
+	
+	@GetMapping("/GLMapping")
+	public String glConfig() {
+		return "Basemappingparameter";
+	}
 
 	@RequestMapping(value = "monthly1", method = { RequestMethod.GET, RequestMethod.POST })
 	public String monthly1(Model md, HttpServletRequest req,

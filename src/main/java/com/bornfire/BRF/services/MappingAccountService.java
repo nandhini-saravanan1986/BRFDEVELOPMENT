@@ -101,4 +101,87 @@ public class MappingAccountService {
     private String nvl(String value) {
         return value != null ? value : "";
     }
+    
+    // BASE MAPPING PARAM — LIST (paged + searched)
+    public Map<String, Object> getBaseMappingParamList(String search, int page, int size) {
+        String s = (search == null || search.trim().isEmpty()) ? "" : search.trim();
+
+        long total = baseMappingRepo.countBySearch(s);
+        List<BrfBaseMapping> rows = baseMappingRepo.findPagedList(s, page, size);
+
+        List<Map<String, String>> data = new ArrayList<>();
+        for (BrfBaseMapping row : rows) {
+            Map<String, String> view = new LinkedHashMap<>();
+            view.put("GL_HEAD",             nvl(row.getGlHead()));
+            view.put("GL_SUBHEAD_CODE",     nvl(row.getGlSubheadCode()));
+            view.put("ACCOUNT_ID_BACID",    nvl(row.getAccountIdBacid()));
+            view.put("ACCOUNT_DESCRIPTION", nvl(row.getAccountDescription()));
+            view.put("CURRENCY",            nvl(row.getCurrency()));
+            view.put("DATA_TYPE",           nvl(row.getDataType()));
+            data.add(view);
+        }
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("totalRecords", total);
+        response.put("data", data);
+        return response;
+    }
+    
+ // BASE MAPPING PARAM — INSERT
+    public String saveBaseMappingParam(Map<String, String> body) {
+    	
+        String accountId = body.get("accountIdBacid");
+        
+        if (accountId == null || accountId.trim().isEmpty()) {
+            return "ACCOUNT_ID_BACID is required";
+        }
+        // CHECK DUPLICATE
+        if (baseMappingRepo.findByAccountIdBacid(accountId.trim()).isPresent()) {
+            return "Account ID already exists: " + accountId;
+        }
+
+        int inserted = baseMappingRepo.insertRecord(
+            accountId.trim(),
+            nvl(body.get("glHead")),
+            nvl(body.get("glSubHeadCode")),
+            nvl(body.get("accountDescription")),
+            nvl(body.get("currency")),
+            nvl(body.get("dataType"))
+        );
+
+        return inserted > 0 ? "SUCCESS" : "Insert failed for: " + accountId;
+    }
+    
+ // BASE MAPPING PARAM — UPDATE
+    public String updateBaseMappingParam(Map<String, String> body) {
+
+        String oldId = body.get("oldAccountId");        //  OLD ID
+        String newId = body.get("accountIdBacid");      //  NEW ID
+
+        if (newId == null || newId.trim().isEmpty()) {
+            return "ACCOUNT_ID_BACID is required";
+        }
+
+        int updated = baseMappingRepo.updateRecord(
+            nvl(body.get("glHead")),
+            nvl(body.get("glSubHeadCode")),
+            nvl(body.get("accountDescription")),
+            nvl(body.get("currency")),
+            nvl(body.get("dataType")),
+            newId.trim(),     // NEW ID (SET)
+            oldId.trim()      // OLD ID (WHERE)
+        );
+
+        return updated > 0 ? "SUCCESS" : "No active record found for: " + oldId;
+    }
+    
+ // BASE MAPPING PARAM — SOFT DELETE
+    public String deleteBaseMappingParam(String accountId) {
+        if (accountId == null || accountId.trim().isEmpty()) {
+            return "ACCOUNT_ID_BACID is required";
+        }
+
+        int deleted = baseMappingRepo.softDelete(accountId.trim());
+        return deleted > 0 ? "SUCCESS" : "No active record found for: " + accountId;
+    }
 }
