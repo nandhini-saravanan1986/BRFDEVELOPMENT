@@ -175,18 +175,21 @@ public class ReportServices {
 
 	}
 	
-	private File findTemplate(String reportCode) {
+	public File findTemplate(String reportCode) {
 
 	    String pattern = convertCode(reportCode);
+	    System.out.println("Report Pattern : "+pattern);
 
 	    File folder = new File(templateFolder);
 
 	    File[] files = folder.listFiles();
 
 	    if(files == null) return null;
-
+	    /*
 	    for(File file : files){
-
+	    	System.out.println(file.getName());	      
+	    }*/
+	    for(File file : files){
 	        if(file.getName().contains(pattern)){
 	            return file;
 	        }
@@ -255,7 +258,8 @@ public class ReportServices {
         List<String> cols = new ArrayList<>();
         int startCol = (structure == 0) ? 2 : 3;; // Column D or like BRF65 starts from C
 
-        for (int col = startCol; col <= 12; col++) {
+        int lastCol = row.getLastCellNum();
+        for (int col = startCol; col <= lastCol; col++) {
             Cell ac = row.getCell(col);
 
             if (ac == null) continue;
@@ -301,7 +305,10 @@ public class ReportServices {
         if (nameRow != null) {
             // Row 2 uses a merged cell — POI stores the value in the first cell
             // of the merge. Scan columns B→M (index 1–13) to find it.
-            for (int col = 1; col <= 13; col++) {
+        	
+        	int lastCol = nameRow.getLastCellNum();
+        	System.out.println("Last Column : "+lastCol);
+            for (int col = 1; col <= lastCol; col++) {
                 String val = getCellValue(nameRow.getCell(col));
                 if (val != null && !val.isEmpty()) {
                     reportName = val;
@@ -347,7 +354,8 @@ public class ReportServices {
                 } else if (!fileHasNumB) {
                     boolean hasAnyCol = false;
                     boolean allString = true;
-                    for (int col = 2; col <= 12; col++) {
+                    int lastCol = row.getLastCellNum();
+                    for (int col = 2; col < lastCol; col++) {
                         Cell dc = row.getCell(col);
                         if (dc == null || dc.getCellTypeEnum() == CellType.BLANK) continue;
                         hasAnyCol = true;
@@ -388,6 +396,7 @@ public class ReportServices {
      }
      
      /* ── Read column headers (rows before firstDataRow, cols E–M = index 4–12) ── */
+     /*
      List<Map<String,String>> columns = new ArrayList<>();
 
      if (firstDataRow >= 0) {
@@ -437,7 +446,58 @@ public class ReportServices {
              }
          }
      }
+     */
+     List<Map<String,String>> columns = new ArrayList<>();
 
+     if (firstDataRow >= 0) {
+
+         int startCol = (structure == 0) ? 2 : 3; 
+
+         int headerStart = (structure == 0 && lastAllStringRow >= 0) 
+                 ? lastAllStringRow 
+                 : Math.max(0, firstDataRow - 6);
+
+         int endCol = 0;
+         for (int r = headerStart; r <= firstDataRow; r++) {
+             Row hr = sheet.getRow(r);
+             if (hr != null && hr.getLastCellNum() - 1 > endCol) {
+                 endCol = hr.getLastCellNum() - 1; 
+             }
+         }
+         
+         if (endCol < startCol) endCol = startCol;
+
+         int totalCols = endCol - startCol + 1;
+         String[] colNames = new String[totalCols];
+         Arrays.fill(colNames, "");
+
+         for (int r = headerStart; r <= firstDataRow; r++) {
+             Row hr = sheet.getRow(r);
+             if (hr == null) continue;
+
+             for (int col = startCol; col <= endCol; col++) {
+
+                 Cell hc = hr.getCell(col);
+                 if (hc == null || hc.getCellTypeEnum() != CellType.STRING) continue;
+                 String val = hc.getStringCellValue().trim();
+
+                 if (!val.isEmpty()) {
+                     if (!colNames[col - startCol].isEmpty())
+                         colNames[col - startCol] += " - ";
+                     colNames[col - startCol] += val;
+                 }
+             }
+         }
+
+         for (int i = 0; i < colNames.length; i++) {
+             if (!colNames[i].isEmpty()) {
+                 Map<String, String> cm = new HashMap<>();
+                 cm.put("colCode", String.valueOf((char)('A' + i)));
+                 cm.put("colName", colNames[i]);
+                 columns.add(cm);
+             }
+         }
+     }
      result.put("columns", columns);
 //     System.out.println("COLUMNS: " + columns);
  
@@ -508,7 +568,8 @@ public class ReportServices {
                     int realFormulaCount = 0;
                     int headerCheckStart = (structure == 0) ? 2 : 4;
 
-                    for (int col = headerCheckStart; col <= 12; col++) {
+                    int lastCol = row.getLastCellNum();
+                    for (int col = headerCheckStart; col < lastCol; col++) {
 
                         Cell c = row.getCell(col);
 
@@ -584,7 +645,8 @@ public class ReportServices {
 
          // FIX — start from correct column based on structure:
             int headerCheckStart = (structure == 0) ? 2 : 4;
-            for (int col = headerCheckStart; col <= 12; col++) {
+            int lastCol = row.getLastCellNum();
+            for (int col = headerCheckStart; col < lastCol; col++) {
 
                 Cell c = row.getCell(col);
 
@@ -633,14 +695,15 @@ public class ReportServices {
     
     public List<String> getGLHeads(String dataType) {
         String sql = "SELECT DISTINCT GL_HEAD FROM BRF_BASE_MAPPING_TABLE " +
-                     "WHERE DATA_TYPE = ? ORDER BY GL_HEAD";
+                     "WHERE UPPER(DATA_TYPE) = UPPER(?) ORDER BY GL_HEAD";
         return jdbcTemplate.queryForList(sql, String.class, dataType);
     }
 
     public List<Map<String, String>> getGLSubHeads(String dataType, String glHead) {
         String sql = "SELECT DISTINCT GL_SUBHEAD_CODE " +
                      "FROM BRF_BASE_MAPPING_TABLE " +
-                     "WHERE DATA_TYPE = ? AND GL_HEAD = ? " +
+                     "WHERE UPPER(DATA_TYPE) = UPPER(?) " +
+                     "AND UPPER(GL_HEAD) = UPPER(?) " +
                      "ORDER BY GL_SUBHEAD_CODE";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {

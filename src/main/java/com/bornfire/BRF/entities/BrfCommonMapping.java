@@ -96,7 +96,43 @@ public class BrfCommonMapping {
     @Column(name = "REPORT_DATE")
     private Date reportDate;
 
-    // ── Getters & Setters ────────────────────────────────────────────────────
+    @Column(name = "CONSTITUTION_CODE")
+    private String constitutionCode;
+
+    @Column(name = "LEGAL_ENTITY_TYPE")
+    private String legalEntityType;
+
+    @Column(name = "HNI_NETWORTH")
+    private String hniNetworth;
+
+    @Column(name = "TURNOVER")
+    private String turnover;    
+    
+    public String getConstitutionCode() {
+		return constitutionCode;
+	}
+	public void setConstitutionCode(String constitutionCode) {
+		this.constitutionCode = constitutionCode;
+	}
+	public String getLegalEntityType() {
+		return legalEntityType;
+	}
+	public void setLegalEntityType(String legalEntityType) {
+		this.legalEntityType = legalEntityType;
+	}
+	public String getHniNetworth() {
+		return hniNetworth;
+	}
+	public void setHniNetworth(String hniNetworth) {
+		this.hniNetworth = hniNetworth;
+	}
+	public String getTurnover() {
+		return turnover;
+	}
+	public void setTurnover(String turnover) {
+		this.turnover = turnover;
+	}
+	// ── Getters & Setters ────────────────────────────────────────────────────
     public String getAccountIdBacid()               { return accountIdBacid; }
     public void   setAccountIdBacid(String v)       { this.accountIdBacid = v; }
     public String getReportCode()                   { return reportCode; }

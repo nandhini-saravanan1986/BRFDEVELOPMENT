@@ -54,6 +54,8 @@ public class MappingAccountService {
             view.put("REPORT_ADDL_CRITERIA_1", nvl(row.getReportAddlCriteria1()));
             view.put("REPORT_ADDL_CRITERIA_2", nvl(row.getReportAddlCriteria2()));
             view.put("REPORT_ADDL_CRITERIA_3", nvl(row.getReportAddlCriteria3()));
+            view.put("DATA_TYPE", nvl(row.getDataType()));
+            view.put("SOL_ID", nvl(row.getSolId()));
 
             result.add(view);
         }

@@ -72,22 +72,28 @@ public interface BrfCommonMappingRepository
                 " ENTRY_USER, MODIFY_USER, AUTH_USER, ENTRY_TIME, MODIFY_TIME, AUTH_TIME, " +
                 " REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_DESC, " +
                 " REPORT_ADDL_CRITERIA_1, REPORT_ADDL_CRITERIA_2, REPORT_ADDL_CRITERIA_3, " +
-                " REPORT_CODE, ROW_ID, COLUMN_ID, ACCOUNT_BALANCE_LC, SOL_ID) " +
+                " REPORT_CODE, ROW_ID, COLUMN_ID, ACCOUNT_BALANCE_LC, SOL_ID, " +
+                " CONSTITUTION_CODE, LEGAL_ENTITY_TYPE, HNI_NETWORTH, TURNOVER) " +
                 "SELECT GL_HEAD, GL_SUBHEAD_CODE, ACCOUNT_ID_BACID, ACCOUNT_DESCRIPTION, " +
                 "       CURRENCY, DATA_TYPE, ENTITY_FLG, AUTH_FLG, MODIFY_FLG, DEL_FLG, " +
                 "       ENTRY_USER, MODIFY_USER, AUTH_USER, ENTRY_TIME, MODIFY_TIME, AUTH_TIME, " +
                 "       REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_DESC, " +
                 "       REPORT_ADDL_CRITERIA_1, REPORT_ADDL_CRITERIA_2, REPORT_ADDL_CRITERIA_3, " +
-                "       :reportCode, :rowId, :columnId, :balanceLc, :solId " +
+                "       :reportCode, :rowId, :columnId, :balanceLc, :solId, " +
+                "       :constCode, :legalEntity, :hniNetworth, :turnover " +
                 "FROM BRF_BASE_MAPPING_TABLE WHERE ACCOUNT_ID_BACID = :accountId",
         nativeQuery = true
     )
     int insertFromBase(
-        @Param("accountId")  String accountId,
-        @Param("reportCode") String reportCode,
-        @Param("rowId")      String rowId,
-        @Param("columnId")   String columnId,
-        @Param("balanceLc")  String balanceLc,
-        @Param("solId")      String solId
+        @Param("accountId")   String accountId,
+        @Param("reportCode")  String reportCode,
+        @Param("rowId")       String rowId,
+        @Param("columnId")    String columnId,
+        @Param("balanceLc")   String balanceLc,
+        @Param("solId")       String solId,
+        @Param("constCode")   String constCode,
+        @Param("legalEntity") String legalEntity,
+        @Param("hniNetworth") String hniNetworth,
+        @Param("turnover")    String turnover
     );
 }

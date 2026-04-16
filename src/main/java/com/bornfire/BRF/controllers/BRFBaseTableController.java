@@ -195,100 +195,51 @@ public class BRFBaseTableController {
             return response;
         }
 
-        // ── ❌ COMMENTED OUT: Raw SQL query strings ───────────────────────────
-        // String checkOtherSql = "SELECT REPORT_CODE FROM BRF_COMMON_MAPPING_TABLE "
-        //                      + "WHERE ACCOUNT_ID_BACID = ? AND ROW_ID = ? AND COLUMN_ID = ? "
-        //                      + "AND REPORT_CODE != ? AND ROWNUM = 1";
-        //
-        // String checkSameSql  = "SELECT COUNT(*) FROM BRF_COMMON_MAPPING_TABLE "
-        //                      + "WHERE ACCOUNT_ID_BACID = ? AND ROW_ID = ? AND COLUMN_ID = ? "
-        //                      + "AND REPORT_CODE = ?";
-        //
-        // String updateCommon  = "UPDATE BRF_COMMON_MAPPING_TABLE "
-        //                      + "SET ACCOUNT_BALANCE_LC = ?, SOL_ID = ? "
-        //                      + "WHERE ACCOUNT_ID_BACID = ? AND ROW_ID = ? "
-        //                      + "AND COLUMN_ID = ? AND REPORT_CODE = ?";
-        //
-        // String insertSql     = "INSERT INTO BRF_COMMON_MAPPING_TABLE "
-        //                      + "(GL_HEAD, GL_SUBHEAD_CODE, ACCOUNT_ID_BACID, ACCOUNT_DESCRIPTION, "
-        //                      + " CURRENCY, DATA_TYPE, ENTITY_FLG, AUTH_FLG, MODIFY_FLG, DEL_FLG, "
-        //                      + " ENTRY_USER, MODIFY_USER, AUTH_USER, ENTRY_TIME, MODIFY_TIME, AUTH_TIME, "
-        //                      + " REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_CODE, REPORT_DESC, "
-        //                      + " ROW_ID, COLUMN_ID, REPORT_ADDL_CRITERIA_1, REPORT_ADDL_CRITERIA_2, "
-        //                      + " REPORT_ADDL_CRITERIA_3, ACCOUNT_BALANCE_LC, SOL_ID) "
-        //                      + "SELECT GL_HEAD, GL_SUBHEAD_CODE, ACCOUNT_ID_BACID, ACCOUNT_DESCRIPTION, "
-        //                      + "       CURRENCY, DATA_TYPE, ENTITY_FLG, AUTH_FLG, MODIFY_FLG, DEL_FLG, "
-        //                      + "       ENTRY_USER, MODIFY_USER, AUTH_USER, ENTRY_TIME, MODIFY_TIME, AUTH_TIME, "
-        //                      + "       REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, "
-        //                      + "       ?, REPORT_DESC, ?, ?, "
-        //                      + "       REPORT_ADDL_CRITERIA_1, REPORT_ADDL_CRITERIA_2, "
-        //                      + "       REPORT_ADDL_CRITERIA_3, ?, ? "
-        //                      + "FROM BRF_BASE_MAPPING_TABLE WHERE ACCOUNT_ID_BACID = ?";
-        // ─────────────────────────────────────────────────────────────────────
-
         int totalInserted = 0;
         int totalUpdated  = 0;
         List<Map<String, String>> blockedList = new ArrayList<>();
 
-        // ── ❌ COMMENTED OUT: JDBC Connection + manual transaction block ───────
-        // try (Connection conn = DriverManager.getConnection(brfUrl, brfUsername, brfPassword)) {
-        //     conn.setAutoCommit(false);
-        //     try {
-        //         ... all JDBC loop logic was here ...
-        //         conn.commit();
-        //     } catch (Exception e) {
-        //         conn.rollback();
-        //         throw e;
-        //     }
-        // }
-        // ─────────────────────────────────────────────────────────────────────
-
-        // ──  REPLACED WITH: Repository calls (Spring manages transactions) ──
         try {
             for (Map<String, String> row : selectedRows) {
 
+                // 1. Extract existing fields
                 String accountId  = row.get("accountId");
                 String balanceLc  = row.get("balanceLc");
                 String reportCode = row.get("reportCode");
                 String rowId      = row.get("rowId");
                 String columnId   = row.get("columnId");
                 String solId      = row.get("solId");
+                
+                String constCode   = row.get("constitutionCode");
+                String legalEntity = row.get("legalEntityType");
+                String hniNetworth = row.get("hniNetworth");
+                String turnover    = row.get("turnover");
 
                 if (accountId == null || accountId.trim().isEmpty()) continue;
-                if (reportCode == null) reportCode = "";
-                if (rowId      == null) rowId      = "";
-                if (columnId   == null) columnId   = "";
-                if (solId      == null) solId      = "";
+                
+                // 2. Handle nulls
+                if (reportCode  == null) reportCode  = "";
+                if (rowId       == null) rowId       = "";
+                if (columnId    == null) columnId    = "";
+                if (solId       == null) solId       = "";
+                if (constCode   == null) constCode   = "";
+                if (legalEntity == null) legalEntity = "";
+                if (hniNetworth == null) hniNetworth = "";
+                if (turnover    == null) turnover    = "";
 
-                final String fAccountId  = accountId.trim();
-                final String fReportCode = reportCode.trim();
-                final String fRowId      = rowId.trim();
-                final String fColumnId   = columnId.trim();
-                final String fSolId      = solId.trim();
-                final String fBalanceLc  = balanceLc;
+                // 3. Clean and finalize variables
+                final String fAccountId   = accountId.trim();
+                final String fReportCode  = reportCode.trim();
+                final String fRowId       = rowId.trim();
+                final String fColumnId    = columnId.trim();
+                final String fSolId       = solId.trim();
+                final String fBalanceLc   = balanceLc;
+                
+                final String fConstCode   = constCode.trim();
+                final String fLegalEntity = legalEntity.trim();
+                final String fHniNetworth = hniNetworth.trim();
+                final String fTurnover    = turnover.trim();
 
-                // ── ❌ COMMENTED OUT: JDBC Step 1 – check different report code ──
-                // String otherReportCode = null;
-                // try (PreparedStatement chk = conn.prepareStatement(checkOtherSql)) {
-                //     chk.setString(1, accountId.trim());
-                //     chk.setString(2, rowId.trim());
-                //     chk.setString(3, columnId.trim());
-                //     chk.setString(4, reportCode.trim());
-                //     try (ResultSet rs = chk.executeQuery()) {
-                //         if (rs.next()) otherReportCode = rs.getString(1);
-                //     }
-                // }
-                // if (otherReportCode != null) {
-                //     Map<String, String> blocked = new LinkedHashMap<>();
-                //     blocked.put("accountId", accountId.trim());
-                //     blocked.put("savedIn",   otherReportCode);
-                //     blockedList.add(blocked);
-                //     continue;
-                // }
-                // ─────────────────────────────────────────────────────────────
-
-                // Step 1: Block if same key exists under a DIFFERENT report code
-                // Uses: commonMappingRepo.findConflictingMapping()
                 Optional<BrfCommonMapping> conflicting =
                     commonMappingRepo.findConflictingMapping(
                         fAccountId, fRowId, fColumnId, fReportCode);
@@ -304,67 +255,33 @@ public class BRFBaseTableController {
                     continue;
                 }
 
-                // ── ❌ COMMENTED OUT: JDBC Step 2 – check same report code ────────
-                // boolean sameExists = false;
-                // try (PreparedStatement chk = conn.prepareStatement(checkSameSql)) {
-                //     chk.setString(1, accountId.trim());
-                //     chk.setString(2, rowId.trim());
-                //     chk.setString(3, columnId.trim());
-                //     chk.setString(4, reportCode.trim());
-                //     try (ResultSet rs = chk.executeQuery()) {
-                //         if (rs.next() && rs.getInt(1) > 0) sameExists = true;
-                //     }
-                // }
-                // ─────────────────────────────────────────────────────────────
-
-                // Step 2: Update if same key exists under the SAME report code
-                // Uses: commonMappingRepo.findByAccountIdBacidAndRowIdAndColumnIdAndReportCode()
                 Optional<BrfCommonMapping> existing =
                     commonMappingRepo.findByAccountIdBacidAndRowIdAndColumnIdAndReportCode(
                         fAccountId, fRowId, fColumnId, fReportCode);
 
                 if (existing.isPresent()) {
 
-                    // ── ❌ COMMENTED OUT: JDBC Update ─────────────────────────────
-                    // try (PreparedStatement upd = conn.prepareStatement(updateCommon)) {
-                    //     upd.setString(1, balanceLc);
-                    //     upd.setString(2, solId.trim());
-                    //     upd.setString(3, accountId.trim());
-                    //     upd.setString(4, rowId.trim());
-                    //     upd.setString(5, columnId.trim());
-                    //     upd.setString(6, reportCode.trim());
-                    //     upd.executeUpdate();
-                    // }
-                    // totalUpdated++;
-                    // ─────────────────────────────────────────────────────────────
-
-                    // Update ACCOUNT_BALANCE_LC and SOL_ID, then save
+                    // Update existing record
                     BrfCommonMapping toUpdate = existing.get();
                     toUpdate.setAccountBalanceLc(fBalanceLc);
                     toUpdate.setSolId(fSolId);
+                    
+                 
+                    toUpdate.setConstitutionCode(fConstCode);
+                    toUpdate.setLegalEntityType(fLegalEntity);
+                    toUpdate.setHniNetworth(fHniNetworth);
+                    toUpdate.setTurnover(fTurnover);
+                    
                     commonMappingRepo.save(toUpdate);
                     totalUpdated++;
 
                 } else {
 
-                    // ── ❌ COMMENTED OUT: JDBC Insert (INSERT...SELECT from base) ──
-                    // try (PreparedStatement ins = conn.prepareStatement(insertSql)) {
-                    //     ins.setString(1, reportCode.trim());   // REPORT_CODE override
-                    //     ins.setString(2, rowId.trim());        // ROW_ID override
-                    //     ins.setString(3, columnId.trim());     // COLUMN_ID override
-                    //     ins.setString(4, balanceLc);           // ACCOUNT_BALANCE_LC override
-                    //     ins.setString(5, solId.trim());        // SOL_ID
-                    //     ins.setString(6, accountId.trim());    // WHERE ACCOUNT_ID_BACID = ?
-                    //     totalInserted += ins.executeUpdate();
-                    // }
-                    // ─────────────────────────────────────────────────────────────
-
-                    //  Fetch base record → copy all fields → override submission
-                    // fields → save to BRF_COMMON_MAPPING_TABLE
-                    // Uses: baseMappingRepo.findByAccountIdBacid()
-                	// Single DB call — replicates original JDBC INSERT...SELECT exactly
+                    // ── NEW: Pass the extra parameters to your insert query ──
                 	int inserted = commonMappingRepo.insertFromBase(
-                	    fAccountId, fReportCode, fRowId, fColumnId, fBalanceLc, fSolId);
+                	    fAccountId, fReportCode, fRowId, fColumnId, fBalanceLc, fSolId,
+                	    fConstCode, fLegalEntity, fHniNetworth, fTurnover);
+                	    
                 	totalInserted += inserted;
                 }
             }
