@@ -108,7 +108,16 @@ public class BrfCommonMapping {
     @Column(name = "TURNOVER")
     private String turnover;    
     
-    public String getConstitutionCode() {
+    @Column(name = "FILTERCOLUMNS")
+    private String filterColumns;  
+        
+    public String getFilterColumns() {
+		return filterColumns;
+	}
+	public void setFilterColumns(String filterColumns) {
+		this.filterColumns = filterColumns;
+	}
+	public String getConstitutionCode() {
 		return constitutionCode;
 	}
 	public void setConstitutionCode(String constitutionCode) {

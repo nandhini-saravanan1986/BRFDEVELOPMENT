@@ -185,7 +185,7 @@ public class BRFBaseTableController {
     @PostMapping("/BRFBaseTable/submit")
     @ResponseBody
     public Map<String, Object> submitAccounts(@RequestBody List<Map<String, String>> selectedRows) {
-
+System.out.println("HIII");
         Map<String, Object> response = new LinkedHashMap<>();
 
         if (selectedRows == null || selectedRows.isEmpty()) {
@@ -214,6 +214,7 @@ public class BRFBaseTableController {
                 String legalEntity = row.get("legalEntityType");
                 String hniNetworth = row.get("hniNetworth");
                 String turnover    = row.get("turnover");
+                String filterColumns    = row.get("filterColumns");
 
                 if (accountId == null || accountId.trim().isEmpty()) continue;
                 
@@ -226,6 +227,7 @@ public class BRFBaseTableController {
                 if (legalEntity == null) legalEntity = "";
                 if (hniNetworth == null) hniNetworth = "";
                 if (turnover    == null) turnover    = "";
+                if (filterColumns    == null) filterColumns    = "";
 
                 // 3. Clean and finalize variables
                 final String fAccountId   = accountId.trim();
@@ -239,6 +241,7 @@ public class BRFBaseTableController {
                 final String fLegalEntity = legalEntity.trim();
                 final String fHniNetworth = hniNetworth.trim();
                 final String fTurnover    = turnover.trim();
+                final String ffilterColumns    = filterColumns.trim();
 
                 Optional<BrfCommonMapping> conflicting =
                     commonMappingRepo.findConflictingMapping(
@@ -266,11 +269,13 @@ public class BRFBaseTableController {
                     toUpdate.setAccountBalanceLc(fBalanceLc);
                     toUpdate.setSolId(fSolId);
                     
-                 
+                 System.out.println("Filter column : "+ffilterColumns);
                     toUpdate.setConstitutionCode(fConstCode);
                     toUpdate.setLegalEntityType(fLegalEntity);
                     toUpdate.setHniNetworth(fHniNetworth);
                     toUpdate.setTurnover(fTurnover);
+                    
+                    toUpdate.setFilterColumns(ffilterColumns);
                     
                     commonMappingRepo.save(toUpdate);
                     totalUpdated++;
@@ -280,7 +285,7 @@ public class BRFBaseTableController {
                     // ── NEW: Pass the extra parameters to your insert query ──
                 	int inserted = commonMappingRepo.insertFromBase(
                 	    fAccountId, fReportCode, fRowId, fColumnId, fBalanceLc, fSolId,
-                	    fConstCode, fLegalEntity, fHniNetworth, fTurnover);
+                	    fConstCode, fLegalEntity, fHniNetworth, fTurnover, ffilterColumns);
                 	    
                 	totalInserted += inserted;
                 }

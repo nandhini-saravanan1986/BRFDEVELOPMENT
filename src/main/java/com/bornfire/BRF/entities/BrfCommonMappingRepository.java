@@ -73,14 +73,14 @@ public interface BrfCommonMappingRepository
                 " REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_DESC, " +
                 " REPORT_ADDL_CRITERIA_1, REPORT_ADDL_CRITERIA_2, REPORT_ADDL_CRITERIA_3, " +
                 " REPORT_CODE, ROW_ID, COLUMN_ID, ACCOUNT_BALANCE_LC, SOL_ID, " +
-                " CONSTITUTION_CODE, LEGAL_ENTITY_TYPE, HNI_NETWORTH, TURNOVER) " +
+                " CONSTITUTION_CODE, LEGAL_ENTITY_TYPE, HNI_NETWORTH, TURNOVER, FILTERCOLUMNS) " +
                 "SELECT GL_HEAD, GL_SUBHEAD_CODE, ACCOUNT_ID_BACID, ACCOUNT_DESCRIPTION, " +
                 "       CURRENCY, DATA_TYPE, ENTITY_FLG, AUTH_FLG, MODIFY_FLG, DEL_FLG, " +
                 "       ENTRY_USER, MODIFY_USER, AUTH_USER, ENTRY_TIME, MODIFY_TIME, AUTH_TIME, " +
                 "       REPORT_DATE, REPORT_VERSION, REPORT_FREQUENCY, REPORT_DESC, " +
                 "       REPORT_ADDL_CRITERIA_1, REPORT_ADDL_CRITERIA_2, REPORT_ADDL_CRITERIA_3, " +
                 "       :reportCode, :rowId, :columnId, :balanceLc, :solId, " +
-                "       :constCode, :legalEntity, :hniNetworth, :turnover " +
+                "       :constCode, :legalEntity, :hniNetworth, :turnover , :filterColumns " +
                 "FROM BRF_BASE_MAPPING_TABLE WHERE ACCOUNT_ID_BACID = :accountId",
         nativeQuery = true
     )
@@ -94,6 +94,7 @@ public interface BrfCommonMappingRepository
         @Param("constCode")   String constCode,
         @Param("legalEntity") String legalEntity,
         @Param("hniNetworth") String hniNetworth,
-        @Param("turnover")    String turnover
+        @Param("turnover")    String turnover,
+        @Param("filterColumns") String filterColumns
     );
 }

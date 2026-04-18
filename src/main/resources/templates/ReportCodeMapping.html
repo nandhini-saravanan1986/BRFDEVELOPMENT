@@ -3276,7 +3276,7 @@ function showAccounts() {
                         ? 'ACCOUNT ID/BACID' : key.replace(/_/g, ' ');
                     headerRow += '<th>' + label + '</th>';
                 });
-                headerRow += '<th>Account Balance (LC)</th></tr>';
+                headerRow += '<th>Account Balance (LC)</th><th>Filter</th></tr>';
                 $('#accountsHead').html(headerRow);
 
                 $('#selectAll').off('change').on('change', function() {
@@ -3296,7 +3296,9 @@ function showAccounts() {
                     $.each(keys, function(j, key) { tr += '<td>' + nvl(row[key]) + '</td>'; });
                     tr += '<td><select class="balance-select form-control form-control-sm"' +
                           ' data-idx="' + i + '" style="min-width:200px;">' +
-                          balOpts + '</select></td></tr>';
+                          balOpts + '</select></td>';
+                          tr += getFilterCellHtml(i, false);
+                          tr += '</tr>';
                     tbody.append(tr);
                 });
             }
@@ -3347,6 +3349,7 @@ function submitAccounts() {
         var idx       = $(this).data('idx');
         var balanceLc = $('.balance-select[data-idx="' + idx + '"]').val();
         var row       = window.currentData[idx];
+        var filterVals= getFilterValues('n_' + idx);
         
         if (!balanceLc) {
             alert('Please select Account Balance (LC) for row ' + (idx + 1));
@@ -3364,7 +3367,8 @@ function submitAccounts() {
             constitutionCode: constCode,
             legalEntityType : legalEntity,
             hniNetworth     : hniNetworth,
-            turnover        : turnover
+            turnover        : turnover,
+            filterColumns   : filterVals
         });
     });
 
@@ -3470,6 +3474,55 @@ function back() { window.history.back(); }
 /* ══════════════════════════════════════════════════════════════════════════════
    HELPERS
 ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Row-Level Filter Multi-Select Logic ── */
+function getFilterCellHtml(idx, isModal) {
+    // Prefix 'm_' for modal, 'n_' for normal tab to prevent ID collisions
+    var p = isModal ? 'm_' : 'n_'; 
+    return '<td style="position:relative;">' +
+        '<button type="button" class="form-control form-control-sm filter-btn-' + p + idx + '" onclick="toggleFilterMenu(event, \'' + p + idx + '\')" style="min-width: 150px; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">3 selected</button>' +
+        '<div id="filterMenu_' + p + idx + '" class="multi-select-menu filter-menu" style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 200px; overflow-y: auto; min-width: 180px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0,0,0,.15); right: 0;">' +
+            '<div style="padding: 5px 14px; border-bottom: 1px solid #eee; position: sticky; top: -6px; background: #fff; z-index: 2;">' +
+                '<input type="checkbox" id="chk_filterAll_' + p + idx + '" onclick="toggleAllFilter(this, \'' + p + idx + '\')" checked> <label for="chk_filterAll_' + p + idx + '" style="font-family: verdana; font-size: 12px; font-weight: bold; cursor: pointer; margin: 0;">Select All</label>' +
+            '</div>' +
+            '<div class="cb-item" style="padding: 4px 14px;"><input type="checkbox" class="chk-filter-' + p + idx + '" id="chk_f1_' + p + idx + '" value="GL_SUBHEAD_CODE" onchange="onFilterCheck(\'' + p + idx + '\')" checked> <label for="chk_f1_' + p + idx + '" style="font-family: verdana; font-size: 12px; cursor: pointer; margin: 0;">GL SUBHEAD CODE</label></div>' +
+            '<div class="cb-item" style="padding: 4px 14px;"><input type="checkbox" class="chk-filter-' + p + idx + '" id="chk_f2_' + p + idx + '" value="ACCOUNT_ID_BACID" onchange="onFilterCheck(\'' + p + idx + '\')" checked> <label for="chk_f2_' + p + idx + '" style="font-family: verdana; font-size: 12px; cursor: pointer; margin: 0;">ACCOUNT ID BACID</label></div>' +
+            '<div class="cb-item" style="padding: 4px 14px;"><input type="checkbox" class="chk-filter-' + p + idx + '" id="chk_f3_' + p + idx + '" value="CURRENCY" onchange="onFilterCheck(\'' + p + idx + '\')" checked> <label for="chk_f3_' + p + idx + '" style="font-family: verdana; font-size: 12px; cursor: pointer; margin: 0;">CURRENCY</label></div>' +
+        '</div></td>';
+}
+
+function toggleFilterMenu(e, idCode) {
+    e.stopPropagation();
+    $('.multi-select-menu').not('#filterMenu_' + idCode).hide();
+    $('.searchable-select-menu').hide();
+    $('#filterMenu_' + idCode).toggle();
+}
+
+function toggleAllFilter(masterChk, idCode) {
+    $('.chk-filter-' + idCode).prop('checked', masterChk.checked);
+    refreshFilterBtnLabel(idCode);
+}
+
+function onFilterCheck(idCode) {
+    var all = $('.chk-filter-' + idCode).length;
+    var checked = $('.chk-filter-' + idCode + ':checked').length;
+    $('#chk_filterAll_' + idCode).prop('checked', all === checked);
+    refreshFilterBtnLabel(idCode);
+}
+
+function refreshFilterBtnLabel(idCode) {
+    var checked = $('.chk-filter-' + idCode + ':checked');
+    var btn = $('.filter-btn-' + idCode);
+    if (checked.length === 0) btn.text('-- Select --');
+    else if (checked.length === 1) btn.text(checked.first().next('label').text()); 
+    else btn.text(checked.length + ' selected');
+}
+
+// Extractor function for the submit payload (Returns comma separated string)
+function getFilterValues(idCode) {
+    return $('.chk-filter-' + idCode + ':checked').map(function() { return this.value; }).get().join(",");
+}
+
 function nvl(val) { return (val !== null && val !== undefined) ? val : ''; }
 function previewRawExcel() {
     var reportCode = $('#reportCodeSelect').val();
@@ -4018,7 +4071,7 @@ function modalShowAccounts() {
                      ? 'ACCOUNT ID/BACID' : key.replace(/_/g, ' ');
                  headerRow += '<th>' + label + '</th>';
              });
-             headerRow += '<th>Account Balance (LC)</th></tr>';
+             headerRow += '<th>Account Balance (LC)</th><th>Filter</th></tr>';
              $('#modalAccountsHead').html(headerRow);
 
              $('#modalSelectAll').off('change').on('change', function() {
@@ -4038,7 +4091,9 @@ function modalShowAccounts() {
                  $.each(keys, function(j, key) { tr += '<td>' + nvl(row[key]) + '</td>'; });
                  tr += '<td><select class="modal-balance-select form-control form-control-sm"' +
                        ' data-idx="' + i + '" style="min-width:180px;">' +
-                       balOpts + '</select></td></tr>';
+                       balOpts + '</select></td>';
+                       tr += getFilterCellHtml(i, true); 
+                       tr += '</tr>';
                  tbody.append(tr);
              });
 
@@ -4092,6 +4147,7 @@ function modalSubmitAccounts() {
         var idx       = $(this).data('idx');
         var balanceLc = $('.modal-balance-select[data-idx="' + idx + '"]').val();
         var row       = window.modalCurrentData[idx];
+        var filterVals= getFilterValues('m_' + idx);
         
         if (!balanceLc) {
             alert('Please select Account Balance (LC) for row ' + (idx + 1));
@@ -4101,6 +4157,7 @@ function modalSubmitAccounts() {
         
         selectedRows.push({
             accountId       : nvl(row['ACCOUNT_ID_BACID'] || row['account_id_bacid']),
+            bacid           : nvl(row['BACID']),
             balanceLc       : balanceLc,
             reportCode      : reportCode,
             rowId           : rowId,
