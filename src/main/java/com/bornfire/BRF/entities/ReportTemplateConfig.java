@@ -25,7 +25,17 @@ public class ReportTemplateConfig {
 	@Column(name = "DATA_START_COL")
 	private Integer dataStartCol;
 
-	// --- Getters and Setters ---
+	@Column(name = "SHEET_INDEX")
+	private Integer sheetIndex;
+
+	public Integer getSheetIndex() {
+		return sheetIndex;
+	}
+
+	public void setSheetIndex(Integer sheetIndex) {
+		this.sheetIndex = sheetIndex;
+	}
+
 	public String getReportCode() {
 		return reportCode;
 	}

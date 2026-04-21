@@ -113,8 +113,17 @@ public class BrfCommonMapping {
     
     @Column(name = "FILTERCOLUMNS")
     private String filterColumns;  
+    
+    @Column(name = "SCHEME_TYPE")
+    private String schemeType;    
         
-    public String getFilterColumns() {
+    public String getSchemeType() {
+		return schemeType;
+	}
+	public void setSchemeType(String schemeType) {
+		this.schemeType = schemeType;
+	}
+	public String getFilterColumns() {
 		return filterColumns;
 	}
 	public void setFilterColumns(String filterColumns) {

@@ -583,6 +583,7 @@ public class BRFNavigationController {
     @ResponseBody
     public String previewExcelTemplate(
             @RequestParam("code") String reportCode,
+            @RequestParam(value = "sheet", required = false) Integer uiSheet,
             @RequestParam(value = "hdr", required = false) Integer uiHdr,
             @RequestParam(value = "data", required = false) Integer uiData,
             @RequestParam(value = "stop", required = false) Integer uiStop,
@@ -591,11 +592,25 @@ public class BRFNavigationController {
         try {
             File templateFile = reportServices.findTemplate(reportCode);
             if (templateFile == null || !templateFile.exists()) {
-                return "<div class='alert alert-danger p-3'>Template file not found for code: " + reportCode + "</div>";
-            }
+				return "<div class='alert alert-danger p-3'>Template file not found for code: " + reportCode + "</div>";
+			}
 
-            try (Workbook workbook = WorkbookFactory.create(templateFile)) {
-                Sheet sheet = workbook.getSheetAt(0);
+			try (Workbook workbook = WorkbookFactory.create(templateFile)) {
+
+				// ── 1. DETERMINE WHICH SHEET TO LOAD ──
+				int activeSheetIndex = 0;
+				Optional<ReportTemplateConfig> savedConfig = configRepo.findById(reportCode);
+
+				if (uiSheet != null) {
+                    activeSheetIndex = uiSheet; // User clicked a tab
+                } else if (savedConfig.isPresent() && savedConfig.get().getSheetIndex() != null) {
+                    activeSheetIndex = savedConfig.get().getSheetIndex(); // Loaded from DB
+                }
+                
+                // Safety fallback
+                if (activeSheetIndex >= workbook.getNumberOfSheets()) activeSheetIndex = 0;
+                Sheet sheet = workbook.getSheetAt(activeSheetIndex);
+
                 StringBuilder html = new StringBuilder();
                 
                 // ── 1. HARD CAP: Prevent Java OutOfMemory on massive formatted sheets ──
@@ -614,7 +629,7 @@ public class BRFNavigationController {
                     dataStartCol = uiCol;
                     rowLabelsMap = generateRowLabels(sheet, absoluteMaxRow, firstDataRow, firstStopRow, dataStartCol);
                 } else {
-                    java.util.Optional<ReportTemplateConfig> savedConfig = configRepo.findById(reportCode);
+                    //Optional<ReportTemplateConfig> savedConfig = configRepo.findById(reportCode);
                     if (savedConfig.isPresent()) {
                         headerStart  = savedConfig.get().getHeaderStartRow();
                         firstDataRow = savedConfig.get().getFirstDataRow();
@@ -684,35 +699,26 @@ public class BRFNavigationController {
                     }
                 }
 
-                // ── 5. BUILD THE TUNING TOOLBAR ──
+             // ── 5. BUILD THE TUNING TOOLBAR ──
                 String statusBadge = isFromDB 
                     ? "<span class='badge badge-success'>Loaded from DB</span>" 
                     : "<span class='badge badge-warning text-dark'>Auto-Predicted</span>";
 
                 html.append("<div style='padding: 10px 15px; background: #fff; border-bottom: 2px solid #dcdcdc; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; left: 0; z-index: 11;'>")
                     .append("<div><b>Layout Tuner</b> ").append(statusBadge).append("</div>")
-                    .append("<div style='display: flex; gap: 15px; align-items: center; font-size: 12px;'>")
+                    .append("<div style='display: flex; gap: 15px; align-items: center; font-size: 12px;'>")       
+                    .append("<input type='hidden' id='tuneSheet' value='").append(activeSheetIndex).append("'>")
                     .append("Header Starts (Row): <input type='number' id='tuneHdr' value='").append(headerStart + 1).append("' style='width: 60px; border: 1px solid #ccc; padding: 2px 5px;'>")
                     .append("Data Starts (Row): <input type='number' id='tuneData' value='").append(firstDataRow + 1).append("' style='width: 60px; border: 1px solid #ccc; padding: 2px 5px;'>")
                     .append("Last Data (Row): <input type='number' id='tuneStop' value='").append(firstStopRow).append("' style='width: 60px; border: 1px solid #ccc; padding: 2px 5px;'>")
                     .append("Data Col (Index): <input type='number' id='tuneCol' value='").append(dataStartCol + 1).append("' style='width: 60px; border: 1px solid #ccc; padding: 2px 5px;' title='A=1, B=2, C=3...'>")
                     .append("<button class='btn btn-sm btn-secondary' onclick='testLayout()'>Test Layout</button>")
                     .append("<button class='btn btn-sm' style='background-color:#E77400; color:white; font-weight:bold;' onclick='saveLayout()'>Save to DB</button>")
-                    .append("</div></div>");
-
-                // ── 6. BUILD THE COLOR LEGEND ──
-                html.append("<div style='padding: 10px 15px; background: #fdfdfd; border-bottom: 2px solid #dcdcdc; font-family: verdana; font-size: 12px; display: flex; flex-wrap: wrap; gap: 20px; position: sticky; top: 45px; left: 0; z-index: 10;'>")
-                    .append("<div style='display: flex; align-items: center; gap: 6px;'><span style='width: 14px; height: 14px; background: #E77400; border: 1px solid #c86400; border-radius: 2px;'></span> <b>Row Label (ROW ID)</b></div>")
-                    .append("<div style='display: flex; align-items: center; gap: 6px;'><span style='width: 14px; height: 14px; background: #376275; border: 1px solid #2a4f5e; border-radius: 2px;'></span> <b>Column Headers</b></div>")
-                    .append("<div style='display: flex; align-items: center; gap: 6px;'><span style='width: 14px; height: 14px; background: #eef4fb; border: 1px solid #cdd8e6; border-radius: 2px;'></span> <b>Row Headers (Desc)</b></div>")
-                    .append("<div style='display: flex; align-items: center; gap: 6px;'><span style='width: 14px; height: 14px; background: #e9ecf0; border: 1px solid #ccc; border-radius: 2px;'></span> <b>Excel Row/Col #</b></div>")
-                    .append("<div style='display: flex; align-items: center; gap: 6px;'><span style='width: 14px; height: 14px; background: #ffffff; border: 1px solid #dcdcdc; border-radius: 2px;'></span> <b>Data Cells</b></div>")
-                    .append("</div>");
-             // ... (Your Color Legend logic remains above this) ...
+                    .append("</div></div>");              
 
                 // ── 7. BUILD THE HTML TABLE (Using SMART boundaries) ──
                 // The outer container must be position: relative for sticky elements inside to anchor correctly.
-                html.append("<div class='table-responsive' style='width: 100%; height: calc(100vh - 350px); min-height: 400px; overflow: auto; position: relative;'>");
+                html.append("<div class='table-responsive' style='width: 100%; height: calc(100vh - 420px); min-height: 400px; overflow: auto; position: relative;'>");
                 html.append("<table class='table table-bordered table-sm' style='font-family: Calibri, verdana, sans-serif; font-size: 13px; width: max-content; background: white; margin-bottom: 0; border-collapse: separate; border-spacing: 0;'>");
 
                 // ── STRICT STICKY HEADERS (Top Row) ──
@@ -804,17 +810,72 @@ public class BRFNavigationController {
                         html.append("<td").append(spans).append(" style='").append(styleStr).append("'>").append(val.replace("\n", "<br>")).append("</td>");
                     }
                     html.append("</tr>");
+				}
+				html.append("</tbody></table></div>");
+
+html.append("</tbody></table></div>");
+                
+                // ── 8. BUILD NATIVE EXCEL TABS & COMPACT LEGEND (Bottom Bar) ──
+                html.append("<div style='display:flex; justify-content:space-between; align-items:stretch; background:#f3f2f1; border-top:1px solid #ccc; height:32px; position:sticky; bottom:0; left:0; z-index:11;'>");
+                
+                html.append("<div style='display:flex; flex:1; min-width:0; overflow:hidden;'>");
+                
+             // Left Arrow Button
+                html.append("<button type='button' id='scrollLeftBtn' onclick='scrollTabs(-150)' style='display:none; border:none; background:#f3f2f1; border-right:1px solid #ccc; padding:0 12px; cursor:pointer; color:#555; font-size:10px;'>&#9664;</button>");
+                
+                // Scrollable Tabs Container
+                html.append("<div id='sheetTabContainer' style='display:flex; overflow:hidden; scroll-behavior:smooth; white-space:nowrap;'>");
+                for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+                    String sName = workbook.getSheetName(i);
+                    if (i == activeSheetIndex) {
+                        html.append("<div style='padding:4px 15px; background:#fff; border-right:1px solid #ccc; border-bottom:none; border-top:3px solid #107c41; font-weight:bold; color:#107c41; cursor:default; font-family:verdana; font-size:12px; box-shadow: 0 -1px 3px rgba(0,0,0,0.05); display:flex; align-items:center;'>")
+                            .append(sName).append("</div>");
+                    } else {
+                        html.append("<div style='padding:4px 15px; background:#e1dfdd; border-right:1px solid #ccc; border-bottom:none; color:#333; cursor:pointer; font-family:verdana; font-size:12px; display:flex; align-items:center;' ")
+                            .append("onclick='switchExcelSheet(").append(i).append(")' ")
+                            .append("onmouseover='this.style.background=\"#fff\"' onmouseout='this.style.background=\"#e1dfdd\"'>")
+                            .append(sName).append("</div>");
+                    }
                 }
-                html.append("</tbody></table></div>");
+                html.append("</div>"); 
+                
+             // Right Arrow Button
+                html.append("<button type='button' id='scrollRightBtn' onclick='scrollTabs(150)' style='display:none; border:none; background:#f3f2f1; border-left:1px solid #ccc; border-right:1px solid #ccc; padding:0 12px; cursor:pointer; color:#555; font-size:10px;'>&#9654;</button>");
+                html.append("</div>"); 
+
+                // --- RIGHT SIDE: Compact Legend ---
+                html.append("<div style='display:flex; align-items:center; gap:12px; padding:0 15px; background:#fdfdfd; font-family:verdana; font-size:10px; white-space:nowrap;'>")
+                    .append("<div style='display:flex; align-items:center; gap:4px;'><span style='width:10px; height:10px; background:#E77400; border:1px solid #c86400; display:inline-block;'></span> <b>ROW ID</b></div>")
+                    .append("<div style='display:flex; align-items:center; gap:4px;'><span style='width:10px; height:10px; background:#376275; border:1px solid #2a4f5e; display:inline-block;'></span> <b>Col Headers</b></div>")
+                    .append("<div style='display:flex; align-items:center; gap:4px;'><span style='width:10px; height:10px; background:#eef4fb; border:1px solid #cdd8e6; display:inline-block;'></span> <b>Row Desc</b></div>")
+                    .append("<div style='display:flex; align-items:center; gap:4px;'><span style='width:10px; height:10px; background:#ffffff; border:1px solid #dcdcdc; display:inline-block;'></span> <b>Data</b></div>")
+                    .append("</div>"); 
+
+                html.append("</div>"); // End Bottom Bar
+
+                html.append("<script>")
+                    .append("function checkTabOverflow() {")
+                    .append("  var c = document.getElementById('sheetTabContainer');")
+                    .append("  var l = document.getElementById('scrollLeftBtn');")
+                    .append("  var r = document.getElementById('scrollRightBtn');")
+                    .append("  if (c && l && r) {")
+                    .append("    var isOverflowing = c.scrollWidth > c.clientWidth;")
+                    .append("    l.style.display = isOverflowing ? 'block' : 'none';")
+                    .append("    r.style.display = isOverflowing ? 'block' : 'none';")
+                    .append("  }")
+                    .append("}")
+                    .append("checkTabOverflow();") 
+                    .append("window.addEventListener('resize', checkTabOverflow);") 
+                    .append("</script>");
+
                 return html.toString();
 
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "<div class='alert alert-danger p-3'>Error generating preview: " + e.getMessage() + "</div>";
-        }
-    }
-
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "<div class='alert alert-danger p-3'>Error generating preview: " + e.getMessage() + "</div>";
+		}
+	}
     // New helper to generate labels purely based on the boundaries
     private Map<Integer, String> generateRowLabels(Sheet sheet, int maxRow, int firstDataRow, int firstStopRow, int dataStartCol) {
         Map<Integer, String> map = new HashMap<>();
@@ -1104,12 +1165,12 @@ public class BRFNavigationController {
 
                 html.append("<div style='padding: 8px 14px; background: #f8f9fa; border-bottom: 1px solid #dee2e6; "
                           + "font-family: verdana; font-size: 12px; color: #555; display: flex; align-items: center;'>")
-                    .append("<div><b>Visual Mapper:</b> Click any row with an orange label to quickly map it.</div>")
+                    .append("<div> Click any row with an orange label to quickly map it.</div>")
                     .append(statusBadge)
                     .append("</div>");
 
                 // Table
-                html.append("<div style='overflow: auto; width: 100%; height: 460px;'>")
+                html.append("<div style='overflow: auto; width: 100%; height: calc(100vh - 380px); min-height: 400px; position: relative;'>")
                     .append("<table id='rawExcelTable' style='border-collapse: collapse; font-family: Calibri, verdana, sans-serif; "
                           + "font-size: 13px; width: max-content; background: white;'>")
                     .append("<thead><tr>")

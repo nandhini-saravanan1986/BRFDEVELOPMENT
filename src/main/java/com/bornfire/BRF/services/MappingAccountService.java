@@ -65,6 +65,7 @@ public class MappingAccountService {
             view.put("HNI_NETWORTH",        nvl(row.getHniNetworth()));
             view.put("TURNOVER",            nvl(row.getTurnover()));
             view.put("FILTER_COLUMNS",      nvl(row.getFilterColumns()));
+            view.put("SCHEME_TYPE",      nvl(row.getSchemeType()));
 
             result.add(view);
         }

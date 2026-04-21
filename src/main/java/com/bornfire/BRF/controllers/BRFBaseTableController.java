@@ -215,7 +215,8 @@ public class BRFBaseTableController {
                 String hniNetworth   = row.get("hniNetworth");
                 String turnover      = row.get("turnover");
                 String filterColumns = row.get("filterColumns");
-
+                String schemeType    = row.get("schemeType");
+                
                 if (accountId == null || accountId.trim().isEmpty()) continue;
 
                 // 2. Handle nulls
@@ -228,7 +229,8 @@ public class BRFBaseTableController {
                 if (hniNetworth  == null) hniNetworth  = "";
                 if (turnover     == null) turnover     = "";
                 if (filterColumns == null) filterColumns = "";
-
+                if (schemeType   == null) schemeType   = "";
+                
                 // 3. Trim and finalize
                 final String fAccountId    = accountId.trim();
                 final String fReportCode   = reportCode.trim();
@@ -241,7 +243,8 @@ public class BRFBaseTableController {
                 final String fHniNetworth  = hniNetworth.trim();
                 final String fTurnover     = turnover.trim();
                 final String fFilterColumns = filterColumns.trim();
-
+                final String fSchemeType    = schemeType.trim();
+                
                 // 4. Block cross-report duplicates
                 Optional<BrfCommonMapping> conflicting =
                     commonMappingRepo.findConflictingMapping(
@@ -323,7 +326,8 @@ public class BRFBaseTableController {
                 record.setHniNetworth(fHniNetworth);
                 record.setTurnover(fTurnover);
                 record.setFilterColumns(fFilterColumns);
-
+                record.setSchemeType(fSchemeType);
+                
                 // 8. Single save — JPA decides INSERT or UPDATE via composite key
                 commonMappingRepo.save(record);
 
@@ -417,6 +421,7 @@ public class BRFBaseTableController {
             String hniNetworth  = nvl(row.get("hniNetworth")).trim();
             String turnover     = nvl(row.get("turnover")).trim();
             String filterCols   = nvl(row.get("filterColumns")).trim();
+            String schemeType   = nvl(row.get("schemeType")).trim(); 
 
             if (accountId.isEmpty() || reportCode.isEmpty() || oldRowId.isEmpty()) {
                 response.put("status",  "ERROR");
@@ -491,6 +496,7 @@ public class BRFBaseTableController {
                 newRecord.setHniNetworth(hniNetworth);
                 newRecord.setTurnover(turnover);
                 newRecord.setFilterColumns(filterCols);
+                newRecord.setSchemeType(schemeType);
 
                 commonMappingRepo.save(newRecord);
 
@@ -507,6 +513,7 @@ public class BRFBaseTableController {
                 existing.setHniNetworth(hniNetworth);
                 existing.setTurnover(turnover);
                 existing.setFilterColumns(filterCols);
+                existing.setSchemeType(schemeType);
                 commonMappingRepo.save(existing);
 
                 System.out.println("UPDATE (fields only): " + accountId
