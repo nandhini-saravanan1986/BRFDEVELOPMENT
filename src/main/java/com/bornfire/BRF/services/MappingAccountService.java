@@ -56,6 +56,15 @@ public class MappingAccountService {
             view.put("REPORT_ADDL_CRITERIA_3", nvl(row.getReportAddlCriteria3()));
             view.put("DATA_TYPE", nvl(row.getDataType()));
             view.put("SOL_ID", nvl(row.getSolId()));
+            // Extra fields needed by Edit Mapped modal
+            view.put("ACCOUNT_DESCRIPTION", nvl(row.getAccountDescription()));
+            view.put("CURRENCY",            nvl(row.getCurrency()));
+            view.put("ACCOUNT_BALANCE_LC",  nvl(row.getAccountBalanceLc()));
+            view.put("CONSTITUTION_CODE",   nvl(row.getConstitutionCode()));
+            view.put("LEGAL_ENTITY_TYPE",   nvl(row.getLegalEntityType()));
+            view.put("HNI_NETWORTH",        nvl(row.getHniNetworth()));
+            view.put("TURNOVER",            nvl(row.getTurnover()));
+            view.put("FILTER_COLUMNS",      nvl(row.getFilterColumns()));
 
             result.add(view);
         }
@@ -92,6 +101,10 @@ public class MappingAccountService {
             view.put("REPORT_ADDL_CRITERIA_1", nvl(row.getReportAddlCriteria1()));
             view.put("REPORT_ADDL_CRITERIA_2", nvl(row.getReportAddlCriteria2()));
             view.put("REPORT_ADDL_CRITERIA_3", nvl(row.getReportAddlCriteria3()));
+         // Extra fields needed by Edit UnMapped modal
+            view.put("ACCOUNT_DESCRIPTION", nvl(row.getAccountDescription()));
+            view.put("CURRENCY",            nvl(row.getCurrency()));
+            view.put("ACCOUNT_BALANCE_LC",  nvl(row.getAccountBalanceLc()));
 
             result.add(view);
         }

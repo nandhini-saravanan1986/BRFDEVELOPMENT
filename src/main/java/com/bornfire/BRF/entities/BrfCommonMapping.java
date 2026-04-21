@@ -4,16 +4,19 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
+@IdClass(BrfCommonMappingId.class)
 @Table(name = "BRF_COMMON_MAPPING_TABLE")
 public class BrfCommonMapping {
 
     @Id
     @Column(name = "ACCOUNT_ID_BACID", length = 50)
     private String accountIdBacid;
-
+    
+    @Id
     @Column(name = "REPORT_CODE",           length = 100)
     private String reportCode;
-
+    
+    @Id
     @Column(name = "ROW_ID",                length = 50)
     private String rowId;
 
