@@ -413,7 +413,7 @@ document.addEventListener("DOMContentLoaded", function () {
     statusCells.forEach(cell => {
         const rptCode = cell.getAttribute("data-rptcode");
 
-        fetch('/BRBS/checkDomainFlagwithdate?rptcode=' + rptCode + '&date=' + selectedDate )
+        fetch('/BRF/checkDomainFlagwithdate?rptcode=' + rptCode + '&date=' + selectedDate )
             .then(response => response.text())
             .then(result => {
 

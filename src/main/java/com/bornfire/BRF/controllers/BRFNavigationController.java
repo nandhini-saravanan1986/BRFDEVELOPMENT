@@ -10,6 +10,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,6 +38,7 @@ import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -46,6 +48,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -82,11 +85,13 @@ import com.bornfire.BRF.entities.BRFValidations;
 import com.bornfire.BRF.entities.BRFValidationsRepo;
 import com.bornfire.BRF.entities.RRReport;
 import com.bornfire.BRF.services.CalculationService;
-
+import com.bornfire.BRF.services.ReportGenerationService;
 
 import org.apache.poi.ss.usermodel.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.regex.Pattern;
 
 
@@ -1192,5 +1197,189 @@ public class BRFNavigationController {
             return "<div class='alert alert-danger p-3'>Error generating preview: " + e.getMessage() + "</div>";
         }
     }
-    
+
+	@GetMapping("/checkDomainFlagwithdate")
+	@ResponseBody
+	public ResponseEntity<String> checkDomainFlagwithdate(@RequestParam String rptcode,
+			@RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") Date date,Model md) {
+		//System.out.println("Date : " + date);
+		md.addAttribute("reportDate", "2025-12-31");
+		List<Date> datelist = rrReportRepo.getdatelist(rptcode);
+		for (Date eachdate : datelist) {
+			//System.out.println("Each date : " + eachdate);
+			if (eachdate != null && eachdate.compareTo(date) == 0) {
+				return ResponseEntity.ok("ENABLED");
+			}
+		}
+		return ResponseEntity.ok("DISABLED");
+	}
+	 @Autowired
+	 JdbcTemplate jdbcTemplate;
+	 
+
+		@GetMapping("/datavalidationdetails")
+		public ResponseEntity<List<Map<String, String>>> getModifyDetails(
+				@RequestParam("report_date") @DateTimeFormat(pattern = "yyyy-MM-dd") Date report_date) {
+
+			List<Map<String, String>> parsedList = new ArrayList<>();
+			Map<String, String> rowMap = new HashMap<>();
+			rowMap.put("tableName", "CBS DATA");
+
+			String sql = "SELECT CASE "
+					+ "WHEN NVL(SUM(ACT_BALANCE_AMT_LC),0) >= 0 AND NVL(SUM(ACT_BALANCE_AMT_LC),0) < 1 "
+					+ "AND NVL(SUM(ACCT_BALANCE_AMT_AC),0) >= 0 AND NVL(SUM(ACCT_BALANCE_AMT_AC),0) < 1 "
+					+ "THEN 'VALID' " + "ELSE 'INVALID' " + "END AS validation_result " + "FROM GENERAL_MASTER_TABLE "
+					+ "WHERE report_date = ?";
+			String result = jdbcTemplate.queryForObject(sql, new Object[] { report_date }, String.class);
+
+			String sql1 = "SELECT COUNT(*) " + "FROM GENERAL_MASTER_TABLE " + "WHERE  report_date = ?";
+			Integer result1 = jdbcTemplate.queryForObject(sql1, new Object[] { report_date }, Integer.class);
+			String dataValidation = "VALID";
+			String status = "OK";
+			if (result1 == 0) {
+				dataValidation = "INVALID";
+			}
+			if (result1 == 0 || "INVALID".equals(result)) {
+				status = "FAIL";
+			}
+			rowMap.put("dataValidation", dataValidation);
+			rowMap.put("logicValidation", result);
+			rowMap.put("status", status);
+
+			parsedList.add(rowMap);
+
+			// String tablename="BRF_TREASURY_INVEST_TB";
+
+			List<String> tablelist = Arrays.asList("BRF_TREASURY_INVEST_TB", "BRF_TREASURY_MASTER_TB",
+					"BRF_TREASURY_PLACEMENT_ID","BRF_FORWARD_REVEAL_MANUAL_TABLE");
+			List<String> tablelisttodisplay = Arrays.asList("TREASURY INVESTMENT DATA", "TREASURY MASTER DATA",
+					"TREASURY PLACEMENT DATA","FORWARD DEAL DATA");
+			for (int i = 0; i < tablelist.size(); i++) {
+				
+				String tablename = tablelist.get(i);
+			    String displayName = tablelisttodisplay.get(i);
+
+				Map<String, String> looprowMap = new HashMap<>();
+				looprowMap.put("tableName", displayName);
+
+				String countsql = "SELECT COUNT(*) " + "FROM " + tablename + " WHERE  report_date = ?";
+				Integer countresult = jdbcTemplate.queryForObject(countsql, new Object[] { report_date },
+						Integer.class);
+				dataValidation = "VALID";
+				status = "OK";
+				if (countresult == 0) {
+					dataValidation = "INVALID";
+					status = "FAIL";
+				}
+
+				looprowMap.put("dataValidation", dataValidation);
+				looprowMap.put("logicValidation", "-");
+				looprowMap.put("status", status);
+				parsedList.add(looprowMap);
+			}
+
+			return ResponseEntity.ok(parsedList);
+		}
+		
+		//@Autowired
+		//Procedure_Common_Service Procedure_Common_Service;
+		
+		@Autowired
+		ReportGenerationService ReportGenerationService;
+		
+		@PostMapping("/executeProcedure")
+		public ResponseEntity<String> executeProcedure(@RequestParam(value = "reportDate", required = false) String reportDate,
+				@RequestParam(value = "srl_no", required = false) Integer srl_no, HttpServletRequest req) {
+			try {
+				System.out.println("Report_Date : " + reportDate);
+				System.out.println("srl_no : " + srl_no);
+				DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+				DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+				LocalDate parsedDate;
+				//String formattedDate = parsedDate.format(dateFormatter);
+				String formattedDate;
+				String rpt_code;
+				Date utildate;
+				if (srl_no != null && !srl_no.equals(null) && srl_no.toString() != "null" && !srl_no.toString().equals("null")) {
+					Optional<RRReport> data = rrReportlist.findById(srl_no);
+					rpt_code = data.get().getRpt_code();
+				} else {
+					rpt_code = "ALL";
+				}
+				if (srl_no != null && !srl_no.equals(null) && srl_no.toString() != "null" && !srl_no.toString().equals("null")) {
+					Optional<RRReport> data = rrReportlist.findById(srl_no);
+					System.out.println("Data's Report date : "+data.get().getEnd_date());			
+					utildate = data.get().getEnd_date();
+					LocalDate localDate = utildate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+					formattedDate = inputFormatter.format(localDate);					
+					parsedDate = LocalDate.parse(formattedDate, inputFormatter);
+					formattedDate = parsedDate.format(dateFormatter);
+				}
+				else {
+					parsedDate = LocalDate.parse(reportDate, inputFormatter);
+					formattedDate = parsedDate.format(dateFormatter);
+					utildate = java.sql.Date.valueOf(parsedDate);
+				}
+				System.out.println("Report_Date Formatted Date : " + formattedDate +"utildate : "+utildate);
+				ReportGenerationService.generateFullReport(formattedDate, rpt_code);
+				String sql = "CALL COMMON_TRIGGERING_PROCEDURE(?, ?)";
+				jdbcTemplate.update(sql, formattedDate, rpt_code);
+				//Procedure_Common_Service.executeCommonProcedure(formattedDate, rpt_code);				
+				int nextSerialno = rrReportlist.findMaxSerialNo() + 1;
+				//Date utildate = java.sql.Date.valueOf(parsedDate);
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(utildate);
+				cal.set(Calendar.DAY_OF_MONTH, 1);
+				Date firstDayOfMonth = cal.getTime();
+				if (srl_no != null && !srl_no.equals(null) && srl_no.toString() != "null" && !srl_no.toString().equals("null")) {		
+					System.out.println("Entered Sigle Procedure");
+					Optional<RRReport> entities = rrReportlist.findById(srl_no);
+					RRReport entity = entities.get();
+					RRReport newentity = new RRReport();
+					BeanUtils.copyProperties(entity, newentity);
+					System.out.println("Report date : " + utildate + " - serial no :" + nextSerialno
+							+ " - Rport code : " + newentity.getRpt_code());
+					newentity.setSrl_no(nextSerialno);
+					newentity.setStart_date(firstDayOfMonth);
+					newentity.setEnd_date(utildate);
+					newentity.setEntry_date(new Date());
+					newentity.setModify_user(null);
+					newentity.setVerify_suer(null);
+					newentity.setEntry_user((String) req.getSession().getAttribute("USERID"));
+					newentity.setModify_date(null);
+					newentity.setVerify_date(null);
+					if(newentity.getEnd_date()!=entity.getEnd_date() && !newentity.getEnd_date().equals(entity.getEnd_date())) {
+						rrReportlist.save(newentity);	
+					}									
+				} else {
+					//System.out.println("Entered Multiple Procedure");
+					List<RRReport> list = rrReportlist.findDataMissing(utildate, "M1");
+					if (list != null && !list.equals(null)) {
+						for (RRReport entity : list) {
+							RRReport newentity = new RRReport();
+							BeanUtils.copyProperties(entity, newentity);
+							System.out.println("Report date : " + utildate + " - serial no :" + nextSerialno
+									+ " - Rport code : " + newentity.getRpt_code());
+							newentity.setSrl_no(nextSerialno++);
+							newentity.setStart_date(firstDayOfMonth);
+							newentity.setEnd_date(utildate);
+							newentity.setEntry_date(new Date());
+							newentity.setModify_user(null);
+							newentity.setVerify_suer(null);
+							newentity.setEntry_user((String) req.getSession().getAttribute("USERID"));
+							newentity.setModify_date(null);
+							newentity.setVerify_date(null);
+							rrReportlist.save(newentity);
+						}
+					}
+				}
+				return ResponseEntity.ok("{\"message\": \"Procedure executed successfully!\"}");
+			} catch (Exception e) {
+				e.printStackTrace();
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+						.body("{\"error\": \"Failed to execute procedure: " + e.getMessage() + "\"}");
+			}
+		}
+		
+		
 }

@@ -93,7 +93,10 @@ table.dataTable tbody td,.table tbody td { font-family:verdana; font-size:13px; 
 .ui-resizable-nw { cursor:nw-resize; width:14px;  height:14px; left:-6px;   top:-6px; }
 .ui-resizable-ne { cursor:ne-resize; width:14px;  height:14px; right:-6px;  top:-6px; }
 
-#verificationGridContainer table,#excelViewContainer table { transform-origin:top left; transition:transform 0.15s ease-in-out; }
+#verificationGridContainer table,#excelViewContainer table { 
+    transform-origin:top left; 
+    transition:transform 0.15s ease-in-out; 
+}
 
 #mappingSubTabs .nav-link.active  { background-color:#0062cc !important; color:#fff !important; }
 #mappingSubTabs .nav-link:hover:not(.active) { background-color:#cc6200 !important; }
@@ -1455,21 +1458,64 @@ function switchView(type) {
         if (_excelLoadedFor !== reportCode) { loadExcelView(reportCode); }
     }
 }
-function loadExcelView(reportCode) {
-    var container = $('#excelViewContainer');
-    container.html('<div class="p-4 text-center text-muted" style="font-family:verdana;"><i class="fas fa-spinner fa-spin fa-2x mb-2"></i><br>Loading raw Excel file...</div>');
-    $.ajax({
-        url: '/BRF/previewExcel', type: 'GET', data: { code: reportCode }, dataType: 'html',
-        success: function(html) { container.html(html); _excelLoadedFor = reportCode; resetZoom(); },
-        error: function(xhr, status, error) { container.html('<div class="alert alert-danger p-3 m-3" style="font-family:verdana;"><i class="fas fa-exclamation-triangle"></i> Failed to load Excel file: ' + error + '</div>'); }
-    });
-}
-function zoomGrid(step) {
-    currentZoom = Math.min(2.5, Math.max(0.4, currentZoom + step));
-    $('#excelViewContainer table').css('transform', 'scale(' + currentZoom + ')');
-}
-function resetZoom() { currentZoom = 1.0; $('#excelViewContainer table').css('transform', 'scale(1)'); }
+function loadExcelView(reportCode, overrides = {}) {
+ var container = $('#excelViewContainer');
 
+ container.html('<div class="p-4 text-center text-muted" style="font-family:verdana;"><i class="fas fa-spinner fa-spin fa-2x mb-2"></i><br>Loading Layout...</div>');
+
+ // Merge report code with any custom overrides from the Tuning Toolbar
+ var requestData = { code: reportCode };
+ $.extend(requestData, overrides);
+
+ $.ajax({
+     url: '/BRF/previewExcel',
+     type: 'GET',
+     data: requestData,
+     dataType: 'html', 
+     success: function(htmlResponse) {
+         container.html(htmlResponse);
+         _excelLoadedFor = reportCode; 
+         resetZoom();
+     },
+     error: function(xhr, status, error) {
+         container.html('<div class="alert alert-danger p-3 m-3" style="font-family:verdana;"><i class="fas fa-exclamation-triangle"></i> Failed to load Excel file: ' + error + '</div>');
+     }
+ });
+}
+
+function testLayout() {
+ var reportCode = $('#reportCodeSelect').val();
+ 
+ if (!reportCode) {
+     alert("Please select a report code first.");
+     return;
+ }
+ 
+ var overrides = {
+     hdr:  parseInt($('#tuneHdr').val()) - 1,
+     data: parseInt($('#tuneData').val()) - 1,
+     stop: parseInt($('#tuneStop').val()),
+     col:  parseInt($('#tuneCol').val()) - 1
+ };
+ 
+ loadExcelView(reportCode, overrides);
+}
+
+var currentZoom = 1.0;
+
+function zoomGrid(step) {
+    currentZoom += step;
+    
+    if (currentZoom > 2.5) currentZoom = 2.5;
+    if (currentZoom < 0.4) currentZoom = 0.4;
+    
+    $('#excelViewContainer table').css('zoom', currentZoom);
+}
+
+function resetZoom() {
+    currentZoom = 1.0;
+    $('#excelViewContainer table').css('zoom', 1);
+}
 /* ─────────────────────────────────────────────────────────────────────────
    RAW EXCEL PREVIEW (Mapping Maintenance – Excel sub-tab)
 ───────────────────────────────────────────────────────────────────────── */
@@ -1491,11 +1537,21 @@ function loadRawExcel(reportCode) {
         error: function(xhr, status, error) { container.html('<div class="alert alert-danger p-3" style="font-family:verdana;"><i class="fas fa-exclamation-triangle"></i> Failed to load: ' + error + '</div>'); }
     });
 }
+var _rawExcelZoom = 1.0;
+
 function zoomRawExcel(step) {
-    _rawExcelZoom = Math.min(2.5, Math.max(0.4, _rawExcelZoom + step));
-    $('#rawExcelContainer table').css({ transform: 'scale(' + _rawExcelZoom + ')', 'transform-origin': 'top left' });
+    _rawExcelZoom += step;
+    
+    if (_rawExcelZoom > 2.5) _rawExcelZoom = 2.5;
+    if (_rawExcelZoom < 0.4) _rawExcelZoom = 0.4;
+    
+    $('#rawExcelContainer table').css('zoom', _rawExcelZoom);
 }
-function resetRawExcelZoom() { _rawExcelZoom = 1.0; $('#rawExcelContainer table').css('transform', 'scale(1)'); }
+
+function resetRawExcelZoom() {
+    _rawExcelZoom = 1.0;
+    $('#rawExcelContainer table').css('zoom', 1);
+}
 
 /* ─────────────────────────────────────────────────────────────────────────
    ROW MAPPING MODAL (Excel tab – open)
