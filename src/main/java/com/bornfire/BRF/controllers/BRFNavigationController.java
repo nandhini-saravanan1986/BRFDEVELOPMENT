@@ -67,6 +67,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.bornfire.BRF.config.PasswordEncryption;
 import com.bornfire.BRF.entities.AccessAndRoles;
 import com.bornfire.BRF.entities.AccessandRolesRepository;
+import com.bornfire.BRF.entities.BRF1_REPORT_ENTITY;
+import com.bornfire.BRF.entities.BRF1_Summary_Repo;
+import com.bornfire.BRF.entities.BRF2_Summary_Repo;
+import com.bornfire.BRF.entities.BRF3_Summary_Repo;
+import com.bornfire.BRF.entities.BRF4_Summary_Repo;
 import com.bornfire.BRF.entities.RRReportRepo;
 import com.bornfire.BRF.entities.ReportTemplateConfig;
 import com.bornfire.BRF.entities.ReportTemplateConfigRepository;
@@ -92,6 +97,7 @@ import org.apache.poi.ss.usermodel.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.regex.Pattern;
 
 
@@ -463,6 +469,85 @@ public class BRFNavigationController {
 	public String glConfig() {
 		return "Basemappingparameter";
 	}
+	
+	@Autowired
+	private BRF1_Summary_Repo brf1_Summary_Repo;
+	
+	@Autowired
+	private BRF2_Summary_Repo brf2_Summary_Repo;
+	
+	@Autowired
+	private BRF3_Summary_Repo br3_Summary_Repo;
+	
+	@Autowired
+	private BRF4_Summary_Repo brf4_Summary_Repo;
+	
+	    
+	@GetMapping("/Archival")
+	public String archival(Model model) {
+		
+		List<RRReport> reports = rrReportRepo.getAllReports();
+		
+		model.addAttribute("reports", reports);
+		
+		return "RR/Brfreport";
+	}
+	
+	@GetMapping("/fetchDetail")
+	@ResponseBody
+	public ResponseEntity<?> fetchDetail(@RequestParam("rptCode") String rptCode, @RequestParam("endDate") String endDate ) {
+
+	    List<RRReport> rows = rrReportRepo.findOtherDatesByRptCode(rptCode,endDate);
+
+	    Map<String, Object> response = new HashMap<>();
+	    response.put("rows", rows);
+
+	    return ResponseEntity.ok(response);
+	}
+	
+	@GetMapping("/BRF1Archival")
+	public String showBrf1Archival(
+	        @RequestParam("reportCode") String reportCode,
+	        @RequestParam("reportDate") String reportDate,
+	        Model model) {
+
+		List<?> summaryRows;
+	    String templateName;
+
+	    switch (reportCode.toLowerCase()) {
+	        case "brf001":
+	            summaryRows = brf1_Summary_Repo.findByReportCodeAndDate(reportCode, reportDate);
+	            templateName = "BRF1";
+	            break;
+	        case "brf002":
+	            summaryRows = brf2_Summary_Repo.findByReportCodeAndDate(reportCode, reportDate);
+	            templateName = "BRF2";
+	            break;
+	        case "brf003":
+	            summaryRows = br3_Summary_Repo.findByReportCodeAndDate(reportCode, reportDate);
+	            templateName = "BRF3";
+	            break;
+	        case "brf004":
+	            summaryRows = brf4_Summary_Repo.findByReportCodeAndDate(reportCode, reportDate);
+	            templateName = "BRF4";
+	            break;
+	        default:
+	            throw new IllegalArgumentException("Unknown reportCode: " + reportCode);
+	    }
+
+	    model.addAttribute("reportsummary", summaryRows);
+	    model.addAttribute("reportid",    reportCode);
+	    model.addAttribute("todate",      reportDate);
+	    model.addAttribute("fromdate",    reportDate);
+	    model.addAttribute("asondate",    reportDate);
+	    model.addAttribute("currency",    "AED");
+	    model.addAttribute("displaymode", "summary");
+	    model.addAttribute("dtltype",     "archival");
+	    model.addAttribute("type",        "ARCHIVAL");
+
+	    return "RR/" + templateName;
+	}
+	
 
 	@RequestMapping(value = "monthly1", method = { RequestMethod.GET, RequestMethod.POST })
 	public String monthly1(Model md, HttpServletRequest req,

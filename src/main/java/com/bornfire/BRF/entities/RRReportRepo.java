@@ -195,4 +195,37 @@ public interface RRReportRepo extends JpaRepository<RRReport, Integer> {
 	@Query(value = "select * from BRF_RR_RPT_MAST where rpt_code=?1 AND end_date =?2", nativeQuery = true)
 	RRReport getReportbyrptcodeandtodate(String rpt_code, String todate);
 
+	
+//	@Query(value = "SELECT * FROM BRF_RR_RPT_MAST ORDER BY SRL_NO ASC",
+//	           nativeQuery = true)
+//	    List<RRReport> getAllReports();
+	
+	// AFTER — one row per rpt_code (highest END_DATE only)
+	@Query(value =
+	        "SELECT t.* " +
+	        "FROM BRF_RR_RPT_MAST t " +
+	        "JOIN ( " +
+	        "   SELECT RPT_CODE, MAX(END_DATE) AS MAX_END_DATE " +
+	        "   FROM BRF_RR_RPT_MAST " +
+	        "   GROUP BY RPT_CODE " +
+	        ") m " +
+	        "ON t.RPT_CODE = m.RPT_CODE " +
+	        "AND t.END_DATE = m.MAX_END_DATE " +
+	        "ORDER BY t.RPT_CODE ASC",
+	        nativeQuery = true)
+	List<RRReport> getAllReports();
+
+//	    @Query(value = "SELECT * FROM BRF_RR_RPT_MAST WHERE RPT_CODE = :rptCode",
+//	           nativeQuery = true)
+//	    Optional<RRReport> findByRptCode(@Param("rptCode") String rptCode);
+	
+	@Query(value = "SELECT * FROM BRF_RR_RPT_MAST " +
+            "WHERE RPT_CODE = :rptCode " +
+            "AND TRUNC(END_DATE) <> TO_DATE(:endDate, 'DD-MM-YYYY') " +
+            "ORDER BY END_DATE DESC",
+    nativeQuery = true)
+	List<RRReport> findOtherDatesByRptCode(
+     @Param("rptCode") String rptCode,
+     @Param("endDate") String endDate);
+
 }

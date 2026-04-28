@@ -649,6 +649,11 @@ th:if="${session.ROLEID == 'GEN' or session.ROLEID == 'ADM' or
 					</ul>
 				</div>
 			</li>
+			
+			<li class="nav-item">
+    			<a class="nav-link" id="Archival" href="#" onclick="contentLoad(this)">
+        			<i class="fa fa-archive mr-2" aria-hidden="true"></i>Archival</a>
+			</li>
 
 			<!-- th:if="${session.ROLEID == 'ADM'}" -->
 			<!-- <li class="nav-item"  th:if="${session.ROLEID == 'BRF_SYSTEM' or session.ROLEID == 'Superadmin' }"><a

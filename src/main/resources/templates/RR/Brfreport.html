@@ -1,0 +1,595 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>BRF Archival</title>
+
+    <link rel="stylesheet" type="text/css"
+          href="/webjars/bootstrap/4.3.1/css/bootstrap.min.css"
+          th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}"/>
+    <link rel="shortcut icon" th:href="@{/favicon.ico}" type="image/x-icon"/>
+    <link rel="icon"          th:href="@{/favicon.ico}" type="image/x-icon"/>
+
+    <script src="/webjars/jquery/3.4.1/jquery.min.js"
+            th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+    <script src="/webjars/popper.js/1.14.7/umd/popper.min.js"
+            th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+    <script src="/webjars/bootstrap/4.3.1/js/bootstrap.min.js"
+            th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            background-color: #efefef;
+            font-family: verdana, Arial, sans-serif;
+            font-size: 13px;
+            margin: 0; padding: 0; color: #333;
+        }
+
+        .main-wrapper {
+            margin-left: 240px;
+            margin-top: 100px;
+            padding: 20px;
+        }
+
+        /* ═══════════════════════════════════════════
+           MAIN TABLE PAGE STYLES
+        ═══════════════════════════════════════════ */
+
+        /* Teal "BRF ARCHIVAL" header bar – main table only */
+        #mainPageHeader {
+            background-color: #376275;
+            color: #fff;
+            padding: 10px 16px;
+            font-family: verdana, Arial, sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            border-radius: 4px 4px 0 0;
+        }
+
+        /* White card wrapping sub-header + table + pagination */
+        #mainCard {
+            background: #fff;
+            border: 1px solid #d0d0d0;
+            border-top: none;
+            overflow: hidden;
+        }
+
+        /* Sub-header: entry count LEFT | rows-per-page + search RIGHT */
+        .main-subheader {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 14px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        #pageInfo {
+            font-size: 13px; /* ↑ was 12px */
+            color: #555;
+            font-family: verdana, Arial, sans-serif;
+        }
+        .search-area {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .search-label {
+            font-size: 13px; /* ↑ was 12px */
+            color: #555;
+            font-family: verdana, Arial, sans-serif;
+        }
+        #pageSizeSelect {
+            font-size: 13px; /* ↑ was 12px */
+            font-family: verdana, Arial, sans-serif;
+            border-radius: 3px;
+            padding: 3px 6px;
+            border: 1px solid #ced4da;
+            color: #495057;
+        }
+
+        /* Search wrapper: input + clear button side by side */
+        .search-input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        #searchBox {
+            width: 210px;
+            font-size: 13px; /* ↑ was 12px */
+            font-family: verdana, Arial, sans-serif;
+            border-radius: 3px;
+            padding: 4px 30px 4px 10px; /* right padding for clear btn */
+            border: 1px solid #ced4da;
+            outline: none;
+            color: #495057;
+        }
+        #searchBox:focus { border-color: #376275; }
+
+        /* Clear (✕) button inside search box */
+        #clearSearch {
+            position: absolute;
+            right: 6px;
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 1;
+            color: #aaa;
+            display: none; /* hidden until user types */
+        }
+        #clearSearch:hover { color: #E77400; }
+
+        /* Main table – light gray header, NO serial number */
+        #reportTable { margin-bottom: 0; width: 100%; }
+        #reportTable thead th {
+            background-color: #e9ecf0;
+            color: #333;
+            font-family: verdana, Arial, sans-serif;
+            font-size: 14px; /* ↑ was 12px */
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            white-space: nowrap;
+            vertical-align: middle;
+            border-color: #dee2e6;
+            padding: 9px 13px;
+        }
+        #reportTable tbody td {
+            vertical-align: middle;
+            font-family: verdana, Arial, sans-serif;
+            font-size: 14px; /* ↑ was 12px */
+            padding: 8px 13px;
+            border-color: #dee2e6;
+            color: #444;
+        }
+        #reportTable tbody tr:hover { background-color: #eef4fb !important; }
+
+        .rpt-code-link {
+            color: #2b506f;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px; /* ↑ was 12px */
+            text-decoration: underline dotted;
+        }
+        .rpt-code-link:hover { color: #E77400; text-decoration: underline solid; }
+
+        /* Pagination bar – bottom of white card */
+        .pagination-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 14px;
+            background: #f0f0f0;
+            border-top: 1px solid #dee2e6;
+            font-size: 13px; /* ↑ was 12px */
+            font-family: verdana, Arial, sans-serif;
+            color: #555;
+        }
+        .pagination { margin: 0; }
+        .page-link {
+            font-size: 13px; /* ↑ was 12px */
+            font-family: verdana, Arial, sans-serif;
+            padding: 3px 9px;
+            color: #2b506f;
+        }
+        .page-item.active .page-link {
+            background-color: #376275;
+            border-color: #376275;
+            color: #fff;
+        }
+        .page-link:hover { color: #E77400; }
+
+        /* Teal footer bar (main table page) — Back button REMOVED, kept for layout */
+        #mainFooter {
+            background-color: #376275;
+            padding: 9px 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 0 0 4px 4px;
+            min-height: 38px; /* keeps footer visible even with no button */
+        }
+
+        /* ═══════════════════════════════════════════
+           DETAIL PANEL STYLES
+        ═══════════════════════════════════════════ */
+        #detailPanel {
+            display: none;
+            width: 100%;
+            background: #fff;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        }
+
+        .detail-header {
+            background-color: #376275;
+            color: #fff;
+            padding: 10px 16px;
+        }
+        .detail-title {
+            font-family: verdana, Arial, sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .detail-subtitle {
+            font-family: verdana, Arial, sans-serif;
+            font-size: 12px; /* ↑ was 11px */
+            opacity: 0.88;
+            margin-top: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        /* Detail inner table – light gray header, WITH serial # */
+        #detailBody table { width: 100%; margin-bottom: 0; }
+        #detailBody table thead th {
+            background-color: #e9ecf0;
+            color: #333;
+            font-family: verdana, Arial, sans-serif;
+            font-weight: bold;
+            font-size: 14px; /* ↑ was 12px */
+            padding: 9px 13px;
+            border-color: #dee2e6;
+        }
+        #detailBody table tbody td {
+            font-family: verdana, Arial, sans-serif;
+            font-size: 14px; /* ↑ was 12px */
+            padding: 8px 13px;
+            border-color: #dee2e6;
+            color: #444;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+        #detailBody table tbody tr:nth-child(even) { background-color: #f5f5f5; }
+        #detailBody table tbody tr:hover { background-color: #eef4fb !important; }
+
+        .detail-row { cursor: pointer; }
+        .rpt-date-nav {
+            color: #2b506f;
+            font-weight: bold;
+            text-decoration: underline dotted;
+        }
+        .detail-row:hover .rpt-date-nav { color: #E77400; text-decoration: underline solid; }
+
+        /* Detail teal footer – Back button ONLY */
+        .detail-footer {
+            background-color: #376275;
+            padding: 9px 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Shared orange button */
+        .btn-orange {
+            background: #E77400;
+            border: 1px solid #cc6600;
+            color: #fff;
+            border-radius: 4px;
+            padding: 5px 20px;
+            cursor: pointer;
+            font-size: 13px; /* ↑ was 12px */
+            font-weight: bold;
+            font-family: verdana, Arial, sans-serif;
+            transition: background 0.2s;
+        }
+        .btn-orange:hover { background: #cc6600; }
+
+        /* Info banner */
+        .info-banner {
+            padding: 9px 14px;
+            margin: 12px;
+            border-radius: 4px;
+            font-family: verdana, Arial, sans-serif;
+            font-size: 13px; /* ↑ was 12px */
+            border-left: 4px solid #376275;
+            background: #eef4fb;
+        }
+    </style>
+</head>
+<body>
+
+<!-- BRF Header Menu -->
+<div th:insert="BRFHeaderMenu :: header"></div>
+
+<div class="main-wrapper">
+
+    <!-- ════════════════════════════════════════
+         MAIN TABLE PAGE
+         (hidden when detail panel is open)
+    ════════════════════════════════════════ -->
+    <div id="mainSection">
+
+        <!-- Teal "BRF ARCHIVAL" header – ONLY visible here -->
+        <div id="mainPageHeader">BRF Archival</div>
+
+        <!-- White card: sub-header + table + pagination -->
+        <div id="mainCard">
+
+            <!-- Sub-header row -->
+            <div class="main-subheader">
+                <!-- <span id="pageInfo"></span> -->
+                <div class="search-area">
+                    <span class="search-label">Rows:</span>
+                    <select id="pageSizeSelect">
+                        <option value="10">10</option>
+                        <option value="15" selected="selected">15</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                    </select>
+                    <!-- Search with inline clear button -->
+                    <div class="search-input-wrap">
+                        <input type="text" id="searchBox" placeholder="Search..."/>
+                        <button id="clearSearch" title="Clear search">&#10005;</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main table — NO serial number column -->
+            <table class="table table-bordered table-hover" id="reportTable">
+                <thead>
+                    <tr>
+                        <th style="width:150px;">Report Code</th>
+                        <th>Report Description</th>
+                        <th style="width:160px;">Remarks</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr th:if="${#lists.isEmpty(reports)}">
+                        <td colspan="3" class="text-center text-muted py-3">No records found.</td>
+                    </tr>
+                    <tr th:each="rpt : ${reports}" th:id="'row-' + ${rpt.rpt_code}">
+                        <td>
+                            <span class="rpt-code-link"
+                                  th:text="${rpt.rpt_code}"
+                                  th:attr="data-rptcode=${rpt.rpt_code},
+                                           data-desc=${rpt.rpt_description},
+                                           data-enddate=${#dates.format(rpt.end_date,'dd-MM-yyyy')}">
+                            </span>
+                        </td>
+                        <td th:text="${rpt.rpt_description}"></td>
+                        <td th:text="${rpt.remarks_4}"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Pagination bar -->
+            <div class="pagination-bar">
+                <span id="pageInfoBottom">—</span>
+                <nav>
+                    <ul class="pagination pagination-sm" id="paginationCtrl"></ul>
+                </nav>
+            </div>
+
+        </div><!-- /#mainCard -->
+
+        <!-- Teal footer — Back button REMOVED -->
+        <div id="mainFooter"></div>
+
+    </div><!-- /#mainSection -->
+
+
+    <!-- ════════════════════════════════════════
+         DETAIL PANEL
+         (hidden by default, shown on rpt-code click)
+    ════════════════════════════════════════ -->
+    <div id="detailPanel">
+
+        <!-- Teal header -->
+        <div class="detail-header">
+            <div class="detail-title">
+                Archival &mdash; <span id="detailRptCode"></span>
+            </div>
+            <div class="detail-subtitle" id="detailDesc"></div>
+        </div>
+
+        <!-- White body area -->
+        <div style="background:#fff; min-height:40px;">
+            <div id="detailInfo" class="info-banner" style="display:none;"></div>
+            <div id="detailSpinner" class="text-center py-4" style="display:none;">
+                <div class="spinner-border text-secondary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <div style="margin-top:8px; font-size:13px; font-family:verdana; color:#888;">Loading...</div>
+            </div>
+            <div id="detailBody"></div>
+        </div>
+
+        <!-- Teal footer – Back button ONLY (acts as View List: returns to main table) -->
+        <div class="detail-footer">
+            <button class="btn-orange" id="backBtn">Back</button>
+        </div>
+
+    </div><!-- /#detailPanel -->
+
+</div><!-- /.main-wrapper -->
+
+<script th:inline="javascript">
+
+    /* ── Date formatter dd-MM-yyyy ── */
+    function fmtDate(val) {
+        if (!val) return '—';
+        var d  = new Date(val);
+        var dd = String(d.getDate()).padStart(2,'0');
+        var mm = String(d.getMonth()+1).padStart(2,'0');
+        return dd + '-' + mm + '-' + d.getFullYear();
+    }
+
+    /* ════════════════════════════
+       MAIN TABLE PAGINATION
+    ════════════════════════════ */
+    var allRows  = [];
+    var filtered = [];
+    var pageSize = 15;
+    var curPage  = 1;
+
+    function initRows() {
+        allRows  = $('#tableBody tr').toArray();
+        filtered = allRows.slice();
+        renderPage(1);
+    }
+
+    function renderPage(page) {
+        curPage = page;
+        var total = filtered.length;
+        var pages = Math.ceil(total / pageSize) || 1;
+        if (curPage > pages) curPage = pages;
+
+        var start = (curPage - 1) * pageSize;
+        var end   = Math.min(start + pageSize, total);
+
+        $(allRows).hide();
+        filtered.slice(start, end).forEach(function(r){ $(r).show(); });
+		
+        /*$('#pageInfo').text(
+            total === 0 ? 'No records found'
+                        : 'Showing ' + (start+1) + ' to ' + end + ' of ' + total + ' entries'
+        );*/
+        $('#pageInfoBottom').text(
+            'Page ' + curPage + ' of ' + pages + ' (' + total + ' total records)'
+        );
+
+        var ctrl = $('#paginationCtrl').empty();
+
+        var prevLi = $('<li>').addClass('page-item' + (curPage===1 ? ' disabled' : ''));
+        $('<a class="page-link" href="#">&#8249;</a>').on('click', function(e){
+            e.preventDefault(); if (curPage>1) renderPage(curPage-1);
+        }).appendTo(prevLi);
+        ctrl.append(prevLi);
+
+        var sp = Math.max(1, curPage-2);
+        var ep = Math.min(pages, sp+4);
+        if (ep-sp < 4) sp = Math.max(1, ep-4);
+        for (var p = sp; p <= ep; p++) {
+            (function(pg){
+                var li = $('<li>').addClass('page-item' + (pg===curPage ? ' active' : ''));
+                $('<a class="page-link" href="#">' + pg + '</a>').on('click', function(e){
+                    e.preventDefault(); renderPage(pg);
+                }).appendTo(li);
+                ctrl.append(li);
+            })(p);
+        }
+
+        var nextLi = $('<li>').addClass('page-item' + (curPage===pages ? ' disabled' : ''));
+        $('<a class="page-link" href="#">&#8250;</a>').on('click', function(e){
+            e.preventDefault(); if (curPage<pages) renderPage(curPage+1);
+        }).appendTo(nextLi);
+        ctrl.append(nextLi);
+    }
+
+    $('#pageSizeSelect').on('change', function(){
+        pageSize = parseInt($(this).val(),10); renderPage(1);
+    });
+
+    /* ── Search input: filter rows + show/hide clear button ── */
+    $('#searchBox').on('keyup input', function(){
+        var q = $(this).val().toLowerCase().trim();
+        /* Show/hide the ✕ clear button */
+        $('#clearSearch').css('display', q.length > 0 ? 'block' : 'none');
+        filtered = q==='' ? allRows.slice()
+            : allRows.filter(function(r){ return $(r).text().toLowerCase().indexOf(q)>-1; });
+        renderPage(1);
+    });
+
+    /* ── Clear button click: reset search ── */
+    $('#clearSearch').on('click', function(){
+        $('#searchBox').val('').trigger('input').focus();
+    });
+
+    $(function(){ initRows(); });
+
+    /* ════════════════════════════
+       REPORT CODE CLICK → DETAIL
+    ════════════════════════════ */
+    $(document).on('click', '.rpt-code-link', function(){
+        var rptCode = $(this).attr('data-rptcode');
+        var desc    = $(this).attr('data-desc');
+        var endDate = $(this).attr('data-enddate');
+
+        /* Hide entire main section (header + card + footer) */
+        $('#mainSection').hide();
+        $('#detailPanel').show();
+
+        $('#detailRptCode').text(rptCode);
+        $('#detailDesc').text(desc);
+        $('#detailBody').html('');
+        $('#detailInfo').hide();
+        $('#detailSpinner').show();
+
+        $.ajax({
+            url     : '/BRF/fetchDetail',
+            method  : 'GET',
+            data    : { rptCode: rptCode, endDate: endDate },
+            dataType: 'json',
+            success : function(response){
+                $('#detailSpinner').hide();
+                var rows = response.rows || [];
+
+                if (rows.length === 0) {
+                    $('#detailInfo')
+                        .html('<strong>No other dates found</strong> for report <strong>' + rptCode + '</strong>.')
+                        .css({ background:'#f8d7da', 'border-left-color':'#dc3545' })
+                        .show();
+                    return;
+                }
+
+                /* Detail table WITH serial number column */
+                var html = '<table class="table table-bordered table-hover mb-0">'
+                         + '<thead><tr>'
+                         + '<th style="width:50px;text-align:center;">#</th>'
+                         + '<th>Frequency</th>'
+                         + '<th>End Date</th>'
+                         + '</tr></thead><tbody>';
+
+                $.each(rows, function(i, row){
+                    var d = fmtDate(row.end_date);
+                    html += '<tr class="detail-row"'
+                          + ' data-rptcode="'    + rptCode + '"'
+                          + ' data-reportdate="' + d       + '">'
+                          + '<td style="text-align:center;">' + (i+1) + '</td>'
+                          + '<td>' + (row.remarks_4 || '—') + '</td>'
+                          + '<td><span class="rpt-date-nav">' + d + '</span></td>'
+                          + '</tr>';
+                });
+
+                html += '</tbody></table>';
+                $('#detailBody').html(html);
+            },
+            error: function(xhr){
+                $('#detailSpinner').hide();
+                $('#detailBody').html(
+                    '<div class="alert alert-danger m-3">Error: ' + xhr.status + ' ' + xhr.statusText + '</div>'
+                );
+            }
+        });
+    });
+
+    /* ── Detail row → navigate to BRF1 ── */
+    $(document).on('click', '.detail-row', function(){
+        var c = $(this).attr('data-rptcode');
+        var d = $(this).attr('data-reportdate');
+        if (c && d) {
+            window.location.href = '/BRF/BRF1Archival'
+                + '?reportCode=' + encodeURIComponent(c)
+                + '&reportDate=' + encodeURIComponent(d);
+        }
+    });
+
+    /* ── Back button → return to main table (View List behaviour) ── */
+    $('#backBtn').on('click', function(){
+        $('#detailPanel').hide();
+        $('#detailBody').html('');
+        $('#detailInfo').hide();
+        $('#mainSection').show();
+    });
+
+</script>
+</body>
+</html>
