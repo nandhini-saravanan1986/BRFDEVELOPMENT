@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -158,4 +159,10 @@ public interface BrfBaseMappingRepository
         nativeQuery = true
     )
     int softDelete(@Param("accountId") String accountId);
+    
+	@Query(value = "SELECT DISTINCT " + "  DATA_TYPE AS \"source\", " + "  GL_HEAD AS \"glHead\", "
+			+ "  GL_SUBHEAD_CODE AS \"subHeadCode\" " + "FROM BRF_BASE_MAPPING_TABLE "
+			+ "WHERE DATA_TYPE IS NOT NULL", nativeQuery = true)
+	List<Map<String, Object>> findAllDistinctGlMappings();
+    
 }

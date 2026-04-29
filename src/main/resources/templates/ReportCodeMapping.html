@@ -475,18 +475,25 @@ table.dataTable tbody td, .table tbody td {
 	background-color: #28a745 !important;
 	color: white !important;
 }
+
 .card-header .form-control-sm {
-    border-radius: 4px;
-    border: 1px solid #ced4da;
-}
-#reportNameWrapper {
-    animation: fadeIn 0.3s ease-in-out;
-}
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateX(-5px); }
-    to { opacity: 1; transform: translateX(0); }
+	border-radius: 4px;
+	border: 1px solid #ced4da;
 }
 
+#reportNameWrapper {
+	animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {from { opacity:0;
+	transform: translateX(-5px);
+}
+
+to {
+	opacity: 1;
+	transform: translateX(0);
+}
+}
 </style>
 </head>
 
@@ -787,15 +794,15 @@ table.dataTable tbody td, .table tbody td {
 								role="tabpanel">
 								<div id="manualPlaceholder" class="p-4 text-center text-muted"
 									style="font-family: verdana;">
-									<i class="fas fa-exclamation-triangle fa-2x mb-2"></i><br> Please
-									select a Report Code above to perform manual mapping.
+									<i class="fas fa-exclamation-triangle fa-2x mb-2"></i><br>
+									Please select a Report Code above to perform manual mapping.
 								</div>
 
 								<div id="manualContent" style="display: none;" class="p-3">
 									<div class="p-3">
-										<!-- Row Label + Column Label -->
 										<div class="form-row align-items-end mb-3"
 											style="gap: 10px; flex-wrap: wrap;">
+
 											<div class="col-auto">
 												<label
 													style="font-family: verdana; font-size: 13px; font-weight: bold;">Row
@@ -805,6 +812,7 @@ table.dataTable tbody td, .table tbody td {
 													<option value="">-- Select Row --</option>
 												</select>
 											</div>
+
 											<div class="col-auto">
 												<label
 													style="font-family: verdana; font-size: 13px; font-weight: bold;">Column
@@ -814,10 +822,7 @@ table.dataTable tbody td, .table tbody td {
 													<option value="">-- Select Column --</option>
 												</select>
 											</div>
-										</div>
-										<!-- Source + GL Code + GL Sub Code + SOL ID -->
-										<div class="form-row align-items-end"
-											style="gap: 10px; flex-wrap: wrap;">
+
 											<div class="col-auto">
 												<label
 													style="font-family: verdana; font-size: 13px; font-weight: bold;">Source</label>
@@ -829,30 +834,45 @@ table.dataTable tbody td, .table tbody td {
 													<option value="TREASURY">Treasury</option>
 												</select>
 											</div>
+
 											<div class="col-auto">
 												<label
 													style="font-family: verdana; font-size: 13px; font-weight: bold;">GL
 													Code</label> <select id="glCodeSelect"
 													class="form-control form-control-sm"
-													style="min-width: 200px;" onchange="onGLCodeChange()"
-													disabled>
+													style="min-width: 200px;" onchange="onGLCodeChange()">
 													<option value="">-- Select GL Code --</option>
 												</select>
 											</div>
+
 											<div class="col-auto" style="position: relative;">
 												<label
 													style="font-family: verdana; font-size: 13px; font-weight: bold;">GL
 													Sub Code</label><br>
 												<button type="button" id="glSubCodeBtn"
 													class="form-control form-control-sm"
-													onclick="toggleSubCodeMenu(event)" disabled
+													onclick="toggleSubCodeMenu(event)"
 													style="min-width: 280px; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
 													-- Select GL Sub Code --</button>
 												<div id="glSubCodeMenu" class="multi-select-menu"
 													style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 260px; overflow-y: auto; min-width: 380px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);">
 												</div>
 											</div>
-											<!-- SOL ID -->
+
+											<div class="col-auto">
+												<label
+													style="font-family: verdana; font-size: 13px; font-weight: bold;">Account
+													Number</label> <input type="text" id="accountNumberInput"
+													class="form-control form-control-sm"
+													style="min-width: 160px;" placeholder="Enter Account No" oninput="applyLocalAccountFilters()" >
+											</div>
+
+										</div>
+
+
+										<div class="form-row align-items-end mb-3"
+											style="gap: 10px; flex-wrap: wrap; margin-top: 10px;">
+
 											<div class="col-auto" style="position: relative;">
 												<label
 													style="font-family: verdana; font-size: 13px; font-weight: bold;">SOL
@@ -864,14 +884,9 @@ table.dataTable tbody td, .table tbody td {
 													-- Select SOL ID --</button>
 												<div id="solIdMenu" class="multi-select-menu"
 													style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);">
-													<!-- populated by JS -->
 												</div>
 											</div>
-										</div>
 
-										<!-- Constitution Code + Legal Entity + HNI + Turnover -->
-										<div class="form-row align-items-end mb-3"
-											style="gap: 10px; flex-wrap: wrap; margin-top: 10px;">
 											<div class="col-auto" style="position: relative;">
 												<label
 													style="font-family: verdana; font-size: 13px; font-weight: bold;">Constitution
@@ -879,13 +894,13 @@ table.dataTable tbody td, .table tbody td {
 												<button type="button" id="constCodeBtn"
 													class="form-control form-control-sm"
 													onclick="toggleMenuById(event,'constCodeMenu')"
-													style="min-width: 160px; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+													style="min-width: 200px; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
 													-- Select --</button>
 												<div id="constCodeMenu" class="multi-select-menu"
 													style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);">
-													<!-- populated by JS -->
 												</div>
 											</div>
+
 											<div class="col-auto" style="position: relative;">
 												<label
 													style="font-family: verdana; font-size: 13px; font-weight: bold;">Legal
@@ -893,27 +908,29 @@ table.dataTable tbody td, .table tbody td {
 												<button type="button" id="legalEntityBtn"
 													class="form-control form-control-sm"
 													onclick="toggleMenuById(event,'legalEntityMenu')"
-													style="min-width: 160px; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+													style="min-width: 200px; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
 													-- Select --</button>
 												<div id="legalEntityMenu" class="multi-select-menu"
 													style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);">
-													<!-- populated by JS -->
 												</div>
 											</div>
+
 											<div class="col-auto">
 												<label
 													style="font-family: verdana; font-size: 13px; font-weight: bold;">HNI
 													Networth</label> <input type="text" id="hniNetworth"
 													class="form-control form-control-sm"
-													style="min-width: 160px;" placeholder="Enter Amount">
+													style="min-width: 200px;" placeholder="Enter Amount">
 											</div>
+
 											<div class="col-auto">
 												<label
 													style="font-family: verdana; font-size: 13px; font-weight: bold;">Turnover</label>
 												<input type="text" id="turnover"
 													class="form-control form-control-sm"
-													style="min-width: 160px;" placeholder="Enter Amount">
+													style="min-width: 200px;" placeholder="Enter Amount">
 											</div>
+
 											<div class="col-auto" style="position: relative;">
 												<label
 													style="font-family: verdana; font-size: 13px; font-weight: bold;">Scheme
@@ -921,7 +938,7 @@ table.dataTable tbody td, .table tbody td {
 												<button type="button" id="schemeTypeBtn"
 													class="form-control form-control-sm"
 													onclick="toggleMenuById(event,'schemeTypeMenu')"
-													style="min-width: 160px; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+													style="min-width: 200px; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
 													-- Select --</button>
 												<div id="schemeTypeMenu" class="multi-select-menu"
 													style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);">
@@ -930,7 +947,7 @@ table.dataTable tbody td, .table tbody td {
 										</div>
 
 										<!-- Show Accounts -->
-										<div style="margin-top: 14px;">
+										<div style="margin-top: 14px; display: none;">
 											<button type="button" class="btn-show-accounts"
 												id="btnShowAccounts" onclick="showAccounts()">
 												<i class="fas fa-search"></i>&nbsp; Show Accounts
@@ -1039,9 +1056,10 @@ table.dataTable tbody td, .table tbody td {
 								<i class="fas fa-spinner fa-spin"></i>&nbsp; Loading mapped
 								accounts…
 							</div>
-							<div id="mappedPlaceholder" class="p-4 text-center text-muted" style="font-family:verdana;">
-								<i class="fas fa-exclamation-triangle fa-2x mb-2"></i><br> Please
-								select a Report Code above to view Mapped Accounts.
+							<div id="mappedPlaceholder" class="p-4 text-center text-muted"
+								style="font-family: verdana;">
+								<i class="fas fa-exclamation-triangle fa-2x mb-2"></i><br>
+								Please select a Report Code above to view Mapped Accounts.
 							</div>
 							<div id="mappedTableWrap" style="display: none;">
 								<div class="mapped-toolbar">
@@ -1087,9 +1105,10 @@ table.dataTable tbody td, .table tbody td {
 								<i class="fas fa-spinner fa-spin"></i>&nbsp; Loading unmapped
 								accounts…
 							</div>
-							<div id="unmappedPlaceholder" class="p-4 text-center text-muted" style="font-family:verdana;">
-								<i class="fas fa-exclamation-triangle fa-2x mb-2"></i><br> Please
-								select a Report Code above to view Unmapped Accounts.
+							<div id="unmappedPlaceholder" class="p-4 text-center text-muted"
+								style="font-family: verdana;">
+								<i class="fas fa-exclamation-triangle fa-2x mb-2"></i><br>
+								Please select a Report Code above to view Unmapped Accounts.
 							</div>
 							<div id="unmappedTableWrap" style="display: none;">
 								<div class="mapped-toolbar">
@@ -1767,6 +1786,7 @@ function toggleMenuById(e, menuId) {
    INITIALISE ALL SHARED MENUS ON PAGE LOAD
 ───────────────────────────────────────────────────────────────────────── */
 $(function() {
+	fetchAllGLData();
     /* Manual tab */
     buildMultiMenu('solIdMenu',       'solIdBtn',       SOL_ID_OPTIONS,       'sol');
     buildMultiMenu('constCodeMenu',   'constCodeBtn',   CONST_CODE_OPTIONS,   'cc');
@@ -1823,12 +1843,25 @@ $(function() {
 var currentRows    = [];
 var currentColumns = [];
 var currentData    = [];
+var allAccountsData = [];
 var _excelLoadedFor    = null;
 var _rawExcelLoadedFor = null;
 var _mappedLoadedFor   = null;
 var _unmappedLoadedFor = null;
 var _rawExcelZoom      = 1.0;
 var currentZoom        = 1.0;
+
+var masterGLData = []; 
+
+function fetchAllGLData() {
+ $.get('/BRF/Reports/allGlMapping', function(data) {
+     window.masterGLData = data || [];     
+     refreshGLCodeList();
+     refreshGLSubCodeList();
+ }).fail(function() {
+     console.error("Failed to load master GL data");
+ });
+}
 
 /* ─────────────────────────────────────────────────────────────────────────
    REPORT CODE CHANGE
@@ -1897,6 +1930,7 @@ function onReportCodeChange() {
 
     // Trigger Data Loads
     loadListViewData(code); 
+    fetchAllAccounts(code);
     loadMappedAccounts(code);
     loadUnmappedAccounts(code);
     loadExcelView(code); 
@@ -2123,6 +2157,80 @@ function onRowLabelChange() {
    SOURCE / GL CODE / GL SUB CODE  (Manual tab)
 ───────────────────────────────────────────────────────────────────────── */
 function onSourceChange() {
+ refreshGLCodeList();
+ refreshGLSubCodeList();
+ applyLocalAccountFilters();
+}
+
+function onGLCodeChange() {
+ refreshGLSubCodeList();
+ applyLocalAccountFilters();
+}
+
+function refreshGLCodeList() {
+ var source = $('#sourceSelect').val();
+ var currentSelection = $('#glCodeSelect').val();
+ var sel = $('#glCodeSelect').html('<option value="">-- Select GL Code --</option>');
+ 
+//1. Filter Data by Source 
+ var filteredData = window.masterGLData;
+ if (source) {
+     filteredData = filteredData.filter(function(item) { 
+         return item.source && item.source.toUpperCase() === source.toUpperCase(); 
+     });
+ }
+ 
+ // 2. Extract Unique GL Heads
+ var uniqueHeads = [];
+ filteredData.forEach(function(item) {
+     if (item.glHead && uniqueHeads.indexOf(item.glHead) === -1) {
+         uniqueHeads.push(item.glHead);
+     }
+ });
+ 
+ // 3. Build Options
+ uniqueHeads.forEach(function(h) { 
+     sel.append('<option value="' + h + '">' + h + '</option>'); 
+ });
+ 
+ // 4. Retain selection if it's still in the filtered list
+ if (uniqueHeads.indexOf(currentSelection) !== -1) {
+     sel.val(currentSelection);
+ }
+ 
+ makeSearchableSelect('#glCodeSelect');
+}
+
+function refreshGLSubCodeList() {
+ var source = $('#sourceSelect').val();
+ var glHead = $('#glCodeSelect').val();
+ 
+//1. Filter Master Data by Source and GL Head (Ignore Case)
+ var filteredData = window.masterGLData;
+ if (source) {
+     filteredData = filteredData.filter(function(item) { 
+         return item.source && item.source.toUpperCase() === source.toUpperCase(); 
+     });
+ }
+ if (glHead) {
+     filteredData = filteredData.filter(function(item) { return item.glHead === glHead; });
+ }
+ 
+ // 2. Extract Unique Sub Codes
+ var uniqueSubCodes = [];
+ filteredData.forEach(function(item) {
+     if (item.subHeadCode && uniqueSubCodes.indexOf(item.subHeadCode) === -1) {
+         uniqueSubCodes.push(item.subHeadCode);
+     }
+ });
+ 
+ // 3. Format array for your existing checkbox builder
+ var formattedRows = uniqueSubCodes.map(function(code) { return { subHeadCode: code }; });
+ 
+ buildSubCodeCheckboxes(formattedRows);
+}
+/*
+function onSourceChange() {
     var source = $('#sourceSelect').val();
     $('#glCodeSelect').html('<option value="">-- Select GL Code --</option>').prop('disabled', true);
     resetGLSubCode();
@@ -2142,6 +2250,7 @@ function onGLCodeChange() {
     if (!glHead) return;
     $.get('/BRF/Reports/glSubHeads', { dataType: source, glHead: glHead }, function(rows) { buildSubCodeCheckboxes(rows); });
 }
+*/
 function buildSubCodeCheckboxes(rows) {
     var menu = $('#glSubCodeMenu').html('');
     var btn  = $('#glSubCodeBtn');
@@ -2168,12 +2277,13 @@ function toggleSubCodeMenu(e) {
     $('.searchable-select-menu').hide();
     $('#glSubCodeMenu').toggle();
 }
-function toggleAllSubCodes(masterChk) { $('#glSubCodeMenu input[type=checkbox]:not(#chk_subAll)').prop('checked', masterChk.checked); refreshSubCodeBtnLabel(); }
+function toggleAllSubCodes(masterChk) { $('#glSubCodeMenu input[type=checkbox]:not(#chk_subAll)').prop('checked', masterChk.checked); refreshSubCodeBtnLabel(); applyLocalAccountFilters(); }
 function onSubCodeCheck() {
     var all = $('#glSubCodeMenu input[type=checkbox]:not(#chk_subAll)').length;
     var chk = $('#glSubCodeMenu input[type=checkbox]:not(#chk_subAll):checked').length;
     $('#chk_subAll').prop('checked', all === chk);
     refreshSubCodeBtnLabel();
+    applyLocalAccountFilters();
 }
 function refreshSubCodeBtnLabel() {
     var checked = $('#glSubCodeMenu input[type=checkbox]:not(#chk_subAll):checked');
@@ -2255,6 +2365,132 @@ function showAccounts() {
         $('#btnSubmitAccounts').hide();
         alert('Error fetching accounts: ' + (xhr.responseText || error));
     });
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+INSTANT ACCOUNT FILTERING ENGINE
+───────────────────────────────────────────────────────────────────────── */
+
+//1. Fetches ALL accounts for the report code upfront
+function fetchAllAccounts(reportCode) {
+ $('#loadingSpinner').show();
+ $('#accountsTable').hide();
+ 
+ // Pass empty filters so the backend returns EVERYTHING for this report code
+ $.ajax({ 
+     url: '/BRF/BRFBaseTable/showAccounts', 
+     type: 'GET', 
+     data: { reportCode: reportCode, source: '', glHead: '', glSubHead: '' },
+     success: function(data) {
+         $('#loadingSpinner').hide();
+         
+         // Filter out duplicates just in case
+         var seen = {};
+         var uniqueData = (data || []).filter(function(row) {
+             var id = row['ACCOUNT_ID_BACID'] || row['account_id_bacid'] || '';
+             if (seen[id]) return false; 
+             seen[id] = true; 
+             return true;
+         });
+         
+         window.allAccountsData = uniqueData;
+         
+         // Render the table immediately with everything
+         applyLocalAccountFilters(); 
+         $('#accountsTable').show();
+     },
+     error: function(xhr, status, error) {
+         $('#loadingSpinner').hide();
+         alert('Error fetching accounts: ' + (xhr.responseText || error));
+     }
+ });
+}
+
+//2. Filters the pre-loaded data based on the dropdowns and inputs
+function applyLocalAccountFilters() {
+    var source = $('#sourceSelect').val(); 
+    var glHead = $('#glCodeSelect').val();
+    var subCodes = getSelectedSubCodes(); // Gets array of checked sub-codes
+    var accNum = $('#accountNumberInput').val().toLowerCase().trim();
+
+    var filteredData = window.allAccountsData || [];
+
+ // Filter 1: By Source 
+    if (source) {
+        var validHeadsForSource = window.masterGLData
+            .filter(function(m) { 
+                return m.source && m.source.toUpperCase() === source.toUpperCase(); 
+            })
+            .map(function(m) { return m.glHead; });
+
+        filteredData = filteredData.filter(function(row) {
+            var rowHead = nvl(row.GL_HEAD || row.gl_head);
+            return validHeadsForSource.includes(rowHead);
+        });
+    }
+
+    // Filter 2: By GL Head (if selected)
+    if (glHead) {
+        filteredData = filteredData.filter(function(row) {
+            return nvl(row.GL_HEAD || row.gl_head) === glHead;
+        });
+    }
+
+    // Filter 3: By GL Sub Code (if any are checked)
+    if (subCodes.length > 0) {
+        filteredData = filteredData.filter(function(row) {
+            var rowSub = nvl(row.GL_SUBHEAD_CODE || row.gl_subhead_code);
+            return subCodes.includes(rowSub);
+        });
+    }
+
+    // Filter 4: By Account Number (as user types)
+    if (accNum) {
+        filteredData = filteredData.filter(function(row) {
+            var rowAcc = nvl(row.ACCOUNT_ID_BACID || row.account_id_bacid).toLowerCase();
+            return rowAcc.includes(accNum);
+        });
+    }
+
+    // Render the filtered subset
+    renderAccountsTable(filteredData);
+}
+//3. Draws the HTML table (extracted from your old showAccounts function)
+function renderAccountsTable(data) {
+ var tbody = $('#accountsBody').empty();
+ 
+ if (!data || data.length === 0) {
+     $('#accountsHead').html('<tr><td class="text-center text-muted">No records found for the current filters.</td></tr>');
+     $('#resultInfo').text('');
+     $('#btnSubmitAccounts').hide();
+     window.currentData = []; 
+     return;
+ }
+
+ window.currentData = data; // Keep currentData updated for the Submit function
+ $('#resultInfo').text('Showing ' + data.length + ' record(s).');
+ 
+ var keys = Object.keys(data[0]).filter(function(k) { return k.toUpperCase() !== 'ACCOUNT_BALANCE_LC'; });
+ var hdr  = '<tr><th><input type="checkbox" id="selectAll" title="Select All"></th><th>#</th>';
+ $.each(keys, function(i, key) {
+     hdr += '<th>' + (key.toUpperCase() === 'ACCOUNT_ID_BACID' ? 'ACCOUNT ID/BACID' : key.replace(/_/g, ' ')) + '</th>';
+ });
+ hdr += '<th>Account Balance (LC)</th><th>Filter</th></tr>';
+ $('#accountsHead').html(hdr);
+ $('#selectAll').off('change').on('change', function() { $('.row-select').prop('checked', this.checked); });
+ 
+ var balOpts = '<option value="">-- Select --</option><option value="<0">&lt; 0</option><option value=">0">&gt; 0</option><option value="<>0">&lt;&gt; 0</option>';
+ 
+ $.each(data, function(i, row) {
+     var tr = '<tr><td><input type="checkbox" class="row-select" data-idx="' + i + '"></td><td>' + (i + 1) + '</td>';
+     $.each(keys, function(j, key) { tr += '<td>' + nvl(row[key]) + '</td>'; });
+     tr += '<td><select class="balance-select form-control form-control-sm" data-idx="' + i + '" style="min-width:200px;">' + balOpts + '</select></td>';
+     tr += getFilterCellHtml(i, false);
+     tr += '</tr>';
+     tbody.append(tr);
+ });
+ 
+ $('#btnSubmitAccounts').show();
 }
 
 /* ─────────────────────────────────────────────────────────────────────────

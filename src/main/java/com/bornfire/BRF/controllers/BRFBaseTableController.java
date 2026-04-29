@@ -63,98 +63,25 @@ public class BRFBaseTableController {
     @ResponseBody
     public List<Map<String, Object>> showAccounts(
             @RequestParam(required = false, defaultValue = "") String reportCode,
-            @RequestParam(required = false, defaultValue = "BANKING") String source,
+            @RequestParam(required = false, defaultValue = "") String source,
             @RequestParam(required = false, defaultValue = "") String glHead,
             @RequestParam(required = false, defaultValue = "") String glSubHead) {
 
         List<Map<String, Object>> result = new ArrayList<>();
 
-        boolean isTreasury   = "TREASURY".equalsIgnoreCase(source.trim());
-        boolean hasGlHead    = !glHead.trim().isEmpty();
-        boolean hasGlSubHead = !glSubHead.trim().isEmpty();
+        String trimmedSource = source.trim();
+        String trimmedGlHead = glHead.trim();
+        String trimmedGlSubHead = glSubHead.trim();
 
-        // ── ❌ COMMENTED OUT: Dynamic SQL build ───────────────────────────────
-        // List<String> conditions = new ArrayList<>();
-        // if (isTreasury)   conditions.add("UPPER(DATA_TYPE) = 'TREASURY'");
-        // if (hasGlHead)    conditions.add("UPPER(GL_HEAD) LIKE UPPER(?)");
-        // if (hasGlSubHead) conditions.add("UPPER(GL_SUBHEAD_CODE) LIKE UPPER(?)");
-        //
-        // StringBuilder sql = new StringBuilder(
-        //     "SELECT GL_HEAD, GL_SUBHEAD_CODE, ACCOUNT_ID_BACID, ACCOUNT_DESCRIPTION, CURRENCY, ACCOUNT_BALANCE_LC " +
-        //     "FROM BRF_BASE_MAPPING_TABLE");
-        // if (!conditions.isEmpty()) {
-        //     sql.append(" WHERE ").append(String.join(" AND ", conditions));
-        // }
-        // System.out.println("BRFBaseTable SQL: " + sql);
-        // ─────────────────────────────────────────────────────────────────────
+        String dataTypeParam = null;
+        if ("TREASURY".equalsIgnoreCase(trimmedSource)) {
+            dataTypeParam = "TREASURY";
+        } else if ("GL".equalsIgnoreCase(trimmedSource)) {           
+            dataTypeParam = "GL"; 
+        }
 
-        // ── ❌ COMMENTED OUT: JDBC connection + ResultSet loop ─────────────────
-        // try (Connection conn = DriverManager.getConnection(brfUrl, brfUsername, brfPassword);
-        //      PreparedStatement ps = conn.prepareStatement(sql.toString())) {
-        //
-        //     System.out.println("DB USER = " + conn.getMetaData().getUserName());
-        //
-        //     int idx = 1;
-        //     if (hasGlHead)    ps.setString(idx++, "%" + glHead.trim() + "%");
-        //     if (hasGlSubHead) ps.setString(idx++, "%" + glSubHead.trim() + "%");
-        //
-        //     try (ResultSet rs = ps.executeQuery()) {
-        //         ResultSetMetaData meta = rs.getMetaData();
-        //         int cols = meta.getColumnCount();
-        //         while (rs.next()) {
-        //             Map<String, Object> row = new LinkedHashMap<>();
-        //             for (int i = 1; i <= cols; i++) {
-        //                 row.put(meta.getColumnName(i), rs.getObject(i));
-        //             }
-        //             result.add(row);
-        //         }
-        //     }
-        // } catch (Exception e) {
-        //     System.err.println("BRFBaseTable ERROR: " + e.getMessage());
-        //     e.printStackTrace();
-        // }
-        // ─────────────────────────────────────────────────────────────────────
-
-        // ── ❌ COMMENTED OUT: findAll() + in-memory Java stream filter ─────────
-        // (Removed because dataset is large — DB-level filtering used instead)
-        //
-        // try {
-        //     List<BrfBaseMapping> allRows = baseMappingRepo.findAll();
-        //
-        //     List<BrfBaseMapping> filtered = allRows.stream()
-        //         .filter(r -> !isTreasury ||
-        //                      "TREASURY".equalsIgnoreCase(r.getDataType()))
-        //         .filter(r -> !hasGlHead ||
-        //                      (r.getGlHead() != null &&
-        //                       r.getGlHead().toUpperCase().contains(glHead.trim().toUpperCase())))
-        //         .filter(r -> !hasGlSubHead ||
-        //                      (r.getGlSubheadCode() != null &&
-        //                       r.getGlSubheadCode().toUpperCase().contains(glSubHead.trim().toUpperCase())))
-        //         .collect(Collectors.toList());
-        //
-        //     for (BrfBaseMapping r : filtered) {
-        //         Map<String, Object> row = new LinkedHashMap<>();
-        //         row.put("GL_HEAD",             r.getGlHead());
-        //         row.put("GL_SUBHEAD_CODE",     r.getGlSubheadCode());
-        //         row.put("ACCOUNT_ID_BACID",    r.getAccountIdBacid());
-        //         row.put("ACCOUNT_DESCRIPTION", r.getAccountDescription());
-        //         row.put("CURRENCY",            r.getCurrency());
-        //         row.put("ACCOUNT_BALANCE_LC",  r.getAccountBalanceLc());
-        //         result.add(row);
-        //     }
-        // } catch (Exception e) {
-        //     System.err.println("BRFBaseTable ERROR: " + e.getMessage());
-        //     e.printStackTrace();
-        // }
-        // ─────────────────────────────────────────────────────────────────────
-
-        // ── REPLACED WITH: DB-level @Query filter via repository ───────────
-        // NULL param = skip that filter in DB (Oracle: :param IS NULL OR col LIKE :param)
-        // isTreasury=true  → pass "TREASURY" so DB filters DATA_TYPE = 'TREASURY'
-        // isTreasury=false → pass null        so DB skips that condition entirely
-        String dataTypeParam  = isTreasury   ? "TREASURY"                   : null;
-        String glHeadParam    = hasGlHead    ? "%" + glHead.trim()    + "%" : null;
-        String glSubHeadParam = hasGlSubHead ? "%" + glSubHead.trim() + "%" : null;
+        String glHeadParam    = trimmedGlHead.isEmpty()    ? null : "%" + trimmedGlHead + "%";
+        String glSubHeadParam = trimmedGlSubHead.isEmpty() ? null : "%" + trimmedGlSubHead + "%";
 
         try {
             List<BrfBaseMapping> filtered =
@@ -176,7 +103,7 @@ public class BRFBaseTableController {
         }
         // ─────────────────────────────────────────────────────────────────────
 
-        System.out.println("BRFBaseTable rows returned: " + result.size());
+        System.out.println("BRFBaseTable rows returned for Report " + reportCode + ": " + result.size());
         return result;
     }
 

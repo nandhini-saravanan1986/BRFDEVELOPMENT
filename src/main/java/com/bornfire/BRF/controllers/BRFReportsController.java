@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.http.HttpStatus;
 
 import com.bornfire.BRF.services.ReportServices;
 
@@ -62,6 +63,7 @@ import com.bornfire.xbrl.entities.BRBS.BRF62_DETAIL_ENTITY;*/
 
 import com.bornfire.BRF.entities.BRF1_DETAIL_ENTITY;
 import com.bornfire.BRF.entities.UserProfileRep;
+import com.bornfire.BRF.entities.BrfBaseMappingRepository;
 //import com.bornfire.xbrl.services.BRF94ReportService;
 import com.bornfire.BRF.services.BRF001ReportService;
 import com.bornfire.BRF.services.LoginServices;
@@ -95,6 +97,19 @@ public class BRFReportsController {
 
 	}
 	
+	@Autowired
+	BrfBaseMappingRepository BrfBaseMappingRepository;
+	
+	@GetMapping("/allGlMapping")
+    @ResponseBody
+    public ResponseEntity<List<Map<String, Object>>> getAllGlMappings() {
+        try {
+            List<Map<String, Object>> mappings = BrfBaseMappingRepository.findAllDistinctGlMappings();
+            return ResponseEntity.ok(mappings);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 	@GetMapping("/glHeads")
 	@ResponseBody
 	public List<String> getGLHeads(@RequestParam String dataType) {

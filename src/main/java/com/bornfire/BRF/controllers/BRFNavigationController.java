@@ -1438,6 +1438,15 @@ html.append("</tbody></table></div>");
 				@RequestParam(value = "srl_no", required = false) Integer srl_no, HttpServletRequest req) {
 			try {
 				System.out.println("Report_Date : " + reportDate);
+				if (reportDate == null || reportDate.trim().isEmpty() || reportDate.equals("null")) {
+				    if (srl_no != null && !srl_no.toString().equals("null")) {
+				        Optional<RRReport> existingData = rrReportlist.findById(srl_no);
+				        if (existingData.isPresent() && existingData.get().getEnd_date() != null) {
+				            reportDate = new java.text.SimpleDateFormat("yyyy-MM-dd").format(existingData.get().getEnd_date());
+				            System.out.println("Report_Date is null. Using DB Date : " + reportDate);
+				        }
+				    }
+				}
 				System.out.println("srl_no : " + srl_no);
 				DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 				DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -1458,7 +1467,7 @@ html.append("</tbody></table></div>");
 					utildate = data.get().getEnd_date();
 					LocalDate localDate = utildate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 					formattedDate = inputFormatter.format(localDate);					
-					parsedDate = LocalDate.parse(formattedDate, inputFormatter);
+					parsedDate = LocalDate.parse(reportDate, inputFormatter);
 					formattedDate = parsedDate.format(dateFormatter);
 				}
 				else {
@@ -1474,7 +1483,7 @@ html.append("</tbody></table></div>");
 				int nextSerialno = rrReportlist.findMaxSerialNo() + 1;
 				//Date utildate = java.sql.Date.valueOf(parsedDate);
 				Calendar cal = Calendar.getInstance();
-				cal.setTime(utildate);
+				cal.setTime(java.sql.Date.valueOf(parsedDate));
 				cal.set(Calendar.DAY_OF_MONTH, 1);
 				Date firstDayOfMonth = cal.getTime();
 				if (srl_no != null && !srl_no.equals(null) && srl_no.toString() != "null" && !srl_no.toString().equals("null")) {		
@@ -1487,16 +1496,20 @@ html.append("</tbody></table></div>");
 							+ " - Rport code : " + newentity.getRpt_code());
 					newentity.setSrl_no(nextSerialno);
 					newentity.setStart_date(firstDayOfMonth);
-					newentity.setEnd_date(utildate);
+					LocalDate passLocal = LocalDate.parse(reportDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+					Date passedDateObj = java.sql.Date.valueOf(passLocal);
+					newentity.setEnd_date(passedDateObj);
 					newentity.setEntry_date(new Date());
 					newentity.setModify_user(null);
 					newentity.setVerify_suer(null);
 					newentity.setEntry_user((String) req.getSession().getAttribute("USERID"));
 					newentity.setModify_date(null);
-					newentity.setVerify_date(null);
-					if(newentity.getEnd_date()!=entity.getEnd_date() && !newentity.getEnd_date().equals(entity.getEnd_date())) {
-						rrReportlist.save(newentity);	
-					}									
+					newentity.setVerify_date(null);					
+					if (passedDateObj != null && entity.getEnd_date() != null && passedDateObj.compareTo(entity.getEnd_date()) != 0) {
+					    System.out.println("Saved into RRPT");
+					    rrReportlist.save(newentity);    
+					}
+
 				} else {
 					//System.out.println("Entered Multiple Procedure");
 					List<RRReport> list = rrReportlist.findDataMissing(utildate, "M1");
@@ -1527,5 +1540,27 @@ html.append("</tbody></table></div>");
 			}
 		}
 		
+
+		@PostMapping("/executeSummaryProcedure")
+		public ResponseEntity<String> executeSummaryProcedure(@RequestParam String reportDate,
+				@RequestParam String rpt_code, HttpServletRequest req) {
+			try {
+				//System.out.println("Report_Date : " + reportDate);
+				DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+				DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+				LocalDate parsedDate = LocalDate.parse(reportDate, inputFormatter);
+				String formattedDate = parsedDate.format(dateFormatter);
+				//System.out.println("Report_Date Formatted Date : " + formattedDate);
+				
+				String sql = "CALL COMMON_SUMMARY_TRIGGERING_PROCEDURE(?, ?)";
+				jdbcTemplate.update(sql, formattedDate, rpt_code);
+				
+				return ResponseEntity.ok("{\"message\": \"Procedure executed successfully!\"}");
+			} catch (Exception e) {
+				e.printStackTrace();
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+						.body("{\"error\": \"Failed to execute procedure: " + e.getMessage() + "\"}");
+			}
+		}
 		
 }
