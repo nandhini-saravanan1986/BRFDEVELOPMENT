@@ -2415,17 +2415,13 @@ function applyLocalAccountFilters() {
 
     var filteredData = window.allAccountsData || [];
 
- // Filter 1: By Source 
+ // Filter 1: By Source
     if (source) {
-        var validHeadsForSource = window.masterGLData
-            .filter(function(m) { 
-                return m.source && m.source.toUpperCase() === source.toUpperCase(); 
-            })
-            .map(function(m) { return m.glHead; });
+        var expectedSource = source.toUpperCase();
 
         filteredData = filteredData.filter(function(row) {
-            var rowHead = nvl(row.GL_HEAD || row.gl_head);
-            return validHeadsForSource.includes(rowHead);
+            var rowSource = nvl(row.DATA_TYPE || row.data_type).toUpperCase();
+            return rowSource === expectedSource;
         });
     }
 

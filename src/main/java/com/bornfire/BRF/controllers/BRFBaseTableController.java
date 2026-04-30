@@ -95,6 +95,7 @@ public class BRFBaseTableController {
                 row.put("ACCOUNT_DESCRIPTION", r.getAccountDescription());
                 row.put("CURRENCY",            r.getCurrency());
                 row.put("ACCOUNT_BALANCE_LC",  r.getAccountBalanceLc());
+                row.put("DATA_TYPE",           r.getDataType());
                 result.add(row);
             }
         } catch (Exception e) {
