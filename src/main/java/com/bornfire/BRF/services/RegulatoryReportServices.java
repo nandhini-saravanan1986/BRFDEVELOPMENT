@@ -167,11 +167,11 @@ public class RegulatoryReportServices {
 		case "BRF003":
 			repfile = brf003ReportService.getFile(reportId, fromdate, todate, currency, dtltype, filetype, filter);
 			break;
-
+*/
 		case "BRF004":
-			repfile = brf004ReportService.getFile(reportId, fromdate, todate, currency, dtltype, filetype, filter);
+			repfile = brf004ReportService.getFile(reportId, fromdate, todate, currency, dtltype, filetype);
 			break;
-			*/
+			
 		}
 
 		return repfile;

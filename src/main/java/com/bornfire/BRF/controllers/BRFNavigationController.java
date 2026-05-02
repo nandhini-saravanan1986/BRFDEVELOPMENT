@@ -1476,10 +1476,11 @@ html.append("</tbody></table></div>");
 					utildate = java.sql.Date.valueOf(parsedDate);
 				}
 				System.out.println("Report_Date Formatted Date : " + formattedDate +"utildate : "+utildate);
-				ReportGenerationService.generateFullReport(formattedDate, rpt_code);
+				//ReportGenerationService.generateFullReport(formattedDate, rpt_code); 
+				jdbcTemplate.setQueryTimeout(600);
 				String sql = "CALL COMMON_TRIGGERING_PROCEDURE(?, ?)";
 				jdbcTemplate.update(sql, formattedDate, rpt_code);
-				//Procedure_Common_Service.executeCommonProcedure(formattedDate, rpt_code);				
+				//ReportGenerationService.executeCommonTrigger(formattedDate, rpt_code);				
 				int nextSerialno = rrReportlist.findMaxSerialNo() + 1;
 				//Date utildate = java.sql.Date.valueOf(parsedDate);
 				Calendar cal = Calendar.getInstance();

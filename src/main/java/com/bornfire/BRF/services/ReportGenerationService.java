@@ -12,6 +12,28 @@ public class ReportGenerationService {
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 
+	public void executeCommonTrigger(String reportDate, String reportCode) {
+
+		System.out.println("Triggering Master Procedure in the background for: " + reportCode);
+
+		CompletableFuture.runAsync(() -> {
+			try {
+				System.out.println("Background thread started. Executing heavy Oracle procedure...");
+
+				jdbcTemplate.setQueryTimeout(7200);
+
+				String sql = "CALL COMMON_TRIGGERING_PROCEDURE(?, ?)";
+				jdbcTemplate.update(sql, reportDate, reportCode);
+
+				System.out.println("Background procedure finished successfully!");
+
+			} catch (Exception e) {
+				System.err.println("Background execution failed: " + e.getMessage());
+			}
+		});
+		System.out.println("Handed off to database. Freeing up the network socket.");
+	}
+
 	public void generateFullReport(String reportDate, String reportCode) {
 		System.out.println("Triggering Database Procedure for Report Code: " + reportCode);
 
@@ -35,6 +57,9 @@ public class ReportGenerationService {
 			break;
 		case "BRF002":
 			tablename = "BRF2_MAPPING_TABLE";
+			break;
+		case "BRF004":
+			tablename = "BRF4_MAPPING_TABLE";
 			break;
 		default:
 			System.out.println("The report Report is not found ");
