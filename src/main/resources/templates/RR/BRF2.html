@@ -334,6 +334,23 @@ PURPOSE		: BRF2 Reports-development
 .addedit:hover {
 	color: #0056b3;
 }
+
+/* PDF page-size submenu */
+.dropdown-submenu {
+    position: relative;
+}
+.dropdown-submenu .dropdown-submenu-menu {
+    display: none;
+    position: absolute;
+    left: 100%;
+    top: 0;
+    z-index: 1050;
+    min-width: 80px;
+}
+.dropdown-submenu:hover > .dropdown-submenu-menu {
+    display: block;
+}
+
 </style>
 <script th:inline="javascript">
 	/*<![CDATA[*/
@@ -573,6 +590,7 @@ function downloadexcel(button) {
 	var secid = button.getAttribute('data-secid');
 	var dtltype = button.getAttribute('data-dtltype');
 	var filetype = button.getAttribute('data-filetype');
+	var pagesize = button.getAttribute('data-pagesize') || 'A3';
 	
 	console.log(filetype);
 
@@ -588,7 +606,8 @@ function downloadexcel(button) {
 			subreportid : subreportid,
 			secid : secid,
 			dtltype : dtltype,
-			filetype : filetype
+			filetype : filetype,
+			pagesize: pagesize
 		},
 		type : 'POST',
 		xhrFields : {
@@ -602,11 +621,17 @@ function downloadexcel(button) {
 			var url = window.URL.createObjectURL(blob);
 			var a = document.createElement('a');
 			a.href = url;
-					if (filetype == "excel" || filetype == "detailexcel") {
+					if (filetype == "excel") {
 		                a.download = '011-BRF-002-A' + ".xlsx"; // assuming .xlsx extension for Excel files
-		            } else if(filetype == "BRF"){
+		            }else if (filetype == "detailexcel") {
+		            	a.download = 'BRF002-Detail' + ".xlsx";
+		            } 
+					else if(filetype == "BRF"){
 		                a.download = '011-BRF-002-A' + ".xls"; // assuming .pdf extension for PDF files
-		            }else{
+		            }else if (filetype == "detailpdf") {
+				        a.download = 'BRF002-Detail' + ".pdf";
+                    }
+					else{
 		            	a.download = '011-BRF-002-A' + ".pdf";
 		            }
 		            
@@ -621,7 +646,10 @@ function downloadexcel(button) {
 		                $('#customAlertBody').text('Downloaded BRF-002 Detail Excel' + ".xlsx");
 		            }else if(filetype == "BRF"){
 		            	$('#customAlertBody').text('Downloaded BRF 002 ' + ".xls"); // assuming .pdf extension for PDF files
-		            } else {
+		            }else if(filetype == "detailpdf"){
+		            	$('#customAlertBody').text('Downloaded BRF 002 Detail ' + ".pdf"); // assuming .pdf extension for PDF files
+		            }  
+		            else {
 		                $('#customAlertBody').text('Downloaded BRF-002 ' + ".pdf");
 		            }
 		            $('#customAlertModal').modal('show');
@@ -771,7 +799,7 @@ function tablepagination(){
 							Download <span class="caret"></span>
 						</button>
 						<ul class="dropdown-menu" role="menu">
-							<li th:if="${displaymode}=='summary' or ${displaymode}==null">
+							<!-- <li th:if="${displaymode}=='summary' or ${displaymode}==null">
 								<a class="text-primary"
 								th:attr="data-reportid=${reportid}, 
 							            data-asondate=${asondate}, 
@@ -796,7 +824,54 @@ function tablepagination(){
 							            data-dtltype=${dtltype}, 
 							             data-filetype='excel'"
 								onclick="downloadexcel(this)">Excel</a>
+							</li> -->
+							
+							<li th:if="${displaymode} == 'summary'"
+							    class="dropdown-submenu">
+							    <a class="text-primary dropdown-toggle-sub" href="#">PDF &raquo;</a>
+							    <ul class="dropdown-menu dropdown-submenu-menu">
+							        <li th:each="size : ${pageSizes}">
+								    <a class="text-primary"
+								       th:text="${size}"
+								       th:attr="data-pagesize=${size},
+								                data-reportid=${reportid},
+								                data-asondate=${asondate},
+								                data-fromdate=${fromdate},
+								                data-todate=${todate},
+								                data-currency=${currency},
+								                data-subreportid=${subreportid},
+								                data-secid=${secid},
+								                data-dtltype=${dtltype},
+								                data-filetype='BRFEXCELTOPDF'"
+								       onclick="downloadexcel(this)">
+								    </a>
+								</li>
+							    </ul>
 							</li>
+							
+							<li th:if="${displaymode}== 'detail' or ${displaymode} == null"
+							    class="dropdown-submenu">
+							    <a class="text-primary dropdown-toggle-sub" href="#">PDF &raquo;</a>
+							    <ul class="dropdown-menu dropdown-submenu-menu">
+							        <li>
+								    <a class="text-primary"
+								       th:text="A4"
+								       th:attr="data-pagesize='A4',
+								                data-reportid=${reportid},
+								                data-asondate=${asondate},
+								                data-fromdate=${fromdate},
+								                data-todate=${todate},
+								                data-currency=${currency},
+								                data-subreportid=${subreportid},
+								                data-secid=${secid},
+								                data-dtltype=${dtltype},
+								                data-filetype='detailpdf'"
+								       onclick="downloadexcel(this)">
+								    </a>
+								</li>
+							    </ul>
+							</li>
+							
 							<li th:if="${displaymode} == 'summary' or ${displaymode} == null">
 								<a class="text-primary"
 								th:attr="data-reportid=${reportid}, 

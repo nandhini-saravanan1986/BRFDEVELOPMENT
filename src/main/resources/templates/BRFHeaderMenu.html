@@ -69,8 +69,7 @@
 			color: #f1eaea;
 		}
 
-		#userdtl,
-		#dropico {
+		#userdtl {
 			float: right;
 		}
 
@@ -469,9 +468,15 @@
 			<!-- 
  	th:if="${session.ROLEID == 'ADM' or session.ROLEID == 'AC'}"  -->
 			<li class="nav-item">
-				<a class="nav-link" data-toggle="collapse" href="#adminsubmenu">
-					<i class="fa fa-user-shield mr-2"></i>Admin<i id="dropico"
-						class="fa fa-caret-down" aria-hidden="true"></i></a>
+				<a class="nav-link d-flex justify-content-between align-items-center"
+				   data-toggle="collapse" href="#adminsubmenu">
+				
+				    <span>
+				        <i class="fa fa-user-shield mr-2"></i>Admin
+				    </span>
+				
+				    <i class="fa fa-caret-down"></i>
+				</a>
 
 				<div id="adminsubmenu" class="collapse submenu1 ">
 					<ul class="nav flex-column">
@@ -485,15 +490,7 @@
 								href="#" onclick="contentLoad(this)"
 								th:if="${session.ROLEID == 'Superadmin'}">Access and
 								Roles</a></li>
-								
-								<li class="nav-item"><a class="nav-link" id="ReportCodeMapping"
-											style="padding-left: 30px;" href="#" onclick="contentLoad(this)">Report Code
-											Mapping</a></li>
-											
-								<li class="nav-item"><a class="nav-link" id="GLMapping"
-											style="padding-left: 30px;" href="#" onclick="contentLoad(this)">GL Configuration</a></li>
-
-
+	
 <!-- 
 						<li class="nav-item"><a class="nav-link" id="BankMaster" style="padding-left: 30px;" href="#"
 								onclick="contentLoad(this)"
@@ -595,13 +592,53 @@
 					</ul>
 				</div>
 			</li>
+			
+			<!-- REPORT PARAMETER MENU -->
+			<li class="nav-item">
+			    <a class="nav-link d-flex justify-content-between align-items-center"
+				   data-toggle="collapse" href="#reportsubmenu">
+				
+				    <span>
+				        <i class="fa fa-file-alt mr-2"></i>Report Parameter
+				    </span>
+				
+				    <i class="fa fa-caret-down"></i>
+				</a>
+			
+			    <div id="reportsubmenu" class="collapse submenu1">
+			        <ul class="nav flex-column">
+			
+			            <li class="nav-item">
+			                <a class="nav-link" id="GLMapping"
+			                   style="padding-left: 30px;"
+			                   href="#" onclick="contentLoad(this)">
+			                    GL Configuration
+			                </a>
+			            </li>
+			
+			            <li class="nav-item">
+			                <a class="nav-link" id="ReportCodeMapping"
+			                   style="padding-left: 30px;"
+			                   href="#" onclick="contentLoad(this)">
+			                    Report Code Mapping
+			                </a>
+			            </li>
+			
+			        </ul>
+			    </div>
+			</li>
 			<!-- 
 th:if="${session.ROLEID == 'GEN' or session.ROLEID == 'ADM' or 
 			  session.ROLEID == 'IT'or session.ROLEID == 'HR' or session.ROLEID == 'OP' or session.ROLEID == 'AC'}" -->
-			<li class="nav-item" th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'BRF_REPORTS')}"><a
-					class="nav-link" data-toggle="collapse" href="#brfreportssubmenu">
-					<i class="fa fa-file-excel mr-2"></i>BRF
-					Reports<i id="dropico" class="fa fa-caret-down" aria-hidden="true"></i>
+			<li class="nav-item" th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'BRF_REPORTS')}">
+				<a class="nav-link d-flex justify-content-between align-items-center"
+				   data-toggle="collapse" href="#brfreportssubmenu">
+				
+				    <span>
+				        <i class="fa fa-file-excel mr-2"></i>BRF Reports
+				    </span>
+				
+				    <i class="fa fa-caret-down"></i>
 				</a>
 
 				<div id="brfreportssubmenu" class="collapse submenu1 ">

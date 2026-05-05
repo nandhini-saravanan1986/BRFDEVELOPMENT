@@ -3,16 +3,18 @@ package com.bornfire.BRF.controllers;
 import java.security.PrivateKey;
 import java.util.List;
 import java.util.Map;
-
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -62,10 +64,15 @@ import com.bornfire.xbrl.entities.BRBS.BRF62_DETAIL_ENTITY;*/
 //import com.bornfire.xbrl.entities.BRBS.BRF94_DETAILENTITY;
 
 import com.bornfire.BRF.entities.BRF1_DETAIL_ENTITY;
+import com.bornfire.BRF.entities.BRF1_DetaiRep;
+import com.bornfire.BRF.entities.BRF2_DetaiRep;
+import com.bornfire.BRF.entities.BRF4_DetaiRep;
 import com.bornfire.BRF.entities.UserProfileRep;
 import com.bornfire.BRF.entities.BrfBaseMappingRepository;
 //import com.bornfire.xbrl.services.BRF94ReportService;
 import com.bornfire.BRF.services.BRF001ReportService;
+import com.bornfire.BRF.services.BRF_DetailExcel_Service;
+import com.bornfire.BRF.services.Exceltopdfservice;
 import com.bornfire.BRF.services.LoginServices;
 import com.bornfire.BRF.services.RegulatoryReportServices;
 import com.bornfire.BRF.services.ReportServices;
@@ -166,6 +173,21 @@ public class BRFReportsController {
 
 	@Autowired
 	UserProfileRep userProfileRep;
+	
+	@Autowired
+	Exceltopdfservice exceltopdfservice;
+	
+	@Autowired
+	BRF_DetailExcel_Service brf_DetailExcel_Service;
+	
+	@Autowired
+	BRF1_DetaiRep brf1_DetaiRep;
+	
+	@Autowired
+	BRF2_DetaiRep brf2_DetaiRep;
+	
+	@Autowired
+	BRF4_DetaiRep brf4_DetaiRep;
 
 	private String pagesize;
 
@@ -251,6 +273,8 @@ public class BRFReportsController {
 		// mv.getModelMap().get("reportsummary");
 
 		// sup0700RepPage.getContent().forEach((a)-> System.out.println(a.toString()));
+		List<String> pageSizes = Arrays.asList("A2", "A3", "A4");
+		mv.addObject("pageSizes", pageSizes);
 
 		return mv;
 
@@ -295,6 +319,9 @@ public class BRFReportsController {
 		logger.info("Getting ModelandView :" + reportid);
 		ModelAndView mv = regreportServices.getReportSummary(reportid, asondate, fromdate, todate, currency, dtltype,
 				subreportid, secid, reportingTime, PageRequest.of(currentPage, pageSize), srl_no, roleId);
+		
+		List<String> pageSizes = Arrays.asList("A2", "A3", "A4");
+		mv.addObject("pageSizes", pageSizes);
 
 		return mv;
 
@@ -355,13 +382,69 @@ public class BRFReportsController {
 			@RequestParam(value = "dtltype", required = false) String dtltype,
 			@RequestParam(value = "reportingTime", required = false) String reportingTime,
 			@RequestParam(value = "instancecode", required = false) String instancecode,
-			@RequestParam("filetype") String filetype, @RequestParam(value = "filter", required = false) String filter)
+			@RequestParam("filetype") String filetype, @RequestParam(value = "filter", required = false) String filter,
+			@RequestParam(value = "pagesize", required = false, defaultValue = "A3") String pagesize)
 			throws IOException, SQLException {
 		response.setContentType("application/octet-stream");
 
 		try {
 			logger.info(
 					"Getting download File :" + reportid + ", FileType :" + filetype + ", SubreportId :" + subreportid);
+			
+			System.out.println("page size " + pagesize );
+			
+			HttpHeaders headers = new HttpHeaders();
+			
+			if ("detailexcel".equalsIgnoreCase(filetype)) {
+
+	            List<Object[]> entityList;
+
+	            switch (reportid) {
+	                case "BRF001": entityList = brf1_DetaiRep.find(); break;
+	                case "BRF002": entityList = brf2_DetaiRep.find(); break;
+	                case "BRF004": entityList = brf4_DetaiRep.find(); break;
+	                default: throw new RuntimeException("Unknown reportid: " + reportid);
+	            }
+
+	            byte[] excelBytes = brf_DetailExcel_Service.generateReport(entityList);
+
+	            headers.setContentType(MediaType.parseMediaType("application/vnd.ms-excel"));
+	            headers.setContentDispositionFormData("attachment", reportid + "_Detail.xlsx"); 
+
+	            return ResponseEntity.ok()
+	                    .headers(headers)
+	                    .contentLength(excelBytes.length)
+	                    .body(new InputStreamResource(new ByteArrayInputStream(excelBytes)));
+	        }
+			
+			if ("detailpdf".equalsIgnoreCase(filetype)) {
+
+			    List<Object[]> entityList;
+
+			    switch (reportid) {
+			        case "BRF001": entityList = brf1_DetaiRep.find(); break;
+			        case "BRF002": entityList = brf2_DetaiRep.find(); break;
+			        case "BRF004": entityList = brf4_DetaiRep.find(); break;
+			        default: throw new RuntimeException("Unknown reportid: " + reportid);
+			    }
+
+			    byte[] excelBytes = brf_DetailExcel_Service.generateReport(entityList);
+			    byte[] pdfBytes = brf_DetailExcel_Service.convertExcelBytesToPdf(excelBytes);
+
+			    InputStreamResource resource =
+			            new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+
+			    headers.setContentType(MediaType.APPLICATION_PDF);
+			    headers.setContentDispositionFormData(
+			            "attachment",
+			            reportid + "_Detail.pdf"  
+			    );
+
+			    return ResponseEntity.ok()
+			            .headers(headers)
+			            .contentLength(pdfBytes.length)
+			            .body(resource);
+			}
 
 			File repfile = regreportServices.getDownloadFile(reportid, asondate, fromdate, todate, currency,
 					subreportid, secid, dtltype, reportingTime, filetype, instancecode, filter);
@@ -369,8 +452,36 @@ public class BRFReportsController {
 
 			// **CALL COMMON AUDIT FUNCTION HERE**
 			//auditService.saveCommonAudit(reportid, filetype);
+			
+			System.out.println("FileType: " + filetype);
+			System.out.println("File: " + repfile);
+			
+			// Excel → PDF
+	        if ("BRFEXCELTOPDF".equalsIgnoreCase(filetype)) {
 
-			HttpHeaders headers = new HttpHeaders();
+	        	// File → byte[]
+	            byte[] excelBytes = Files.readAllBytes(repfile.toPath());
+
+	            
+	            byte[] pdfBytes = exceltopdfservice.convertExcelBytesToPdf(excelBytes, pagesize);
+
+	            InputStreamResource resource =
+	                    new InputStreamResource(new ByteArrayInputStream(pdfBytes));
+
+	            headers.setContentType(MediaType.APPLICATION_PDF);
+	            headers.setContentDispositionFormData(
+	                    "attachment",
+	                    repfile.getName().replace(".xlsx", ".pdf")
+	            );
+
+	            return ResponseEntity.ok()
+	                    .headers(headers)
+	                    .contentLength(pdfBytes.length)
+	                    .body(resource);
+	        }
+	        
+	        
+			
 			headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 			headers.setContentDispositionFormData("attachment", repfile.getName());
 
