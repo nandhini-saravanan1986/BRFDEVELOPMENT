@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bornfire.BRF.entities.BRFReportsMasterRep;
+import com.bornfire.BRF.entities.RRReportRepo;
 import com.bornfire.BRF.entities.ReportTemplateConfig;
 import com.bornfire.BRF.entities.ReportTemplateConfigRepository;
 
@@ -57,6 +58,9 @@ public class ReportServices {
 
 	@Autowired
 	BRFReportsMasterRep brfReportsMasterRep;
+	
+	@Autowired
+	RRReportRepo rrReportRepo;
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
@@ -740,6 +744,43 @@ public class ReportServices {
 
 		return title;
 
+	}
+	
+	public List<Object[]> getDropdownReportCodes() {
+
+	    List<Object[]> rows = rrReportRepo.getReportCodesForDropdown();
+
+	    for (Object[] row : rows) {
+
+	        if (row[0] != null) {
+	            row[0] = row[0].toString().trim().toUpperCase();
+	        }
+
+	        if (row[1] != null) {
+	            row[1] = cleanDescription(row[1].toString());
+	        }
+	    }
+
+	    return rows;
+	}
+
+	private String cleanDescription(String desc) {
+	    if (desc == null || desc.isEmpty()) return "";
+
+	    return desc
+	        // Case 1: "BRF95-FB-NFB"  → removes "BRF95-"  → "FB-NFB"
+	        .replaceAll("(?i)BRF\\d+[A-Za-z]?-", "")
+
+	        // Case 2: "- BRF 73 (AED 000)" or "-BRF207(AED IN 000s)"
+	        .replaceAll("(?i)\\s*[-–]?\\s*BRF\\s*\\d+[A-Za-z]?\\s*(\\([^)]*\\))?", "")
+
+	        // Case 3: leftover "(AED IN 000s)" at end
+	        .replaceAll("(?i)\\s*\\([^)]*AED[^)]*\\)\\s*$", "")
+
+	        // Cleanup
+	        .replaceAll("\\s{2,}", " ")
+	        .replaceAll("[\\s\\-–]+$", "")
+	        .trim();
 	}
 
 }

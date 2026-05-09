@@ -138,7 +138,7 @@
 }
 
 #rawExcelContainer {
-    height: calc(100vh - 350px);
+    height: calc(100vh - 200px);
     overflow: auto !important;
     min-height: 150px;
 }
@@ -551,112 +551,55 @@
 						<div class="d-flex align-items-center"
 							style="gap: 8px; margin-left: auto;">
 							<label style="white-space: nowrap; flex-shrink: 0;">Report
-								Code :</label> <select id="reportCodeSelect"
-								class="form-control form-control-sm"
-								style="width: 120px; flex-shrink: 0;"
-								onchange="onReportCodeChange()">
-								<option value="">Select</option>
-								<option value="BRF0001">BRF0001</option>
-								<option value="BRF001">BRF001</option>
-								<option value="BRF002">BRF002</option>
-								<option value="BRF003">BRF003</option>
-								<option value="BRF004">BRF004</option>
-								<option value="BRF005">BRF005</option>
-								<option value="BRF007">BRF007</option>
-								<option value="BRF008">BRF008</option>
-								<option value="BRF009">BRF009</option>
-								<option value="BRF010">BRF010</option>
-								<option value="BRF011">BRF011</option>
-								<option value="BRF012">BRF012</option>
-								<option value="BRF013">BRF013</option>
-								<option value="BRF014">BRF014</option>
-								<option value="BRF031">BRF031</option>
-								<option value="BRF032">BRF032</option>
-								<option value="BRF033">BRF033</option>
-								<option value="BRF034">BRF034</option>
-								<option value="BRF035">BRF035</option>
-								<option value="BRF036">BRF036</option>
-								<option value="BRF037">BRF037</option>
-								<option value="BRF038">BRF038</option>
-								<option value="BRF039">BRF039</option>
-								<option value="BRF040">BRF040</option>
-								<option value="BRF041">BRF041</option>
-								<option value="BRF042">BRF042</option>
-								<option value="BRF043">BRF043</option>
-								<option value="BRF044">BRF044</option>
-								<option value="BRF045">BRF045</option>
-								<option value="BRF046">BRF046</option>
-								<option value="BRF047">BRF047</option>
-								<option value="BRF048">BRF048</option>
-								<option value="BRF049">BRF049</option>
-								<option value="BRF050">BRF050</option>
-								<option value="BRF051">BRF051</option>
-								<option value="BRF052">BRF052</option>
-								<option value="BRF053">BRF053</option>
-								<option value="BRF054">BRF054</option>
-								<option value="BRF056">BRF056</option>
-								<option value="BRF057">BRF057</option>
-								<option value="BRF059">BRF059</option>
-								<option value="BRF060">BRF060</option>
-								<option value="BRF062">BRF062</option>
-								<option value="BRF064">BRF064</option>
-								<option value="BRF065">BRF065</option>
-								<option value="BRF066">BRF066</option>
-								<option value="BRF067">BRF067</option>
-								<option value="BRF068">BRF068</option>
-								<option value="BRF069">BRF069</option>
-								<option value="BRF070">BRF070</option>
-								<option value="BRF071">BRF071</option>
-								<option value="BRF073">BRF073</option>
-								<option value="BRF074">BRF074</option>
-								<option value="BRF077">BRF077</option>
-								<option value="BRF078">BRF078</option>
-								<option value="BRF079">BRF079</option>
-								<option value="BRF080">BRF080</option>
-								<option value="BRF081">BRF081</option>
-								<option value="BRF082">BRF082</option>
-								<option value="BRF083">BRF083</option>
-								<option value="BRF084">BRF084</option>
-								<option value="BRF085">BRF085</option>
-								<option value="BRF086">BRF086</option>
-								<option value="BRF087">BRF087</option>
-								<option value="BRF092">BRF092</option>
-								<option value="BRF093">BRF093</option>
-								<option value="BRF094">BRF094</option>
-								<option value="BRF095">BRF095</option>
-								<option value="BRF096">BRF096</option>
-								<option value="BRF099">BRF099</option>
-								<option value="BRF100">BRF100</option>
-								<option value="BRF101">BRF101</option>
-								<option value="BRF102">BRF102</option>
-								<option value="BRF103">BRF103</option>
-								<option value="BRF104">BRF104</option>
-								<option value="BRF105">BRF105</option>
-								<option value="BRF106">BRF106</option>
-								<option value="BRF107">BRF107</option>
-								<option value="BRF108">BRF108</option>
-								<option value="BRF109">BRF109</option>
-								<option value="BRF151">BRF151</option>
-								<option value="BRF152">BRF152</option>
-								<option value="BRF153">BRF153</option>
-								<option value="BRF154">BRF154</option>
-								<option value="BRF155">BRF155</option>
-								<option value="BRF156">BRF156</option>
-								<option value="BRF181">BRF181</option>
-								<option value="BRF200">BRF200</option>
-								<option value="BRF201">BRF201</option>
-								<option value="BRF202">BRF202</option>
-								<option value="BRF204">BRF204</option>
-								<option value="BRF205">BRF205</option>
-								<option value="BRF206">BRF206</option>
-								<option value="BRF207">BRF207</option>
-								<option value="BRF208">BRF208</option>
-								<option value="BRF209">BRF209</option>
-								<option value="BRF210">BRF210</option>
-								<option value="BRF300">BRF300</option>
-								<option value="BRF301">BRF301</option>
-							</select>
-							<div id="reportNameWrapper"
+								Code :</label> 
+								
+								
+							<div style="position:relative; width:650px; flex-shrink:0;">
+							    <button type="button" id="reportCodeBtn"
+							        style="width:650px; text-align:left; background:#fff; border:1px solid #ced4da;
+							               border-radius:4px; font-family:verdana; font-size:13px; padding:4px 10px;
+							               white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer;
+							               height:31px; color:#495057;">
+							        Select
+							    </button>
+							    <div id="reportCodeDropdown"
+							        style="display:none; position:absolute; top:100%; left:0; width:650px; z-index:9999;
+							               background:#fff; border:1px solid #ced4da; border-radius:4px;
+							               max-height:260px; overflow-y:auto; overflow-x:auto;
+							               box-shadow:0 4px 10px rgba(0,0,0,.15);">
+							        <!-- Search Box -->
+							        <div style="padding:6px 8px; position:sticky; top:0; background:#fff; border-bottom:1px solid #eee; z-index:2;">
+							            <input type="text" id="reportCodeSearch"
+							                class="form-control form-control-sm"
+							                placeholder="Search report code..."
+							                oninput="filterReportCodeOptions()"
+							                onclick="event.stopPropagation()">
+							        </div>
+							        <div id="reportCodeOptions">
+							            <div class="rc-option" data-value=""
+							                style="padding:5px 10px; font-family:verdana; font-size:13px;
+							                       cursor:pointer; white-space:nowrap; color:#495057;">
+							                Select
+							            </div>
+							            <div th:each="r : ${reportCodes}"
+							                class="rc-option"
+							                th:data-value="${r[0]}"
+							                th:text="${r[0] + ' - ' + r[1]}"
+							                style="padding:5px 10px; font-family:verdana; font-size:13px;
+							                       cursor:pointer; white-space:nowrap; color:#495057;">
+							            </div>
+							        </div>
+							    </div>
+							    <!-- see the function used onreportcodechnage()  -->
+							    <select id="reportCodeSelect" style="display:none;">
+							        <option value="">Select</option>
+							        <option th:each="r : ${reportCodes}"
+							                th:value="${r[0]}"
+							                th:text="${r[0] + ' - ' + r[1]}">
+							        </option>
+							    </select>
+							</div>
+							<!-- <div id="reportNameWrapper"
 								class="d-flex align-items-center flex-grow-1"
 								style="display: none !important; gap: 8px; min-width: 0;">
 								<label
@@ -665,7 +608,7 @@
 									class="form-control form-control-sm" readonly
 									style="flex-grow: 1; min-width: 500px; background-color: rgba(255, 255, 255, 0.9);"
 									title="">
-							</div>
+							</div> -->
 						</div>
 					</div>
 				</div>
@@ -747,9 +690,9 @@
 									role="tabpanel">
 									<div id="listViewContainer" class="responsive-table-wrap"
     									style="border: 1px solid #dee2e6; background: #fff;">
-										<div id="listPlaceholder" class="p-4 text-center text-muted"
-											style="font-family: verdana;">
-											<i class="fas fa-exclamation-triangle fa-2x mb-2"></i><br>
+										<div id="listPlaceholder" class="p-4 text-center"
+											style="font-family: verdana; color:#dc3545;">
+											<i class="fas fa-exclamation-triangle fa-2x mb-2" style="color:#dc3545;"></i><br>
 											Please select a Report Code above to load the list view.
 										</div>
 	
@@ -775,8 +718,8 @@
 									<div id="excelViewContainer" class="table-responsive responsive-table-wrap"
     									style="overflow: auto; background: #fff; border: 1px solid #dcdcdc;">
 										<div class="p-4 text-center text-muted"
-											style="font-family: verdana;">
-											<i class="fas fa-exclamation-triangle fa-2x mb-2"></i><br>Please
+											style="font-family: verdana; color:#dc3545;">
+											<i class="fas fa-exclamation-triangle fa-2x mb-2" style="color:#dc3545;"></i><br>Please
 											select a Report Code above to load the Excel preview.
 										</div>
 									</div>
@@ -829,9 +772,9 @@
 								<!-- Manual sub-tab -->
 								<div class="tab-pane fade show active" id="sub-pane-manual"
 									role="tabpanel">
-									<div id="manualPlaceholder" class="p-4 text-center text-muted"
-										style="font-family: verdana;">
-										<i class="fas fa-exclamation-triangle fa-2x mb-2"></i><br>
+									<div id="manualPlaceholder" class="p-4 text-center"
+										style="font-family: verdana; color:#dc3545;">
+										<i class="fas fa-exclamation-triangle fa-2x mb-2" style="color:#dc3545;"></i><br>
 										Please select a Report Code above to perform manual mapping.
 									</div>
 	
@@ -1075,8 +1018,8 @@
 									<div id="rawExcelContainer" class="responsive-table-wrap"
     									style="background: #fff; border: 1px solid #dcdcdc;">
 										<div class="p-4 text-center text-muted"
-											style="font-family: verdana;">
-											<i class="fas fa-exclamation-triangle fa-2x mb-2"></i><br>Please
+											style="font-family: verdana; color:#dc3545;">
+											<i class="fas fa-exclamation-triangle fa-2x mb-2" style="color:#dc3545;"></i><br>Please
 											select a Report Code above to load the raw Excel preview.
 										</div>
 									</div>
@@ -1093,9 +1036,9 @@
 									<i class="fas fa-spinner fa-spin"></i>&nbsp; Loading mapped
 									accounts…
 								</div>
-								<div id="mappedPlaceholder" class="p-4 text-center text-muted"
-									style="font-family: verdana;">
-									<i class="fas fa-exclamation-triangle fa-2x mb-2"></i><br>
+								<div id="mappedPlaceholder" class="p-4 text-center"
+									style="font-family: verdana; color:#dc3545;">
+									<i class="fas fa-exclamation-triangle fa-2x mb-2" style="color:#dc3545;"></i><br>
 									Please select a Report Code above to view Mapped Accounts.
 								</div>
 								<div id="mappedTableWrap" style="display: none;">
@@ -1142,9 +1085,9 @@
 									<i class="fas fa-spinner fa-spin"></i>&nbsp; Loading unmapped
 									accounts…
 								</div>
-								<div id="unmappedPlaceholder" class="p-4 text-center text-muted"
-									style="font-family: verdana;">
-									<i class="fas fa-exclamation-triangle fa-2x mb-2"></i><br>
+								<div id="unmappedPlaceholder" class="p-4 text-center"
+									style="font-family: verdana; color:#dc3545;">
+									<i class="fas fa-exclamation-triangle fa-2x mb-2" style="color:#dc3545;"></i><br>
 									Please select a Report Code above to view Unmapped Accounts.
 								</div>
 								<div id="unmappedTableWrap" style="display: none;">
@@ -1599,9 +1542,9 @@
 									Balance (LC)</label> <select id="editBalanceLc"
 									class="form-control form-control-sm" style="min-width: 180px;">
 									<option value="">-- Select --</option>
-									<option value="&lt;0">&lt; 0</option>
-									<option value="&gt;0">&gt; 0</option>
-									<option value="&lt;&gt;0">&lt;&gt; 0</option>
+									<option value="&lt;0">Debit</option>
+									<option value="&gt;0">Credit</option>
+									<option value="&lt;&gt;0">Net Off</option>
 								</select>
 							</div>
 							<div class="col-auto" style="position: relative;">
@@ -1897,6 +1840,17 @@
 	   REPORT CODE CHANGE
 	───────────────────────────────────────────────────────────────────────── */
 	function onReportCodeChange() {
+
+		/* ── Auto resize to fit selected option ── */
+	    /* var sel = document.getElementById('reportCodeSelect');
+	    var ghost = document.createElement('span');
+	    ghost.style.cssText = 'visibility:hidden;position:absolute;white-space:nowrap;font-family:verdana;font-size:13px;padding:0 28px 0 6px;';
+	    ghost.textContent = sel.options[sel.selectedIndex].text || 'Select';
+	    document.body.appendChild(ghost);
+	    sel.style.width = Math.max(120, ghost.offsetWidth + 4) + 'px';
+	    document.body.removeChild(ghost); */
+	    
+	    
 	    var code = $('#reportCodeSelect').val();
 	
 	    // ── 1. RESET / EMPTY STATE ──
@@ -1906,15 +1860,18 @@
 	        $('#reportNameInput').val('');
 	
 	        // Tab 1: List View
-	        $('#listPlaceholder').show();
-	        $('#reportCodeTable').hide();
-	        $('#tableBody').empty();
+	        /* $('#listPlaceholder').show(); */
+	        $('#listPlaceholder').html('<i class="fas fa-exclamation-triangle fa-2x mb-2" style="color:#dc3545;"></i><br>Please select a Report Code above to load the list view.').css('color','#dc3545').show();
+			$('#reportCodeTable').hide();
+			$('#tableBody').empty();
 	        
 	        // Tab 1: Excel View
-	        $('#excelViewContainer').html('<div class="p-4 text-center text-muted"><i class="fas fa-exclamation-triangle fa-2x mb-2"></i><br>Please select a Report Code above to load the Excel preview.</div>');
+	        $('#excelViewContainer').html('<div class="p-4 text-center" style="font-family:verdana;color:#dc3545;"><i class="fas fa-exclamation-triangle fa-2x mb-2" style="color:#dc3545;"></i><br>Please select a Report Code above to load the Excel preview.</div>');
 	
 	        // Tab 2: Mapping Maintenance (Manual)
-	        $('#manualPlaceholder').show();
+	        /* $('#manualPlaceholder').show(); */
+	       $('#manualPlaceholder').html('<i class="fas fa-exclamation-triangle fa-2x mb-2" style="color:#dc3545;"></i><br>Please select a Report Code above to perform manual mapping.').css('color','#dc3545').show();
+
 	        $('#manualContent').hide();
 	        // Clear manual selections/tables
 	        $('#rowLabelSelect, #colLabelSelect, #glCodeSelect').val('').prop('disabled', true);
@@ -1923,12 +1880,14 @@
 	        $('#btnSubmitAccounts').hide();
 	
 	        // Tab 2: Mapping Maintenance (Excel)
-	        $('#rawExcelContainer').html('<div class="p-4 text-center text-muted" style="font-family: verdana;"><i class="fas fa-exclamation-triangle fa-2x mb-2"></i><br>Please select a Report Code above to load the raw Excel preview.</div>');
+	        $('#rawExcelContainer').html('<div class="p-4 text-center" style="font-family:verdana;color:#dc3545;"><i class="fas fa-exclamation-triangle fa-2x mb-2" style="color:#dc3545;"></i><br>Please select a Report Code above to load the raw Excel preview.</div>');
 	        $('#mappingZoomControls').hide();
 	
 	        // Tab 3 & 4: Mapped / Unmapped
 	        $('#mappedTableWrap, #unmappedTableWrap').hide();
-	        $('#mappedPlaceholder, #unmappedPlaceholder').show();
+	        /* $('#mappedPlaceholder, #unmappedPlaceholder').show(); */
+	        $('#mappedPlaceholder').html('<i class="fas fa-exclamation-triangle fa-2x mb-2" style="color:#dc3545;"></i><br>Please select a Report Code above to view Mapped Accounts.').css('color','#dc3545').show();
+			$('#unmappedPlaceholder').html('<i class="fas fa-exclamation-triangle fa-2x mb-2" style="color:#dc3545;"></i><br>Please select a Report Code above to view Unmapped Accounts.').css('color','#dc3545').show();
 	        $('#mappedBadge, #unmappedBadge').hide();
 	
 	        // Reset state variables
@@ -2160,8 +2119,8 @@
 	   ROW / COLUMN DROPDOWNS
 	───────────────────────────────────────────────────────────────────────── */
 	function populateRowLabelDropdown() {
-	    var sel = $('#rowLabelSelect').html('<option value="">-- Select Row --</option>');
-	    $('#colLabelSelect').html('<option value="">-- Select Column --</option>');
+	    var sel = $('#rowLabelSelect').prop('disabled', false).html('<option value="">-- Select Row --</option>');
+	    $('#colLabelSelect').prop('disabled', false).html('<option value="">-- Select Column --</option>');
 	    currentRows.forEach(function(row, idx) {
 	        if (row.header === 'Y') return;
 	        sel.append('<option value="' + idx + '">' + row.label + ' - ' + row.description + '</option>');
@@ -2377,7 +2336,7 @@
 	            hdr += '<th>Account Balance (LC)</th><th>Filter</th></tr>';
 	            $('#accountsHead').html(hdr);
 	            $('#selectAll').off('change').on('change', function() { $('.row-select').prop('checked', this.checked); });
-	            var balOpts = '<option value="">-- Select --</option><option value="<0">&lt; 0</option><option value=">0">&gt; 0</option><option value="<>0">&lt;&gt; 0</option>';
+	            var balOpts = '<option value="">-- Select --</option><option value="<0">Debit</option><option value=">0">Credit</option><option value="<>0">Net Off</option>';
 	            $.each(data, function(i, row) {
 	                var tr = '<tr><td><input type="checkbox" class="row-select" data-idx="' + i + '"></td><td>' + (i + 1) + '</td>';
 	                $.each(keys, function(j, key) { tr += '<td>' + nvl(row[key]) + '</td>'; });
@@ -2505,7 +2464,7 @@
 	 $('#accountsHead').html(hdr);
 	 $('#selectAll').off('change').on('change', function() { $('.row-select').prop('checked', this.checked); });
 	 
-	 var balOpts = '<option value="">-- Select --</option><option value="<0">&lt; 0</option><option value=">0">&gt; 0</option><option value="<>0">&lt;&gt; 0</option>';
+	 var balOpts = '<option value="">-- Select --</option><option value="<0">Debit</option><option value=">0">Credit</option><option value="<>0">Net Off</option>';
 	 
 	 $.each(data, function(i, row) {
 	     var tr = '<tr><td><input type="checkbox" class="row-select" data-idx="' + i + '"></td><td>' + (i + 1) + '</td>';
@@ -2650,7 +2609,7 @@
 	        
 	        var reportCode = $('#reportCodeSelect').val();
 	        if (!reportCode) {
-	            $('#excelViewContainer').html('<div class="p-4 text-center text-muted"><i class="fas fa-exclamation-triangle fa-2x mb-2"></i><br>Please select a Report Code above to load the list view.</div>');
+	        	$('#excelViewContainer').html('<div class="p-4 text-center" style="font-family:verdana;color:#dc3545;"><i class="fas fa-exclamation-triangle fa-2x mb-2" style="color:#dc3545;"></i><br>Please select a Report Code above to load the Excel preview.</div>');
 	            return;
 	        }
 	        if (_excelLoadedFor !== reportCode) { loadExcelView(reportCode); }
@@ -2721,7 +2680,7 @@
 	 
 	 var rc = $('#reportCodeSelect').val();
 	 if (!rc) {
-	     $('#rawExcelContainer').html('<div class="p-4 text-center text-muted" style="font-family:verdana;"><i class="fas fa-exclamation-triangle fa-2x mb-2"></i><br>Please select a Report Code above to load the list view.</div>');
+		 $('#rawExcelContainer').html('<div class="p-4 text-center" style="font-family:verdana;color:#dc3545;"><i class="fas fa-exclamation-triangle fa-2x mb-2" style="color:#dc3545;"></i><br>Please select a Report Code above to load the raw Excel preview.</div>');
 	     return;
 	 }
 	 if (_rawExcelLoadedFor === rc) return;
@@ -3023,7 +2982,7 @@
 	        $('.modal-row-select').prop('checked', this.checked);
 	    });
 
-	    var balOpts = '<option value="">-- Select --</option><option value="<0">&lt; 0</option><option value=">0">&gt; 0</option><option value="<>0">&lt;&gt; 0</option>';
+	    var balOpts = '<option value="">-- Select --</option><option value="<0">Debit</option><option value=">0">Credit</option><option value="<>0">Net Off</option>';
 	    $.each(data, function(i, row) {
 	        var tr = '<tr><td><input type="checkbox" class="modal-row-select" data-idx="' + i + '"></td><td>' + (i + 1) + '</td>';
 	        $.each(keys, function(j, key) { tr += '<td>' + nvl(row[key]) + '</td>'; });
@@ -3035,7 +2994,7 @@
 
 	    $('#modalBtnSubmit').show();
 	    $('#modalAccountsTable').show();
-	}x
+	}
 	
 	/* ─────────────────────────────────────────────────────────────────────────
 	   SHOW ACCOUNTS (Row Mapping Modal)
@@ -3081,7 +3040,7 @@
 	            hdr += '<th>Account Balance (LC)</th><th>Filter</th></tr>';
 	            $('#modalAccountsHead').html(hdr);
 	            $('#modalSelectAll').off('change').on('change', function() { $('.modal-row-select').prop('checked', this.checked); });
-	            var balOpts = '<option value="">-- Select --</option><option value="<0">&lt; 0</option><option value=">0">&gt; 0</option><option value="<>0">&lt;&gt; 0</option>';
+	            var balOpts = '<option value="">-- Select --</option><option value="<0">Debit</option><option value=">0">Credit</option><option value="<>0">Net Off</option>';
 	            $.each(data, function(i, row) {
 	                var tr = '<tr><td><input type="checkbox" class="modal-row-select" data-idx="' + i + '"></td><td>' + (i + 1) + '</td>';
 	                $.each(keys, function(j, key) { tr += '<td>' + nvl(row[key]) + '</td>'; });
@@ -3592,7 +3551,7 @@
 	/* ─────────────────────────────────────────────────────────────────────────
 	LOAD LIST VIEW DATA (Updates the table and dropdowns)
 	───────────────────────────────────────────────────────────────────────── */
-	function loadListViewData(reportCode) {
+	/* function loadListViewData(reportCode) {
 	    var cacheBuster = new Date().getTime();
 	    
 	    // Show a loading state inside the placeholder while fetching
@@ -3623,7 +3582,7 @@
 	                });
 	            } else {
 	                // No data returned
-	                $('#listPlaceholder').html('<i class="fas fa-exclamation-circle fa-2x mb-2"></i><br>No data found for this report.').show();
+	                $('#listPlaceholder').removeClass('text-muted').html('<i class="fas fa-exclamation-circle fa-2x mb-2"></i><br>No data found for this report.').show();
 	            }
 	
 	            currentRows = data.rows;
@@ -3632,15 +3591,134 @@
 	        })
 	        .catch(function(err) { 
 	            console.error('Error loading template:', err);
-	            $('#listPlaceholder').html('<i class="fas fa-times-circle fa-2x mb-2"></i><br>Error loading data.').show();
+	            $('#listPlaceholder').removeClass('text-muted').html(
+	                '<i class="fas fa-times-circle fa-2x mb-2" style="color:#dc3545;"></i><br>Template file not found for code: <strong>' + reportCode + '</strong>'
+	            ).css('color','#dc3545').show();
+	        });
+	} */
+	
+	function loadListViewData(reportCode) {
+	    var cacheBuster = new Date().getTime();
+	    
+	    $('#listPlaceholder').html('<i class="fas fa-spinner fa-spin fa-2x mb-2"></i><br>Loading Data...').css('color','#376275').show();
+	    $('#reportCodeTable').hide();
+
+	    fetch('/BRF/Reports/reportTemplate?code=' + encodeURIComponent(reportCode) + '&_=' + cacheBuster)
+	        .then(function(r) { return r.json(); })
+	        .then(function(data) {
+	            $('#reportNameInput').val(data.reportName).attr('title', data.reportName);
+
+	            var tbody = $('#tableBody').empty();
+	            if (data.rows && data.rows.length > 0) {
+	                $('#listPlaceholder').hide();
+	                $('#reportCodeTable').show();
+	                
+	                data.rows.forEach(function(row) {
+	                    tbody.append(
+	                        '<tr>' +
+	                        '<td>' + nvl(row.level1)      + '</td>' +
+	                        '<td>' + nvl(row.level2)      + '</td>' +
+	                        '<td>' + nvl(row.description) + '</td>' +
+	                        '<td>' + nvl(row.label)       + '</td>' +
+	                        '<td>' + nvl(row.header)      + '</td>' +
+	                        '<td>' + nvl(row.remarks)     + '</td>' +
+	                        '</tr>'
+	                    );
+	                });
+
+	                /* ── Template found: populate dropdowns and show manual content ── */
+	                currentRows    = data.rows;
+	                currentColumns = data.columns || [];
+	                populateRowLabelDropdown();
+
+	                /* Always re-show manual content when template is found */
+	                $('#manualPlaceholder').hide();
+	                $('#manualContent').show();
+
+	            } else {
+	                showTemplateNotFound(reportCode);
+	            }
+	        })
+	        .catch(function(err) { 
+	            console.error('Error loading template:', err);
+	            showTemplateNotFound(reportCode);
 	        });
 	}
+
+	/* ── Helper: show template not found message in both Tab1 and Tab2 ── */
+	function showTemplateNotFound(reportCode) {
+	    /* Tab 1 - List View */
+	    $('#listPlaceholder').removeClass('text-muted').html(
+	        '<i class="fas fa-times-circle fa-2x mb-2" style="color:#dc3545;"></i><br>' +
+	        'Template file not found for code: <strong>' + reportCode + '</strong>'
+	    ).css('color','#dc3545').show();
+	    $('#reportCodeTable').hide();
+
+	    /* Tab 2 - Manual: hide content, show warning */
+	    $('#manualContent').hide();
+	    $('#manualPlaceholder').removeClass('text-muted').html(
+	        '<i class="fas fa-exclamation-triangle fa-2x mb-2" style="color:#dc3545;"></i><br>' +
+	        'Template file not found for code: <strong>' + reportCode + '</strong>. Row and Column mapping is unavailable.'
+	    ).css('color','#dc3545').show();
+
+	    /* Clear rows/columns so stale data from previous code is gone */
+	    currentRows    = [];
+	    currentColumns = [];
+	}
+	
 	
 	function scrollTabs(offset) {
 	    var container = document.getElementById('sheetTabContainer');
 	    if (container) {
 	        container.scrollLeft += offset;
 	    }
+	}
+	/* ── Custom Report Code Dropdown ── */
+	$('#reportCodeBtn').on('click', function(e) {
+    e.stopPropagation();
+    $('#reportCodeSearch').val('');
+    filterReportCodeOptions();
+    $('#reportCodeDropdown').toggle();
+    if ($('#reportCodeDropdown').is(':visible')) {
+        $('#reportCodeSearch').focus();
+    }
+});
+
+	$(document).on('click', '.rc-option', function() {
+	    var val  = $(this).data('value');
+	    var text = $(this).text();
+	    $('#reportCodeBtn').text(text);
+	    $('#reportCodeSelect').val(val);
+	    $('#reportCodeDropdown').hide();
+	    onReportCodeChange();
+	});
+
+	$(document).on('click', function(e) {
+	    if (!$(e.target).closest('#reportCodeBtn, #reportCodeDropdown').length) {
+	        $('#reportCodeDropdown').hide();
+	    }
+	});
+
+	/* Hover effect */
+	$(document).on('mouseenter', '.rc-option', function() {
+	    $(this).css('background-color', '#eef4fb');
+	});
+	$(document).on('mouseleave', '.rc-option', function() {
+	    $(this).css('background-color', '#fff');
+	});
+	
+	function filterReportCodeOptions() {
+	    var filter = $('#reportCodeSearch').val().toLowerCase().trim();
+	    $('#reportCodeOptions .rc-option').each(function() {
+	        var text = $(this).text().toLowerCase();
+	        var val  = $(this).data('value');
+	        // Always show the blank "Select" option
+	        if (val === '' || val === undefined) {
+	            $(this).show();
+	        } else {
+	            $(this).toggle(text.indexOf(filter) > -1);
+	        }
+	    });
 	}
 	</script>
 	

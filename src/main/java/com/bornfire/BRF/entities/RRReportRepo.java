@@ -227,5 +227,15 @@ public interface RRReportRepo extends JpaRepository<RRReport, Integer> {
 	List<RRReport> findOtherDatesByRptCode(
      @Param("rptCode") String rptCode,
      @Param("endDate") String endDate);
+	
+	@Query(value =
+		    "SELECT REGEXP_SUBSTR(rpt_code, 'BRF[0-9]+') AS clean_code, " +
+		    "       MIN(rpt_description) AS rpt_description " +
+		    "FROM BRF_RR_RPT_MAST " +
+		    "WHERE REGEXP_LIKE(rpt_code, '^BRF[0-9]', 'i') " +
+		    "GROUP BY REGEXP_SUBSTR(rpt_code, 'BRF[0-9]+') " +
+		    "ORDER BY REGEXP_SUBSTR(rpt_code, 'BRF[0-9]+')",
+		    nativeQuery = true)
+		List<Object[]> getReportCodesForDropdown();
 
 }

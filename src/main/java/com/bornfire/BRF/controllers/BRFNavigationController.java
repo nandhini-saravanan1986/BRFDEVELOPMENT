@@ -461,7 +461,12 @@ public class BRFNavigationController {
 	}
 	
 	@GetMapping("/ReportCodeMapping")
-	public String reportCodeMapping() {
+	public String reportCodeMapping(Model model) {
+		
+		List<Object[]> reportCodes = reportServices.getDropdownReportCodes();
+
+	    model.addAttribute("reportCodes", reportCodes);
+		
         return "ReportCodeMapping";
     }
 	
