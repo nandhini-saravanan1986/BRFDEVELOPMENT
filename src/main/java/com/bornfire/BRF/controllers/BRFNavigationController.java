@@ -88,10 +88,11 @@ import net.bytebuddy.asm.Advice.Return;
 
 import com.bornfire.BRF.entities.BRFValidations;
 import com.bornfire.BRF.entities.BRFValidationsRepo;
+import com.bornfire.BRF.entities.BrfCommonMapping;
 import com.bornfire.BRF.entities.RRReport;
 import com.bornfire.BRF.services.CalculationService;
 import com.bornfire.BRF.services.ReportGenerationService;
-
+import com.bornfire.BRF.entities.BrfCommonMappingRepository;
 import org.apache.poi.ss.usermodel.*;
 
 import java.util.ArrayList;
@@ -1482,7 +1483,7 @@ html.append("</tbody></table></div>");
 				}
 				System.out.println("Report_Date Formatted Date : " + formattedDate +"utildate : "+utildate);
 				//ReportGenerationService.generateFullReport(formattedDate, rpt_code); 
-				jdbcTemplate.setQueryTimeout(600);
+				jdbcTemplate.setQueryTimeout(60000);
 				String sql = "CALL COMMON_TRIGGERING_PROCEDURE(?, ?)";
 				jdbcTemplate.update(sql, formattedDate, rpt_code);
 				//ReportGenerationService.executeCommonTrigger(formattedDate, rpt_code);				
@@ -1568,5 +1569,41 @@ html.append("</tbody></table></div>");
 						.body("{\"error\": \"Failed to execute procedure: " + e.getMessage() + "\"}");
 			}
 		}
+		@Autowired
+		BrfCommonMappingRepository BrfCommonMappingRepository;
 		
+		@GetMapping("/getMappingDetails")
+		@ResponseBody
+		public ResponseEntity<List<Object[]>> getDetails(@RequestParam("glSubHeadCode") String glSubHeadCode) {
+		    try {
+		        List<Object[]> details = BrfCommonMappingRepository.findDistinctCombinationsByGlSubHead(glSubHeadCode);
+		        
+		        return ResponseEntity.ok(details);
+		        
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		    }
+		}
+		@GetMapping("/getExistingMappingParams")
+		@ResponseBody
+		public ResponseEntity<List<Object[]>> getExistingMappingParams(
+		        @RequestParam("reportCode") String reportCode,
+		        @RequestParam("rowLabel") String rowLabel,
+		        @RequestParam("colLabel") String colLabel,
+		        @RequestParam("glSubHead") String glSubHead) { 
+		    try {
+		        String safeRowLabel = (rowLabel == null || rowLabel.trim().isEmpty()) ? null : rowLabel;
+		        String safeColLabel = (colLabel == null || colLabel.trim().isEmpty()) ? null : colLabel;
+
+		        List<Object[]> existingParams = BrfCommonMappingRepository.findMappingParameters(
+		                reportCode, safeRowLabel, safeColLabel, glSubHead);
+		        
+		        return ResponseEntity.ok(existingParams);
+		        
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		    }
+		}
 }

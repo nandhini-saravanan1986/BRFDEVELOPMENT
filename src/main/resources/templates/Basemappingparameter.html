@@ -21,7 +21,7 @@
     <script src="/webjars/bootstrap/4.3.1/js/bootstrap.min.js"
         th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
 
-    <title>Base Mapping Parameter</title>
+    <title>GL Configuration</title>
 
     <style>
         /* ── Brand colours ── */
@@ -292,7 +292,7 @@
         <!-- ─── Card Header ─── -->
         <div class="card-header">
             <div class="d-flex align-items-center justify-content-between" style="width:100%;">
-                <h5>BASE MAPPING PARAMETER</h5>
+                <h5>GL Configuration</h5>
                 <button class="btn-add-new" onclick="openAddModal()">
                     <i class="fas fa-plus"></i>&nbsp; Add New
                 </button>
@@ -399,19 +399,26 @@
                                maxlength="200" placeholder="Enter Account Description" />
                     </div>
                 </div>
-                <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <label class="modal-label">Currency <span class="req">*</span></label>
-                        <input type="text" id="fldCurrency" class="form-control modal-input"
-                               maxlength="10" placeholder="e.g. USD, GBP, EUR" />
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label class="modal-label">Data Type <span class="req">*</span></label>
-                        <input type="text" id="fldDataType" class="form-control modal-input"
-                               maxlength="20" placeholder="e.g. GL, TREASURY" />
-                    </div>
-                </div>
-            </div>
+					<div class="form-row">
+						<div class="form-group col-md-6">
+							<label class="modal-label">Currency <span class="req">*</span></label>
+							<select id="fldCurrency" class="form-control modal-input">
+								<option value="">-- Select Currency --</option>
+								<option value="USD">USD</option>
+								<option value="GBP">GBP</option>
+								<option value="EUR">EUR</option>
+							</select>
+						</div>
+						<div class="form-group col-md-6">
+							<label class="modal-label">Data Type <span class="req">*</span></label>
+							<select id="fldDataType" class="form-control modal-input">
+								<option value="">-- Select Data Type --</option>
+								<option value="GL">GL</option>
+								<option value="TREASURY">TREASURY</option>
+							</select>
+						</div>
+					</div>
+				</div>
             <div class="modal-footer" id="crudModalFooter">
                 <button type="button" class="btn-cancel-modal" data-dismiss="modal">
                     <i class="fas fa-times"></i>&nbsp; Cancel
@@ -458,8 +465,225 @@
     </div>
 </div>
 
+	<div class="modal fade" id="successModal" tabindex="-1" role="dialog"
+		data-backdrop="static">
+		<div class="modal-dialog modal-dialog-centered modal-lg"
+			role="document">
+			<div class="modal-content">
+				<div class="modal-header"
+					style="background-color: #2b506f; color: white;">
+					<h5 class="modal-title"
+						style="font-family: verdana; font-size: 15px; font-weight: bold;">
+						<i class="fas fa-check-circle"></i>&nbsp; Success
+					</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						style="color: white; opacity: 1;">
+						<span>&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+                <div class="alert alert-success" style="font-family:verdana; font-size:13px;">
+                    <strong>Record saved successfully!</strong> 
+                </div>
+                
+                <div id="successLoading" class="mt-3 text-center text-muted" style="font-family:verdana; font-size:13px;">
+                    <i class="fas fa-spinner fa-spin"></i>&nbsp; Fetching details...
+                </div>
 
-<script>
+                <div id="noDataMessage" class="mt-3 text-center text-muted" style="display:none; font-family:verdana; font-size:13px;">
+                   The saved GL SUB HEAD has not been mapped to any report yet 
+                </div>
+                
+                <div id="successTableContainer" class="table-outer mt-3" style="display:none;">
+                    <table class="bmp-table" style="width: 100%; min-width: unset;">
+                        <thead>
+                            <tr>
+                                <th>Report Code</th>
+                                <th>Row Label</th>
+                                <th>Column Label</th>
+                                <th style="text-align:center;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="successTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+				<div class="modal-footer">
+					<button type="button" class="btn-cancel-modal" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+<div class="modal fade" id="finalMapModal" tabindex="-1" role="dialog" style="z-index: 1060;">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 950px; width: 950px;">
+        
+        <div class="modal-content" style="height: 650px;">
+            <div class="modal-header py-2" style="background-color: #376275; color: white;">
+                <h6 class="modal-title mb-0" style="font-family: verdana; font-weight: bold;">
+                    <i class="fas fa-map-marker-alt"></i>&nbsp; Complete Mapping
+                </h6>
+                <button type="button" class="close" data-dismiss="modal" style="color: white; opacity: 1;">
+                    <span>&times;</span>
+                </button>
+            </div>
+            
+            <div class="modal-body" style="padding: 16px; overflow-y: auto;">
+                
+                <div id="finalMapLoading" class="mt-3 text-center text-muted" style="display:none; font-family:verdana; font-size:13px;">
+                    <i class="fas fa-spinner fa-spin"></i>&nbsp; Fetching existing parameters...
+                </div>
+
+                <div id="existingMappingSection" style="display:none; margin-bottom: 20px; background: #fff; padding: 10px; border: 1px solid #ced4da; border-radius: 4px;">
+                    <h6 style="font-family: verdana; font-size: 13px; font-weight: bold; color: #E77400; border-bottom: 1px solid #eee; padding-bottom: 6px; margin-bottom: 10px;">
+                        <i class="fas fa-list"></i> Existing Mapping Parameters
+                    </h6>
+                    <div style="max-height: 140px; overflow-y: auto;">
+                        
+                        <table class="table table-bordered table-sm" style="font-family: verdana; font-size: 11px; margin-bottom: 0; table-layout: fixed; width: 100%; word-break: break-word;">
+                            <thead style="background: #e9ecf0; position: sticky; top: 0; z-index: 1;">
+									<tr>
+										<th>Account Number</th>
+										<th>SOL ID</th>
+										<th>Constitution</th>
+										<th>Legal Entity</th>
+										<th>Scheme</th>
+										<th>HNI Networth</th>
+										<th>Turnover</th>
+										<th>Balance (LC)</th>
+									</tr>
+								</thead>
+                            <tbody id="existingMappingBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <h6 style="font-family: verdana; font-size: 13px; font-weight: bold; color: #E77400; border-bottom: 1px solid #eee; padding-bottom: 6px; margin-bottom: 10px;">
+                    <i class="fas fa-save"></i> Saved Record Details
+                </h6>
+                <div class="form-row mb-3">
+                    <div class="col-md-3">
+                        <label style="font-family: verdana; font-size: 12px; font-weight: bold;">GL HEAD</label>
+                        <input type="text" id="map_glHead" class="form-control form-control-sm" readonly style="background: #f5f5f5;">
+                    </div>
+                    <div class="col-md-3">
+                        <label style="font-family: verdana; font-size: 12px; font-weight: bold;">GL SUBHEAD</label>
+                        <input type="text" id="map_glSubHead" class="form-control form-control-sm" readonly style="background: #f5f5f5;">
+                    </div>
+                    <div class="col-md-3">
+                        <label style="font-family: verdana; font-size: 12px; font-weight: bold;">ACCOUNT ID</label>
+                        <input type="text" id="map_accountId" class="form-control form-control-sm" readonly style="background: #f5f5f5;">
+                    </div>
+                    <div class="col-md-3">
+                        <label style="font-family: verdana; font-size: 12px; font-weight: bold;">CURRENCY</label>
+                        <input type="text" id="map_currency" class="form-control form-control-sm" readonly style="background: #f5f5f5;">
+                    </div>
+                </div>
+
+                <h6 style="font-family: verdana; font-size: 13px; font-weight: bold; color: #376275; border-bottom: 1px solid #eee; padding-bottom: 6px; margin-bottom: 10px;">
+                    <i class="fas fa-table"></i> Selected Report
+                </h6>
+                <div class="form-row mb-3">
+                    <div class="col-md-4">
+                        <label style="font-family: verdana; font-size: 12px; font-weight: bold;">REPORT CODE</label>
+                        <input type="text" id="map_reportCode" class="form-control form-control-sm" readonly style="background: #f5f5f5;">
+                    </div>
+                    <div class="col-md-4">
+                        <label style="font-family: verdana; font-size: 12px; font-weight: bold;">ROW LABEL</label>
+                        <input type="text" id="map_rowLabel" class="form-control form-control-sm" readonly style="background: #f5f5f5;">
+                    </div>
+                    <div class="col-md-4">
+                        <label style="font-family: verdana; font-size: 12px; font-weight: bold;">COLUMN LABEL</label>
+                        <input type="text" id="map_colLabel" class="form-control form-control-sm" readonly style="background: #f5f5f5;">
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-2" style="border-bottom: 1px solid #eee; padding-bottom: 6px;">
+                    <h6 style="font-family: verdana; font-size: 13px; font-weight: bold; color: #376275; margin-bottom: 0;">
+                        <i class="fas fa-sliders-h"></i> Mapping Parameters
+                    </h6>
+                    <button type="button" id="btnAutoFillParams" class="btn btn-sm btn-outline-info" onclick="autoFillMappingParams()" style="display:none; font-family: verdana; font-size: 11px; padding: 2px 8px;">
+                        <i class="fas fa-magic"></i> Auto-Fill
+                    </button>
+                </div>
+                
+                <div class="form-row mb-2" style="flex-wrap: wrap; gap: 10px; align-items: flex-end;">
+                    <div class="col-auto" style="position: relative;">
+                        <label style="font-family: verdana; font-size: 12px; font-weight: bold;">SOL ID</label><br>
+                        <button type="button" id="mapSolIdBtn" onclick="toggleMenuById(event,'mapSolIdMenu')" class="form-control form-control-sm text-left" style="min-width: 160px; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-- Select SOL ID --</button>
+                        <div id="mapSolIdMenu" class="multi-select-menu" style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
+                    </div>
+                    <div class="col-auto" style="position: relative;">
+                        <label style="font-family: verdana; font-size: 12px; font-weight: bold;">Constitution Code</label><br>
+                        <button type="button" id="mapConstCodeBtn" onclick="toggleMenuById(event,'mapConstCodeMenu')" class="form-control form-control-sm text-left" style="min-width: 160px; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-- Select --</button>
+                        <div id="mapConstCodeMenu" class="multi-select-menu" style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
+                    </div>
+                    <div class="col-auto" style="position: relative;">
+                        <label style="font-family: verdana; font-size: 12px; font-weight: bold;">Legal Entity Type</label><br>
+                        <button type="button" id="mapLegalEntityBtn" onclick="toggleMenuById(event,'mapLegalEntityMenu')" class="form-control form-control-sm text-left" style="min-width: 160px; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-- Select --</button>
+                        <div id="mapLegalEntityMenu" class="multi-select-menu" style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
+                    </div>
+                    <div class="col-auto" style="position: relative;">
+                        <label style="font-family: verdana; font-size: 12px; font-weight: bold;">Scheme Type</label><br>
+                        <button type="button" id="mapSchemeTypeBtn" onclick="toggleMenuById(event,'mapSchemeTypeMenu')" class="form-control form-control-sm text-left" style="min-width: 160px; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-- Select --</button>
+                        <div id="mapSchemeTypeMenu" class="multi-select-menu" style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
+                    </div>
+                </div>
+
+                <div class="form-row mb-2" style="gap: 10px; align-items: flex-end;">
+                    <div class="col-auto">
+                        <label style="font-family: verdana; font-size: 12px; font-weight: bold;">HNI Networth</label>
+                        <input type="text" id="mapHniNetworth" class="form-control form-control-sm" placeholder="Enter Amount" style="min-width: 160px;">
+                    </div>
+                    <div class="col-auto">
+                        <label style="font-family: verdana; font-size: 12px; font-weight: bold;">Turnover</label>
+                        <input type="text" id="mapTurnover" class="form-control form-control-sm" placeholder="Enter Amount" style="min-width: 160px;">
+                    </div>
+                    <div class="col-auto">
+                        <label style="font-family: verdana; font-size: 12px; font-weight: bold;">Account Balance (LC)</label>
+                        <select id="mapBalanceLc" class="form-control form-control-sm" style="min-width: 160px;">
+                            <option value="">-- Select --</option>
+                            <option value="<0">Debit</option>
+                            <option value=">0">Credit</option>
+                            <option value="<>0">Net Off</option>
+                        </select>
+                    </div>
+                    <div class="col-auto" style="position: relative;">
+                        <label style="font-family: verdana; font-size: 12px; font-weight: bold;">Filter Columns</label><br>
+                        <button type="button" class="form-control form-control-sm filter-btn-final_0" onclick="toggleFilterMenu(event,'final_0')" style="min-width: 150px; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">3 selected</button>
+                        <div id="filterMenu_final_0" class="multi-select-menu filter-menu" style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 200px; overflow-y: auto; min-width: 180px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15); right: 0;">
+                            <div style="padding: 5px 14px; border-bottom: 1px solid #eee; position: sticky; top: -6px; background: #fff; z-index: 2;">
+                                <input type="checkbox" id="chk_filterAll_final_0" onclick="toggleAllFilter(this,'final_0')" checked>
+                                <label for="chk_filterAll_final_0" style="font-family: verdana; font-size: 12px; font-weight: bold; cursor: pointer; margin: 0;">Select All</label>
+                            </div>
+                            <div class="cb-item" style="padding: 4px 14px;">
+                                <input type="checkbox" class="chk-filter-final_0" id="chk_f1_final_0" value="GL_SUBHEAD_CODE" onchange="onFilterCheck('final_0')" checked>
+                                <label for="chk_f1_final_0" style="font-family: verdana; font-size: 12px; cursor: pointer; margin: 0;">GL SUBHEAD CODE</label>
+                            </div>
+                            <div class="cb-item" style="padding: 4px 14px;">
+                                <input type="checkbox" class="chk-filter-final_0" id="chk_f2_final_0" value="ACCOUNT_ID_BACID" onchange="onFilterCheck('final_0')" checked>
+                                <label for="chk_f2_final_0" style="font-family: verdana; font-size: 12px; cursor: pointer; margin: 0;">ACCOUNT ID BACID</label>
+                            </div>
+                            <div class="cb-item" style="padding: 4px 14px;">
+                                <input type="checkbox" class="chk-filter-final_0" id="chk_f3_final_0" value="CURRENCY" onchange="onFilterCheck('final_0')" checked>
+                                <label for="chk_f3_final_0" style="font-family: verdana; font-size: 12px; cursor: pointer; margin: 0;">CURRENCY</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer py-2">
+                <button type="button" class="btn-cancel" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn-submit" onclick="submitFinalMapping()">Save Mapping</button>
+            </div>
+        </div>
+    </div>
+</div>
+	<script>
 /* ══════════════════════════════════════════════════════════════════════
    GLOBAL STATE
 ══════════════════════════════════════════════════════════════════════ */
@@ -472,11 +696,57 @@ var _searchTimer  = null;
 var _deleteTarget = null;   // row data for the record pending deletion
 var _crudMode     = 'add';  // 'add' | 'edit' | 'view'
 
+var SOL_ID_OPTIONS = ['9001','9002','9003','9004','9005','9008'];
+
+var CONST_CODE_OPTIONS = [
+ 'LLTCO','DMCC','FZC','FZE','FZCLL','OFC','FZELL','OPLLC','PROPR','SPLLC',
+ 'PROPM','11512','PVTCO','PRTNR','ESTB','11505','33201','FGNCO','FZLLC','PBPVT',
+ 'PJSC','PRTNF','61003','ASSOC','71001','CGPSU','INSTU','SGPSU','PBCLI','33199',
+ 'BUC','11599','11501','11699','33101','FI','BFC','MXC','11507','NBFC','GOENT',
+ '44111','44116','INDL','44101','INDVM','INDVF','44108','WPS','44212','44205',
+ '44201','44217','44299','44214','44199','44209','44115','44107','44203','SGOVT',
+ '71002','61012','PCLBG','SOCIE','GEMS','PROPF','PBCNL','REALE','CC','SA','GOVT',
+ '61002','EDTRU','GOVCO','11409','RFC','11700','FGNSO','NFLLC','ULTCO',
+ '22302','BUEBC','56700','SHGOT','33299','11604','REAL','11401','11601',
+ '11403','NPO','44103','71005','44207','44216','44106','44208','44102','.','44109','44113',
+ 'NREIN','44210','44112','RESIN','0','44202','33104','11510','11506','33107','-','33103','BR'
+];
+
+var LEGAL_ENTITY_OPTIONS = [
+ 'SAL','WT','HOSP','PRTNR','MXC','FORSV','PFINS','GT','NPO','EDINS','FI','FGNBK','GOVTE',
+ 'ASSN','RT','OFC','JJWEL','NBFC','RWTO','MILLS','EMBSY','COFTZ','TRAVL','PARTY','THEAT','EXSTF',
+ 'PSE','BUSIN','SSI','PVTCO','GOVT','HOTEL','COMBK','PROPR','RECLB','CGOVB','INDVL','IMEX',
+ 'PBLCO','PROF','SERV','FGBBK','STAFF','GOVTL','PSEC','INSP','STBRK','CB','MNC','MLI','OTH',
+ 'EMBAS','SHOPS','HUWIF','INSG','AGRI','GOVTF'
+];
+
+var SCHEME_TYPE_OPTIONS = ['SBA','CLA','CAA','LAA','ODA','DDA','OAB','FBA','PCA','OAP','TDA','OSP'];
+
 /* ══════════════════════════════════════════════════════════════════════
    ON PAGE LOAD
 ══════════════════════════════════════════════════════════════════════ */
 $(document).ready(function () {
-    loadPage(1);
+ // 1. Load the main background table
+ loadPage(1);
+
+ // 2. Prevent the "Blocked aria-hidden" console warning
+ $('.modal').on('hide.bs.modal', function () {
+     if (document.activeElement) {
+         document.activeElement.blur();
+     }
+ });
+
+ // 3. Initialize the multi-select dropdowns for the Final Mapping Modal
+ buildMultiMenu('mapSolIdMenu',       'mapSolIdBtn',       SOL_ID_OPTIONS,       'fsol');
+ buildMultiMenu('mapConstCodeMenu',   'mapConstCodeBtn',   CONST_CODE_OPTIONS,   'fcc');
+ buildMultiMenu('mapLegalEntityMenu', 'mapLegalEntityBtn', LEGAL_ENTITY_OPTIONS, 'fle');
+ buildMultiMenu('mapSchemeTypeMenu',  'mapSchemeTypeBtn',  SCHEME_TYPE_OPTIONS,  'fst'); 
+
+ // Set default text properties so they can be reset properly
+ $('#mapSolIdBtn').data('default',       '-- Select SOL ID --');
+ $('#mapConstCodeBtn').data('default',   '-- Select --');
+ $('#mapLegalEntityBtn').data('default', '-- Select --');
+ $('#mapSchemeTypeBtn').data('default',  '-- Select --');
 });
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -644,7 +914,7 @@ function clearSearch() {
 ══════════════════════════════════════════════════════════════════════ */
 function openAddModal() {
     _crudMode = 'add';
-    $('#crudModalTitle').text('BASE MAPPING PARAMETER - ADD');
+    $('#crudModalTitle').text('GL Configuration - ADD');
     clearModalFields();
     setModalReadonly(false);
     $('#btnCrudSubmit').show();
@@ -656,7 +926,7 @@ function openAddModal() {
 ══════════════════════════════════════════════════════════════════════ */
 function openViewModal(row) {
     _crudMode = 'view';
-    $('#crudModalTitle').text('BASE MAPPING PARAMETER - VIEW');
+    $('#crudModalTitle').text('GL Configuration - VIEW');
     fillModalFields(row);
     setModalReadonly(true);
     $('#btnCrudSubmit').hide();
@@ -668,7 +938,7 @@ function openViewModal(row) {
 ══════════════════════════════════════════════════════════════════════ */
 function openEditModal(row) {
     _crudMode = 'edit';
-    $('#crudModalTitle').text('BASE MAPPING PARAMETER - EDIT');
+    $('#crudModalTitle').text('GL Configuration - EDIT');
     fillModalFields(row);
     setModalReadonly(false);
     $('#btnCrudSubmit').show();
@@ -695,8 +965,11 @@ function fillModalFields(row) {
     $('#fldDataType').val(nvl(row['DATA_TYPE']));
 }
 function setModalReadonly(flag) {
-    $('#fldGlHead, #fldGlSubHead, #fldAccountId, #fldAccountDesc, #fldCurrency, #fldDataType')
+    $('#fldGlHead, #fldGlSubHead, #fldAccountId, #fldAccountDesc')
         .prop('readonly', flag)
+        .css('background-color', flag ? '#f8f9fa' : '#fff');        
+    $('#fldCurrency, #fldDataType')
+        .prop('disabled', flag)
         .css('background-color', flag ? '#f8f9fa' : '#fff');
 }
 
@@ -756,8 +1029,14 @@ function submitCrud() {
         success: function () {
             $('#btnCrudSubmit').prop('disabled', false).text('Submit');
             $('#crudModal').modal('hide');
-            alert(_crudMode === 'add' ? 'Record added successfully.' : 'Record updated successfully.');
-            loadPage(_crudMode === 'add' ? 1 : _currentPage);
+            //alert(_crudMode === 'add' ? 'Record added successfully.' : 'Record updated successfully.');
+            //loadPage(_crudMode === 'add' ? 1 : _currentPage);
+            if (_crudMode === 'add') {
+            	fetchAndShowSuccessDetails(payload.glSubHeadCode);
+            } else {
+                alert('Record updated successfully.');
+                loadPage(_currentPage);
+            }
         },
         error: function (xhr) {
             $('#btnCrudSubmit').prop('disabled', false).text('Submit');
@@ -830,6 +1109,352 @@ function back() { window.history.back(); }
 ══════════════════════════════════════════════════════════════════════ */
 function nvl(val) { return (val !== null && val !== undefined) ? val : ''; }
 
+
+
+function fetchAndShowSuccessDetails(glSubHead) {
+ $('#successTableContainer, #noDataMessage').hide();
+ $('#successLoading').show();
+ $('#successTableBody').empty(); 
+ 
+ $('#successModal').modal('show');
+
+ $.ajax({
+     url: '/BRF/getMappingDetails', 
+     type: 'GET',
+     data: { glSubHeadCode: glSubHead }, 
+     success: function (res) {
+         $('#successLoading').hide();
+
+         if (res && res.length > 0) {
+             $('#successTableContainer').show();
+             
+             var $tbody = $('#successTableBody');
+             $.each(res, function (i, item) {
+                 $tbody.append(
+                     '<tr>' +
+                     '<td>' + nvl(item[0]) + '</td>' +
+                     '<td>' + nvl(item[1]) + '</td>' +
+                     '<td>' + nvl(item[2]) + '</td>' + 
+                     '<td style="text-align:center;">' +
+                     '<button type="button" class="btn btn-sm btn-primary" ' +
+                             'onclick="processRowAction(this, \'' + item[0] + '\', \'' + item[1] + '\', \'' + item[2] + '\')">' +
+                         'Map' +
+                     '</button>' +
+                 '</td>' +
+                     '</tr>'
+                 );
+             });
+         } else {
+             $('#noDataMessage').text(' The saved GL SUB HEAD has not been mapped to any report yet .').show();
+         }
+     },
+     error: function (xhr) {
+         $('#successLoading').hide();
+         $('#noDataMessage').html('<span class="text-danger"><i class="fas fa-exclamation-triangle"></i> Failed to fetch details. Server error.</span>').show();
+     }
+ });
+}
+
+$('#successModal').on('hidden.bs.modal', function () {
+ loadPage(_crudMode === 'add' ? 1 : _currentPage);
+});
+
+function processRowAction(btnElem, reportCode, rowLabel, colLabel) {
+ window._currentMapBtn = btnElem;
+ var glHead    = $('#fldGlHead').val();
+ var glSubHead = $('#fldGlSubHead').val();
+ var accountId = $('#fldAccountId').val();
+ var currency  = $('#fldCurrency').val();
+
+ $('#map_glHead').val(glHead);
+ $('#map_glSubHead').val(glSubHead);
+ $('#map_accountId').val(accountId);
+ $('#map_currency').val(currency);
+ 
+ $('#map_reportCode').val(reportCode);
+ $('#map_rowLabel').val(rowLabel);
+ $('#map_colLabel').val(colLabel);
+
+ resetMenu('mapSolIdMenu', 'mapSolIdBtn');
+ resetMenu('mapConstCodeMenu', 'mapConstCodeBtn');
+ resetMenu('mapLegalEntityMenu', 'mapLegalEntityBtn');
+ resetMenu('mapSchemeTypeMenu', 'mapSchemeTypeBtn');
+ 
+ $('#mapHniNetworth').val('');
+ $('#mapTurnover').val('');
+ $('#mapBalanceLc').val('');
+ 
+ $('.chk-filter-final_0').prop('checked', true); 
+ onFilterCheck('final_0');
+
+ $('#existingMappingSection').hide();
+ $('#existingMappingBody').empty();
+ $('#finalMapLoading').show();
+
+ $('#finalMapModal').modal('show');
+
+ $.ajax({
+     url: '/BRF/getExistingMappingParams', 
+     type: 'GET',
+     data: { 
+         reportCode: reportCode, 
+         rowLabel: (rowLabel.trim() === '-') ? '' : rowLabel.trim(), 
+         colLabel: (colLabel.trim() === '-') ? '' : colLabel.trim(),
+         glSubHead: glSubHead 
+     },
+     success: function (res) {
+         $('#finalMapLoading').hide();
+         
+         var $tbody = $('#existingMappingBody');
+         
+         if (res && res.length > 0) {
+             $('#existingMappingSection').show();
+             $('#btnAutoFillParams').show(); 
+             
+             window._currentExistingParams = res;             
+				$.each(res, function (i, item) {
+                 
+                 var displaySolId = nvl(item[1]).replace(/'/g, '');
+                 var displayConst = nvl(item[2]).replace(/'/g, '');
+                 var displayLegal = nvl(item[3]).replace(/'/g, '');
+                 var displayScheme = nvl(item[4]).replace(/'/g, '');
+
+                 $tbody.append(
+                     '<tr>' +
+                     '<td>' + nvl(item[0]) + '</td>' +                     
+                     '<td style="white-space: normal;">' + displaySolId + '</td>' + 
+                     '<td style="white-space: normal;">' + displayConst + '</td>' + 
+                     '<td style="white-space: normal;">' + displayLegal + '</td>' + 
+                     '<td style="white-space: normal;">' + displayScheme + '</td>' + 
+                     
+                     '<td>' + nvl(item[5]) + '</td>' + 
+                     '<td>' + nvl(item[6]) + '</td>' +
+                     '<td>' + nvl(item[7]) + '</td>' + 
+                     '</tr>'
+                 );
+             });
+         } else {
+             $('#btnAutoFillParams').hide();
+             window._currentExistingParams = [];
+         }
+     },
+     error: function (xhr) {
+         $('#finalMapLoading').hide();
+         $('#btnAutoFillParams').hide();
+     }
+ });
+} 
+
+
+function autoFillMappingParams() {
+ if (!window._currentExistingParams || window._currentExistingParams.length === 0) {
+     return;
+ }
+
+ var params = window._currentExistingParams[0];
+
+ preSelectMenuValues('mapSolIdMenu', 'mapSolIdBtn', nvl(params[1]));
+ preSelectMenuValues('mapConstCodeMenu', 'mapConstCodeBtn', nvl(params[2]));
+ preSelectMenuValues('mapLegalEntityMenu', 'mapLegalEntityBtn', nvl(params[3]));
+ preSelectMenuValues('mapSchemeTypeMenu', 'mapSchemeTypeBtn', nvl(params[4]));
+
+ $('#mapHniNetworth').val(nvl(params[5]));
+ $('#mapTurnover').val(nvl(params[6]));
+ $('#mapBalanceLc').val(nvl(params[7]));
+
+ var filterRaw = nvl(params[8]);
+ if (filterRaw) {
+     $('.chk-filter-final_0').prop('checked', false); 
+     filterRaw.split(',').forEach(function(v) { 
+         $('.chk-filter-final_0[value="' + v.trim() + '"]').prop('checked', true); 
+     });
+ } else {
+     $('.chk-filter-final_0').prop('checked', true);
+ }
+ onFilterCheck('final_0'); 
+}
+
+function preSelectMenuValues(menuId, btnId, storedStr) {
+ $('.cb-' + menuId).prop('checked', false);
+ if (storedStr) {
+     storedStr.replace(/'/g, '').split(',').forEach(function(v) {
+         var t = v.trim();
+         if (t) $('.cb-' + menuId + '[value="' + t + '"]').prop('checked', true);
+     });
+ }
+ multiMenuOnCheck(menuId, btnId);
+}
+function resetMenu(menuId, btnId) {
+    $('.cb-' + menuId).prop('checked', false);
+    
+    var $btn = $('#' + btnId);
+    var def  = $btn.data('default') || '-- Select --';
+    $btn.text(def);
+    
+    $('#' + menuId + ' input[type=checkbox][id$="_All"]').prop('checked', false);
+}
+
+
+function submitFinalMapping() {
+    var balanceLc = $('#mapBalanceLc').val();
+    if (!balanceLc) {
+        alert('Please select an Account Balance (LC).');
+        $('#mapBalanceLc').focus();
+        return;
+    }
+
+    var rawRow = $('#map_rowLabel').val().trim();
+    var rawCol = $('#map_colLabel').val().trim();
+    
+    var finalRow = (rawRow === '-') ? null : rawRow;
+    var finalCol = (rawCol === '-') ? null : rawCol;
+
+    var payload = [{
+        accountId        : $('#map_accountId').val(),
+        reportCode       : $('#map_reportCode').val(),
+        rowId            : finalRow, 
+        columnId         : finalCol, 
+        balanceLc        : balanceLc,
+        solId            : getMenuValues('mapSolIdMenu'),
+        constitutionCode : getMenuValues('mapConstCodeMenu'),
+        legalEntityType  : getMenuValues('mapLegalEntityMenu'),
+        schemeType       : getMenuValues('mapSchemeTypeMenu'),
+        hniNetworth      : $('#mapHniNetworth').val().trim(),
+        turnover         : $('#mapTurnover').val().trim(),
+        filterColumns    : getFilterValues('final_0')
+    }];
+
+    $.ajax({
+        url: '/BRF/BRFCommonTable/submit', 
+        type: 'POST', 
+        contentType: 'application/json', 
+        data: JSON.stringify(payload),
+        success: function(res) {
+            $('#finalMapModal').modal('hide');
+            alert('Mapping saved successfully!');
+            
+            if (window._currentMapBtn) {
+                $(window._currentMapBtn)
+                    .removeClass('btn-primary')  
+                    .addClass('btn-secondary')     
+                    .prop('disabled', true)         
+                    .html('Mapped'); 
+                
+                window._currentMapBtn = null;       
+            }
+        },
+        error: function(xhr, status, error) {
+            alert('Error saving mapping: ' + (xhr.responseText || error));
+        }
+    });
+}
+
+function onFilterCheck(idCode) {
+    var all = $('.chk-filter-' + idCode).length;
+    
+    var chk = $('.chk-filter-' + idCode + ':checked').length;
+    
+    $('#chk_filterAll_' + idCode).prop('checked', all === chk);
+    
+    refreshFilterBtnLabel(idCode);
+}
+function refreshFilterBtnLabel(idCode) {
+    var checked = $('.chk-filter-' + idCode + ':checked');
+    var btn = $('.filter-btn-' + idCode);
+    
+    if (checked.length === 0) {
+        btn.text('-- Select --');
+    } else if (checked.length === 1) {
+        btn.text(checked.first().next('label').text());
+    } else {
+        btn.text(checked.length + ' selected');
+    }
+}
+function toggleFilterMenu(e, idCode) {
+    e.stopPropagation();
+    $('.multi-select-menu').not('#filterMenu_' + idCode).hide();
+    $('.searchable-select-menu').hide();
+    $('#filterMenu_' + idCode).toggle();
+}
+
+function toggleAllFilter(masterChk, idCode) { 
+    $('.chk-filter-' + idCode).prop('checked', masterChk.checked); 
+    refreshFilterBtnLabel(idCode); 
+}
+
+function getFilterValues(idCode) {
+    return $('.chk-filter-' + idCode + ':checked').map(function() { return this.value; }).get().join(',');
+}
+
+function toggleMenuById(e, menuId) {
+ e.stopPropagation();
+ $('.multi-select-menu').not('#' + menuId).hide();
+ $('.searchable-select-menu').hide();
+ $('#' + menuId).toggle();
+}
+
+function buildMultiMenu(menuId, btnId, options, prefix) {
+ var $menu = $('#' + menuId).empty();
+ var allId = prefix + '_All';
+ $menu.append(
+     '<div style="padding:5px 14px;border-bottom:1px solid #eee;position:sticky;top:-6px;background:#fff;z-index:2;">' +
+     '<input type="text" class="form-control form-control-sm mb-2" placeholder="Search..." oninput="filterMultiSelect(this)">' +
+     '<input type="checkbox" id="' + allId + '"' +
+     ' onclick="multiMenuToggleAll(this,\'' + menuId + '\',\'' + btnId + '\')">' +
+     ' <label for="' + allId + '" style="font-family:verdana;font-size:12px;font-weight:bold;cursor:pointer;margin:0;">Select All</label>' +
+     '</div>'
+ );
+ options.forEach(function(val) {
+     var safeId = prefix + '_' + val.replace(/[^a-zA-Z0-9]/g, '_');
+     $menu.append(
+         '<div class="cb-item" style="padding:4px 14px;">' +
+         '<input type="checkbox" id="' + safeId + '" value="' + val +
+         '" class="cb-' + menuId + '" onchange="multiMenuOnCheck(\'' + menuId + '\',\'' + btnId + '\')">' +
+         ' <label for="' + safeId + '" style="font-family:verdana;font-size:12px;cursor:pointer;margin:0;">' + val + '</label>' +
+         '</div>'
+     );
+ });
+}
+
+function multiMenuToggleAll(masterChk, menuId, btnId) {
+ $('.cb-' + menuId).prop('checked', masterChk.checked);
+ multiMenuSyncBtn(menuId, btnId);
+}
+
+function multiMenuOnCheck(menuId, btnId) {
+ var total   = $('.cb-' + menuId).length;
+ var checked = $('.cb-' + menuId + ':checked').length;
+ $('#' + menuId + ' input[type=checkbox][id$="_All"]').prop('checked', total > 0 && total === checked);
+ multiMenuSyncBtn(menuId, btnId);
+}
+
+function multiMenuSyncBtn(menuId, btnId) {
+ var $checked = $('.cb-' + menuId + ':checked');
+ var $btn = $('#' + btnId);
+ var def  = $btn.data('default') || '-- Select --';
+ if ($checked.length === 0)      $btn.text(def);
+ else if ($checked.length === 1) $btn.text($checked.first().val());
+ else                            $btn.text($checked.length + ' selected');
+}
+
+function getMenuValues(menuId) {
+ var vals = $('.cb-' + menuId + ':checked').map(function() { return this.value; }).get();
+ return vals.length ? "'" + vals.join("','") + "'" : '';
+}
+
+function filterMultiSelect(input) {
+ var filter = $(input).val().toLowerCase();
+ $(input).closest('.multi-select-menu').find('.cb-item').each(function() {
+     $(this).toggle($(this).text().toLowerCase().indexOf(filter) > -1);
+ });
+}
+
+$(document).on('click', function(e) {
+ var $t = $(e.target);
+ if (!$t.closest('.multi-select-menu').length && !$t.is('[onclick*="toggleMenuById"]') && !$t.is('[onclick*="toggleFilterMenu"]')) {
+     $('.multi-select-menu').hide();
+ }
+});
 </script>
 
 </body>

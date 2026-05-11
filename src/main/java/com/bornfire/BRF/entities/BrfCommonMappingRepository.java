@@ -101,5 +101,17 @@ public interface BrfCommonMappingRepository
 	List<BrfCommonMapping> findbyreportcode(@Param("reportCode") String reportCode);
         
     
-    
+	@Query(value = "SELECT DISTINCT REPORT_CODE, COALESCE(ROW_ID, ' - '), COALESCE(COLUMN_ID, ' - ') "
+			+ "FROM BRF_COMMON_MAPPING_TABLE " + "WHERE GL_SUBHEAD_CODE = :glSubHead", nativeQuery = true)
+	List<Object[]> findDistinctCombinationsByGlSubHead(@Param("glSubHead") String glSubHead);
+
+	@Query(value = "SELECT ACCOUNT_ID_BACID, SOL_ID, CONSTITUTION_CODE, LEGAL_ENTITY_TYPE , "
+			+ "SCHEME_TYPE, HNI_NETWORTH, TURNOVER, ACCOUNT_BALANCE_LC, FILTERCOLUMNS  " + "FROM BRF_COMMON_MAPPING_TABLE "
+			+ "WHERE REPORT_CODE = :reportCode " + "AND (ROW_ID = :rowLabel OR (:rowLabel IS NULL AND ROW_ID IS NULL)) "
+			+ "AND (COLUMN_ID = :colLabel OR (:colLabel IS NULL AND COLUMN_ID IS NULL)) " 
+			+ "AND GL_SUBHEAD_CODE = :glSubHead", nativeQuery = true)
+	List<Object[]> findMappingParameters(@Param("reportCode") String reportCode, @Param("rowLabel") String rowLabel,
+			@Param("colLabel") String colLabel, @Param("glSubHead") String glSubHead);
+	
+	
 }
