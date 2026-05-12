@@ -113,5 +113,20 @@ public interface BrfCommonMappingRepository
 	List<Object[]> findMappingParameters(@Param("reportCode") String reportCode, @Param("rowLabel") String rowLabel,
 			@Param("colLabel") String colLabel, @Param("glSubHead") String glSubHead);
 	
+	@Query(value = "SELECT DISTINCT REPORT_CODE, COALESCE(ROW_ID, ' - '), COALESCE(COLUMN_ID, ' - ') " +
+            "FROM BRF_COMMON_MAPPING_TABLE " +
+            "WHERE ACCOUNT_ID_BACID = :accountId",
+            nativeQuery = true)
+	List<Object[]> findDistinctCombinationsByAccountId(@Param("accountId") String accountId);
+	
+	@Query(
+		    value = "SELECT DISTINCT GL_SUBHEAD_CODE " +
+		            "FROM BRF_COMMON_MAPPING_TABLE " +
+		            "WHERE REPORT_CODE = :reportCode " +
+		            "AND GL_SUBHEAD_CODE IS NOT NULL",
+		    nativeQuery = true
+		)
+	List<String> findMappedGlSubheadCodes(@Param("reportCode") String reportCode);
+	
 	
 }

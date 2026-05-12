@@ -38,6 +38,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.usermodel.CellValue;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 //import java.util.Arrays;
@@ -270,26 +271,51 @@ public class ReportServices {
 		return s.trim().matches("^\\d+\\.\\d+.*");
 	}
 
+//	private List<String> getAvailableCols(Row row, int dataStartCol) {
+//		List<String> available = new ArrayList<>();
+//		if (row == null)
+//			return available;
+//
+//		int lastCol = row.getLastCellNum();
+//
+//		// Loop starting exactly from the dynamically saved column you passed in
+//		for (int col = dataStartCol; col < lastCol; col++) {
+//			Cell c = row.getCell(col);
+//
+//			// If the cell has data, map its physical location back to a relative letter (A,
+//			// B, C...)
+//			if (c != null && c.getCellTypeEnum() != CellType.BLANK) {
+//				int relativeIdx = col - dataStartCol;
+//				String colLetter = getColumnLetter(relativeIdx);
+//				available.add(colLetter);
+//			}
+//		}
+//		return available;
+//	}
+	
 	private List<String> getAvailableCols(Row row, int dataStartCol) {
-		List<String> available = new ArrayList<>();
-		if (row == null)
-			return available;
+	    List<String> available = new ArrayList<>();
+	    if (row == null) return available;
 
-		int lastCol = row.getLastCellNum();
+//	    for (int col = dataStartCol; col <= 12; col++) {
+	    int rowLastCol = (row.getLastCellNum() - 1);
+	    for (int col = dataStartCol; col <= rowLastCol; col++) {
+	        Cell c = row.getCell(col);
+	        if (c == null) continue;
 
-		// Loop starting exactly from the dynamically saved column you passed in
-		for (int col = dataStartCol; col < lastCol; col++) {
-			Cell c = row.getCell(col);
+	        CellType type = c.getCellTypeEnum();
+	        if (type == CellType.BLANK) continue;
+	        if (type == CellType.STRING) continue; // ← FIX: skip text/label cells
 
-			// If the cell has data, map its physical location back to a relative letter (A,
-			// B, C...)
-			if (c != null && c.getCellTypeEnum() != CellType.BLANK) {
-				int relativeIdx = col - dataStartCol;
-				String colLetter = getColumnLetter(relativeIdx);
-				available.add(colLetter);
-			}
-		}
-		return available;
+	        if (type == CellType.FORMULA) {
+	            String formula = c.getCellFormula().trim();
+	            if (!formula.matches("^\\d+(\\.\\d+)?$")) continue;
+	        }
+
+	        int relativeIdx = col - dataStartCol;
+	        available.add(getColumnLetter(relativeIdx));
+	    }
+	    return available;
 	}
 
 	// Converts indices (0, 1, 2) to Excel letters (A, B, C)
@@ -449,64 +475,157 @@ public class ReportServices {
 			structure = cHasDecimal ? 3 : 2;
 		}
 
+//		List<Map<String, String>> columns = new ArrayList<>();
+//
+//		if (firstDataRow >= 0) {
+//
+//			int startCol = (structure == 0) ? 2 : 3;
+//			if (savedStartCol != null)
+//				startCol = savedStartCol;
+//
+//			int headerStart = (structure == 0 && lastAllStringRow >= 0) ? lastAllStringRow
+//					: Math.max(0, firstDataRow - 6);
+//			if (savedHeaderStart != null)
+//				headerStart = savedHeaderStart;
+//
+//			int endCol = 0;
+//			for (int r = headerStart; r <= firstDataRow; r++) {
+//				Row hr = sheet.getRow(r);
+//				if (hr != null && hr.getLastCellNum() - 1 > endCol) {
+//					endCol = hr.getLastCellNum() - 1;
+//				}
+//			}
+//
+//			if (endCol < startCol)
+//				endCol = startCol;
+//
+//			int totalCols = endCol - startCol + 1;
+//			String[] colNames = new String[totalCols];
+//			Arrays.fill(colNames, "");
+//
+//			for (int r = headerStart; r <= firstDataRow; r++) {
+//				Row hr = sheet.getRow(r);
+//				if (hr == null)
+//					continue;
+//
+//				for (int col = startCol; col <= endCol; col++) {
+//
+//					Cell hc = hr.getCell(col);
+//					if (hc == null || hc.getCellTypeEnum() != CellType.STRING)
+//						continue;
+//					String val = hc.getStringCellValue().trim();
+//
+//					if (!val.isEmpty()) {
+//						if (!colNames[col - startCol].isEmpty())
+//							colNames[col - startCol] += " - ";
+//						colNames[col - startCol] += val;
+//					}
+//				}
+//			}
+//
+//			for (int i = 0; i < colNames.length; i++) {
+//				if (!colNames[i].isEmpty()) {
+//					Map<String, String> cm = new HashMap<>();
+//					cm.put("colCode", getColumnLetter(i));
+//					cm.put("colName", colNames[i]);
+//					columns.add(cm);
+//				}
+//			}
+//		}
+//		result.put("columns", columns);
+		
+		int dataStartCol;
+		if (structure == 0)      dataStartCol = 2;
+		else if (structure == 3) dataStartCol = 4;
+		else                     dataStartCol = 3; // structure == 2
+		if (savedStartCol != null) dataStartCol = savedStartCol;
+		
+		int endCol = dataStartCol;
+		if (firstDataRow >= 0) {
+		    int scanStart = Math.max(0, firstDataRow - 6);
+		    for (int r = scanStart; r <= firstDataRow; r++) {
+		        Row hr = sheet.getRow(r);
+		        if (hr != null && hr.getLastCellNum() - 1 > endCol) {
+		            endCol = hr.getLastCellNum() - 1;
+		        }
+		    }
+		}
+	
+		Map<String, String> mergedCellValues = new HashMap<>();
+
+		for (CellRangeAddress region : sheet.getMergedRegions()) {
+
+		    // Skip full-width title rows (e.g. "UAE OPERATIONS")
+		    if (region.getFirstColumn() <= dataStartCol && region.getLastColumn() >= endCol) {
+		        continue;
+		    }
+
+		    Row firstRow = sheet.getRow(region.getFirstRow());
+		    if (firstRow == null) continue;
+
+		    Cell firstCell = firstRow.getCell(region.getFirstColumn());
+		    if (firstCell == null || firstCell.getCellTypeEnum() != CellType.STRING) continue;
+
+		    String val = firstCell.getStringCellValue().trim();
+		    if (val.isEmpty()) continue;
+
+		    for (int c = region.getFirstColumn(); c <= region.getLastColumn(); c++) {
+		        mergedCellValues.put(region.getFirstRow() + ":" + c, val);
+		    }
+		}
+
+		// ── THEN the columns section ──
 		List<Map<String, String>> columns = new ArrayList<>();
 
 		if (firstDataRow >= 0) {
 
-			int startCol = (structure == 0) ? 2 : 3;
-			if (savedStartCol != null)
-				startCol = savedStartCol;
+		    int totalCols = endCol - dataStartCol + 1;   // endCol already declared above
+		    String[] colNames = new String[totalCols];
+		    Arrays.fill(colNames, "");
 
-			int headerStart = (structure == 0 && lastAllStringRow >= 0) ? lastAllStringRow
-					: Math.max(0, firstDataRow - 6);
-			if (savedHeaderStart != null)
-				headerStart = savedHeaderStart;
+		 // skips metadata rows 1-5:
+		    int headerStart = (structure == 0 && lastAllStringRow >= 0)
+		            ? lastAllStringRow
+		            : Math.max(5, firstDataRow - 6);
+		    if (savedHeaderStart != null) headerStart = savedHeaderStart;
 
-			int endCol = 0;
-			for (int r = headerStart; r <= firstDataRow; r++) {
-				Row hr = sheet.getRow(r);
-				if (hr != null && hr.getLastCellNum() - 1 > endCol) {
-					endCol = hr.getLastCellNum() - 1;
-				}
-			}
+		    for (int r = headerStart; r <= firstDataRow; r++) {
+		        Row hr = sheet.getRow(r);
+		        if (hr == null) continue;
 
-			if (endCol < startCol)
-				endCol = startCol;
+		        for (int col = dataStartCol; col <= endCol; col++) {
 
-			int totalCols = endCol - startCol + 1;
-			String[] colNames = new String[totalCols];
-			Arrays.fill(colNames, "");
+		            String val = "";
+		            String mergeKey = r + ":" + col;
 
-			for (int r = headerStart; r <= firstDataRow; r++) {
-				Row hr = sheet.getRow(r);
-				if (hr == null)
-					continue;
+		            if (mergedCellValues.containsKey(mergeKey)) {
+		                val = mergedCellValues.get(mergeKey);
+		            } else {
+		                Cell hc = hr.getCell(col);
+		                if (hc != null && hc.getCellTypeEnum() == CellType.STRING) {
+		                    val = hc.getStringCellValue().trim();
+		                }
+		            }
 
-				for (int col = startCol; col <= endCol; col++) {
+		            if (!val.isEmpty()) {
+		                if (!colNames[col - dataStartCol].isEmpty())
+		                    colNames[col - dataStartCol] += " - ";
+		                colNames[col - dataStartCol] += val;
+		            }
+		        }
+		    }
 
-					Cell hc = hr.getCell(col);
-					if (hc == null || hc.getCellTypeEnum() != CellType.STRING)
-						continue;
-					String val = hc.getStringCellValue().trim();
-
-					if (!val.isEmpty()) {
-						if (!colNames[col - startCol].isEmpty())
-							colNames[col - startCol] += " - ";
-						colNames[col - startCol] += val;
-					}
-				}
-			}
-
-			for (int i = 0; i < colNames.length; i++) {
-				if (!colNames[i].isEmpty()) {
-					Map<String, String> cm = new HashMap<>();
-					cm.put("colCode", getColumnLetter(i));
-					cm.put("colName", colNames[i]);
-					columns.add(cm);
-				}
-			}
+		    for (int i = 0; i < colNames.length; i++) {
+		        if (!colNames[i].isEmpty()) {
+		            Map<String, String> cm = new HashMap<>();
+		            cm.put("colCode", getColumnLetter(i));
+		            cm.put("colName", colNames[i]);
+		            columns.add(cm);
+		        }
+		    }
 		}
 		result.put("columns", columns);
+		
 //     System.out.println("COLUMNS: " + columns);
 		/*
 		 * ═══════════════════════════════════════════════════════════════ MAIN SCAN –
@@ -626,11 +745,12 @@ public class ReportServices {
 			/* ── skip fake "1" rows with only text ── */
 			boolean hasOnlyText = true;
 
-			int checkStart = (structure == 0) ? 2 : 4;
-			if (savedStartCol != null)
-				checkStart = savedStartCol;
+//			int checkStart = (structure == 0) ? 2 : 4;
+//			if (savedStartCol != null)
+//				checkStart = savedStartCol;
 
-			for (int col = checkStart; col <= 12; col++) {
+//			for (int col = dataStartCol; col <= 12; col++) {
+			for (int col = dataStartCol; col <= endCol; col++) {
 
 				Cell c = row.getCell(col);
 
@@ -655,11 +775,11 @@ public class ReportServices {
 			int formulaCount = 0;
 			int nonEmptyCount = 0;
 
-			int headerCheckStart = (structure == 0) ? 2 : 4;
-			if (savedStartCol != null)
-				headerCheckStart = savedStartCol;
+//			int headerCheckStart = (structure == 0) ? 2 : 4;
+//			if (savedStartCol != null)
+//				headerCheckStart = savedStartCol;
 			int lastCol = row.getLastCellNum();
-			for (int col = headerCheckStart; col < lastCol; col++) {
+			for (int col = dataStartCol; col < lastCol; col++) {
 
 				Cell c = row.getCell(col);
 
@@ -689,7 +809,7 @@ public class ReportServices {
 			map.put("label", currentLabel);
 			map.put("header", header);
 
-			map.put("availableCols", getAvailableCols(row, checkStart));
+			map.put("availableCols", getAvailableCols(row, dataStartCol));
 
 			map.put("remarks", "");
 			rows.add(map);

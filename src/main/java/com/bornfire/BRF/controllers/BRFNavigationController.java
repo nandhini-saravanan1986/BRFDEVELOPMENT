@@ -809,7 +809,7 @@ public class BRFNavigationController {
 
                 // ── 7. BUILD THE HTML TABLE (Using SMART boundaries) ──
                 // The outer container must be position: relative for sticky elements inside to anchor correctly.
-                html.append("<div class='table-responsive' style='width: 100%; height: calc(100vh - 420px); min-height: 400px; overflow: auto; position: relative;'>");
+                html.append("<div class='table-responsive' style='width: 100%; height: calc(100vh - 300px); min-height: 530px; overflow: auto; position: relative;'>");
                 html.append("<table class='table table-bordered table-sm' style='font-family: Calibri, verdana, sans-serif; font-size: 13px; width: max-content; background: white; margin-bottom: 0; border-collapse: separate; border-spacing: 0;'>");
 
                 // ── STRICT STICKY HEADERS (Top Row) ──
@@ -1216,13 +1216,48 @@ html.append("</tbody></table></div>");
                 if (maxCol > 50) maxCol = 50; // Cap columns
 
                 // ── NEW: GENERATE CONTINUOUS COLUMN LABELS ──
-                Map<Integer, String> colLabelsMap = new HashMap<>();
-                int logicalColIndex = 0; // Always start at 0 so the first data column is 'A'
+//                Map<Integer, String> colLabelsMap = new HashMap<>();
+//                int logicalColIndex = 0; // Always start at 0 so the first data column is 'A'
+//                
+//                for (int c = dataStartCol; c < maxCol; c++) {
+//                    String colLetter = getColumnLetter(logicalColIndex++); 
+//                    colLabelsMap.put(c, "COL" + colLetter); 
+//                }
                 
+             // ── NEW: GENERATE CONTINUOUS COLUMN LABELS ──
+                Map<Integer, String> colLabelsMap = new HashMap<>();
+                int logicalColIndex = 0;
+
                 for (int c = dataStartCol; c < maxCol; c++) {
-                    String colLetter = getColumnLetter(logicalColIndex++); 
-                    colLabelsMap.put(c, "COL" + colLetter); 
+                    String colLetter = getColumnLetter(logicalColIndex++);
+                    colLabelsMap.put(c, "COL" + colLetter);
                 }
+
+                // ── FIND FIRST CLICKABLE (non-formula) ROW LABEL for column key construction ──
+                String firstClickableRowLabel = null;
+                for (int r = firstDataRow; r < firstStopRow && r <= maxRow; r++) {
+                    String lbl = rowLabelsMap.get(r);
+                    if (lbl == null) continue;
+                    Row rowCheck = sheet.getRow(r);
+                    if (rowCheck == null) continue;
+                    int formulaCount = 0, nonEmptyCount = 0;
+                    int lastDataCol = rowCheck.getLastCellNum();
+                    for (int col = dataStartCol; col < lastDataCol; col++) {
+                        Cell fc = rowCheck.getCell(col);
+                        if (fc == null || fc.getCellTypeEnum() == CellType.BLANK) continue;
+                        nonEmptyCount++;
+                        if (fc.getCellTypeEnum() == CellType.FORMULA) {
+                            String formula = fc.getCellFormula().trim();
+                            if (!formula.matches("^\\d+(\\.\\d+)?$")) formulaCount++;
+                        }
+                    }
+                    // Non-formula row (or empty row): first clickable row found
+                    if (nonEmptyCount == 0 || formulaCount < nonEmptyCount) {
+                        firstClickableRowLabel = lbl;
+                        break;
+                    }
+                }
+                
                 // Build merged region maps
                 boolean[][] skipCells = new boolean[maxRow + 1][maxCol];
                 Map<String, String> spanMap = new HashMap<>();
@@ -1261,7 +1296,7 @@ html.append("</tbody></table></div>");
                     .append("</div>");
 
                 // Table
-                html.append("<div style='overflow: auto; width: 100%; height: calc(100vh - 380px); min-height: 400px; position: relative;'>")
+                html.append("<div style='overflow: auto; width: 100%; height: calc(100vh - 350px); min-height: 580px; position: relative;'>")
                     .append("<table id='rawExcelTable' style='border-collapse: collapse; font-family: Calibri, verdana, sans-serif; "
                           + "font-size: 13px; width: max-content; background: white;'>")
                     .append("<thead><tr>")
@@ -1270,22 +1305,54 @@ html.append("</tbody></table></div>");
                     .append("<th style='box-sizing: border-box; width: 55px; min-width: 55px; max-width: 55px; background:#e9ecf0; color:#333; border:1px solid #c0c0c0; padding:4px 8px; text-align:center; position:sticky; top:0; left:85px; z-index:5;'>#</th>");
 
                 // ── RENDER EXCEL LETTERS + ORANGE COLUMN BADGES ──
+//                for (int c = 0; c < maxCol; c++) {
+//                    String colLetter = (c < 26)
+//                        ? String.valueOf((char)('A' + c))
+//                        : String.valueOf((char)('A' + (c / 26) - 1)) + (char)('A' + (c % 26));
+//                        
+//                    String colId = colLabelsMap.get(c);
+//
+//                    html.append("<th style='background:#e9ecf0; color:#333; border:1px solid #c0c0c0; ")
+//                        .append("padding:4px 10px; text-align:center; position:sticky; top:0; z-index:2; ")
+//                        .append("white-space:nowrap; vertical-align:bottom;'>");
+//                        
+//                    if (colId != null) {
+//                        html.append("<div style='background:#E77400; color:white; border-radius:3px; padding:1px 5px; font-size:10px; margin-bottom:2px; font-weight:bold; box-shadow: 0 1px 2px rgba(0,0,0,0.2);'>")
+//                            .append(colId).append("</div>");
+//                    }
+//                    
+//                    html.append(colLetter).append("</th>");
+//                }
+             // ── RENDER EXCEL LETTERS + ORANGE COLUMN BADGES (with onclick for mapped columns) ──
                 for (int c = 0; c < maxCol; c++) {
                     String colLetter = (c < 26)
                         ? String.valueOf((char)('A' + c))
                         : String.valueOf((char)('A' + (c / 26) - 1)) + (char)('A' + (c % 26));
-                        
+
                     String colId = colLabelsMap.get(c);
 
-                    html.append("<th style='background:#e9ecf0; color:#333; border:1px solid #c0c0c0; ")
-                        .append("padding:4px 10px; text-align:center; position:sticky; top:0; z-index:2; ")
-                        .append("white-space:nowrap; vertical-align:bottom;'>");
-                        
                     if (colId != null) {
+                        // colId is "COLA", "COLB", etc. — strip the "COL" prefix to get the suffix letter(s)
+                        String colSuffix = colId.substring(3); // "COLA" -> "A"
+                        // If firstClickableRowLabel = "ROW101", colKey = "ROW101A" (backend-recognised key)
+                        String colKey = (firstClickableRowLabel != null)
+                            ? firstClickableRowLabel + colSuffix
+                            : colId;
+
+                        html.append("<th style='background:#e9ecf0; color:#333; border:1px solid #c0c0c0; ")
+                            .append("padding:4px 10px; text-align:center; position:sticky; top:0; z-index:2; ")
+                            .append("white-space:nowrap; vertical-align:bottom; cursor:pointer;' ")
+                            .append("onclick='openColMappingModal(\"").append(colId).append("\", \"").append(colKey).append("\")'")
+                            .append(" title='Click to map column ").append(colId).append("'>");
+
                         html.append("<div style='background:#E77400; color:white; border-radius:3px; padding:1px 5px; font-size:10px; margin-bottom:2px; font-weight:bold; box-shadow: 0 1px 2px rgba(0,0,0,0.2);'>")
                             .append(colId).append("</div>");
+                    } else {
+                        html.append("<th style='background:#e9ecf0; color:#333; border:1px solid #c0c0c0; ")
+                            .append("padding:4px 10px; text-align:center; position:sticky; top:0; z-index:2; ")
+                            .append("white-space:nowrap; vertical-align:bottom;'>");
                     }
-                    
+
                     html.append(colLetter).append("</th>");
                 }
                 html.append("</tr></thead><tbody>");
@@ -1298,8 +1365,41 @@ html.append("</tbody></table></div>");
                     boolean hasLabel = (label != null);
 
                     // Add OnClick Event to the Row
-                    if (hasLabel) {
+//                    if (hasLabel) {
+//                        html.append("<tr class='mappable-row' style='cursor:pointer;' onclick='openRowMappingModal(\"").append(label).append("\")' title='Click to map ").append(label).append("'>");
+//                    } else {
+//                        html.append("<tr>");
+//                    }
+                    
+                 // ── Detect formula row using same logic as ReportServices ──
+                    boolean isFormulaRow = false;
+                    if (hasLabel && row != null) {
+                        int formulaCount  = 0;
+                        int nonEmptyCount = 0;
+                        int lastDataCol   = row.getLastCellNum();
+                        for (int col = dataStartCol; col < lastDataCol; col++) {
+                            Cell fc = row.getCell(col);
+                            if (fc == null || fc.getCellTypeEnum() == CellType.BLANK) continue;
+                            nonEmptyCount++;
+                            if (fc.getCellTypeEnum() == CellType.FORMULA) {
+                                String formula = fc.getCellFormula().trim();
+                                // Ignore plain-number formulas like "=0" or "=1.5"
+                                if (!formula.matches("^\\d+(\\.\\d+)?$")) {
+                                    formulaCount++;
+                                }
+                            }
+                        }
+                        if (nonEmptyCount > 0 && formulaCount == nonEmptyCount) {
+                            isFormulaRow = true;
+                        }
+                    }
+
+                    // Add OnClick only for non-formula rows
+                    if (hasLabel && !isFormulaRow) {
                         html.append("<tr class='mappable-row' style='cursor:pointer;' onclick='openRowMappingModal(\"").append(label).append("\")' title='Click to map ").append(label).append("'>");
+                    } else if (hasLabel && isFormulaRow) {
+                        // Formula rows — no onclick, visually distinct
+                        html.append("<tr style='background-color:#eef4fb;' title='Formula row – not mappable'>");
                     } else {
                         html.append("<tr>");
                     }
@@ -1605,5 +1705,11 @@ html.append("</tbody></table></div>");
 		        e.printStackTrace();
 		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		    }
+		}
+		
+		@GetMapping("/Reports/accountMappings")
+		@ResponseBody
+		public List<Object[]> getAccountMappings(@RequestParam String accountId) {
+		    return BrfCommonMappingRepository.findDistinctCombinationsByAccountId(accountId);
 		}
 }

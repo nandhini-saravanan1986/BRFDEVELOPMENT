@@ -8,9 +8,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 @Service
@@ -78,6 +80,41 @@ public class MappingAccountService {
     // Returns rows from BRF_BASE_MAPPING_TABLE whose ACCOUNT_ID_BACID does
     // NOT exist in BRF_COMMON_MAPPING_TABLE for the given reportCode.
     // ─────────────────────────────────────────────────────────────────────────
+//    public List<Map<String, String>> getUnmappedAccounts(String reportCode) {
+//        if (reportCode == null || reportCode.trim().isEmpty()) {
+//            return Collections.emptyList();
+//        }
+//
+//        List<BrfBaseMapping> rows = baseMappingRepo.findUnmappedAccounts(reportCode);
+//        System.out.println("UNMAPPED COUNT = " + rows.size());
+//
+//        List<Map<String, String>> result = new ArrayList<>();
+//
+//        for (BrfBaseMapping row : rows) {
+//            if (row == null) continue;
+//
+//            Map<String, String> view = new LinkedHashMap<>();
+//
+//            view.put("GL_HEAD",               nvl(row.getGlHead()));
+//            view.put("GL_SUBHEAD_CODE",       nvl(row.getGlSubheadCode()));
+//            view.put("ACCOUNT_ID_BACID",      nvl(row.getAccountIdBacid()));
+//            view.put("REPORT_CODE",           nvl(row.getReportCode()));
+//            view.put("ROW_ID",                nvl(row.getRowId()));
+//            view.put("COLUMN_ID",             nvl(row.getColumnId()));
+//            view.put("REPORT_ADDL_CRITERIA_1", nvl(row.getReportAddlCriteria1()));
+//            view.put("REPORT_ADDL_CRITERIA_2", nvl(row.getReportAddlCriteria2()));
+//            view.put("REPORT_ADDL_CRITERIA_3", nvl(row.getReportAddlCriteria3()));
+//         // Extra fields needed by Edit UnMapped modal
+//            view.put("ACCOUNT_DESCRIPTION", nvl(row.getAccountDescription()));
+//            view.put("CURRENCY",            nvl(row.getCurrency()));
+//            view.put("ACCOUNT_BALANCE_LC",  nvl(row.getAccountBalanceLc()));
+//
+//            result.add(view);
+//        }
+//
+//        return result;
+//    }
+    
     public List<Map<String, String>> getUnmappedAccounts(String reportCode) {
         if (reportCode == null || reportCode.trim().isEmpty()) {
             return Collections.emptyList();
@@ -86,30 +123,50 @@ public class MappingAccountService {
         List<BrfBaseMapping> rows = baseMappingRepo.findUnmappedAccounts(reportCode);
         System.out.println("UNMAPPED COUNT = " + rows.size());
 
-        List<Map<String, String>> result = new ArrayList<>();
+        // Fetch all GL_SUBHEAD_CODEs already present in the common mapping table
+        // for this reportCode — used to flag partially-mapped subheads
+        List<String> mappedSubheads = commonMappingRepo.findMappedGlSubheadCodes(reportCode);
+        Set<String> mappedSubheadSet = new HashSet<>(mappedSubheads);
+
+        List<Map<String, String>> highlighted = new ArrayList<>();
+        List<Map<String, String>> normal      = new ArrayList<>();
 
         for (BrfBaseMapping row : rows) {
             if (row == null) continue;
 
             Map<String, String> view = new LinkedHashMap<>();
 
-            view.put("GL_HEAD",               nvl(row.getGlHead()));
-            view.put("GL_SUBHEAD_CODE",       nvl(row.getGlSubheadCode()));
-            view.put("ACCOUNT_ID_BACID",      nvl(row.getAccountIdBacid()));
-            view.put("REPORT_CODE",           nvl(row.getReportCode()));
-            view.put("ROW_ID",                nvl(row.getRowId()));
-            view.put("COLUMN_ID",             nvl(row.getColumnId()));
+            view.put("GL_HEAD",                nvl(row.getGlHead()));
+            view.put("GL_SUBHEAD_CODE",        nvl(row.getGlSubheadCode()));
+            view.put("ACCOUNT_ID_BACID",       nvl(row.getAccountIdBacid()));
+            view.put("REPORT_CODE",            nvl(row.getReportCode()));
+            view.put("ROW_ID",                 nvl(row.getRowId()));
+            view.put("COLUMN_ID",              nvl(row.getColumnId()));
             view.put("REPORT_ADDL_CRITERIA_1", nvl(row.getReportAddlCriteria1()));
             view.put("REPORT_ADDL_CRITERIA_2", nvl(row.getReportAddlCriteria2()));
             view.put("REPORT_ADDL_CRITERIA_3", nvl(row.getReportAddlCriteria3()));
-         // Extra fields needed by Edit UnMapped modal
-            view.put("ACCOUNT_DESCRIPTION", nvl(row.getAccountDescription()));
-            view.put("CURRENCY",            nvl(row.getCurrency()));
-            view.put("ACCOUNT_BALANCE_LC",  nvl(row.getAccountBalanceLc()));
+            // Extra fields needed by Edit UnMapped modal
+            view.put("ACCOUNT_DESCRIPTION",    nvl(row.getAccountDescription()));
+            view.put("CURRENCY",               nvl(row.getCurrency()));
+            view.put("ACCOUNT_BALANCE_LC",     nvl(row.getAccountBalanceLc()));
 
-            result.add(view);
+            // HIGHLIGHT_FLG = "Y" if this account's GL_SUBHEAD_CODE already has
+            // at least one OTHER account mapped under the same reportCode
+            String subhead = nvl(row.getGlSubheadCode());
+            boolean isHighlighted = !subhead.isEmpty() && mappedSubheadSet.contains(subhead);
+            view.put("HIGHLIGHT_FLG", isHighlighted ? "Y" : "N");
+
+            if (isHighlighted) {
+                highlighted.add(view);
+            } else {
+                normal.add(view);
+            }
         }
 
+        // Highlighted rows (green) come first
+        List<Map<String, String>> result = new ArrayList<>();
+        result.addAll(highlighted);
+        result.addAll(normal);
         return result;
     }
 
