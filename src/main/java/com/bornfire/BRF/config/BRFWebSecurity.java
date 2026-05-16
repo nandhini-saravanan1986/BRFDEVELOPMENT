@@ -42,6 +42,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.transaction.annotation.Transactional;
 import com.bornfire.BRF.controllers.BRFReportsController;
+import com.bornfire.BRF.entities.AccessandRolesRepository;
 import com.bornfire.BRF.entities.UserProfile;
 import com.bornfire.BRF.entities.UserProfileRep;
 
@@ -63,6 +64,8 @@ public class BRFWebSecurity extends WebSecurityConfigurerAdapter {
 	@Autowired
 	SequenceGenerator sequence;
 
+	@Autowired
+	AccessandRolesRepository accessRepository;
 
 	private static final Logger logger = LoggerFactory.getLogger(BRFReportsController.class);
 
@@ -215,52 +218,97 @@ public class BRFWebSecurity extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	public AuthenticationSuccessHandler BRFAuthSuccessHandle() {
+
 		return new AuthenticationSuccessHandler() {
 
 			@Override
 			public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 					Authentication authentication) throws IOException, ServletException {
-				String auditID = sequence.generateRequestUUId();
 
-				Optional<UserProfile> up = userProfileRep.findById(authentication.getName());
-				UserProfile user = up.get();
-				user.setNo_of_attmp(0);
-				user.setUser_locked_flg("N");
-				userProfileRep.save(user);
+				try {
 
-				loginServices.SessionLogging("LOGIN", "M1", request.getSession().getId(), user.getUserid(),
-						request.getRemoteAddr(), "ACTIVE");
+					String auditID = sequence.generateRequestUUId();
 
-				request.getSession().setMaxInactiveInterval(SESSION_TIMEOUT_IN_SECONDS);
-				request.getSession().setAttribute("USERID", user.getUserid());
-				request.getSession().setAttribute("USERNAME", user.getUsername());
-				request.getSession().setAttribute("ROLEID", user.getRole_id());
-				request.getSession().setAttribute("DOMAINID", user.getDomain_id());
-				request.getSession().setAttribute("PERMISSIONS", user.getPermissions());
-				request.getSession().setAttribute("WORKCLASS", user.getWork_class());
-				request.getSession().setAttribute("MOBILENUMBER", user.getMob_number());
-				request.getSession().setAttribute("ROLEDESC", user.getRole_desc());
-				request.getSession().setAttribute("ACCESSCODE", user.getAcct_access_code());
-				request.getSession().setAttribute("BRANCHCODE", user.getBranch_code());
-				// Generate OTP
-				String otp = String.valueOf((int) (Math.random() * 900000) + 100000); // 6-digit OTP
+					Optional<UserProfile> up = userProfileRep
+							.findById(authentication.getName()); /* This gets menu list from DB based on role */
 
-				System.out.println(" Your Log in otp is :" + otp);
+					if (!up.isPresent()) {
 
-				loginServices.sendclientotp(otp, user.getRole_id(), user);
+						response.sendRedirect("login?error=Invalid User");
+						return;
+					}
 
-				// Store OTP in session or Redis (secure option)
-				request.getSession().setAttribute("otp", otp);
+					UserProfile user = up.get();
 
-				String roleId = user.getRole_id();
-				System.out.println("THE LOGIN ROLE ID IS " + roleId);
+					// RESET LOGIN ATTEMPTS
+					user.setNo_of_attmp(0);
+					user.setUser_locked_flg("N");
 
-				response.sendRedirect("systemotp");
-				// }
+					userProfileRep.save(user);
+
+					// SESSION LOGGING
+					loginServices.SessionLogging("LOGIN", "M1", request.getSession().getId(), user.getUserid(),
+							request.getRemoteAddr(), "ACTIVE");
+
+					// GET MENU LIST
+					String menus = accessRepository.getMenulist(user.getRole_id());
+
+					System.out.println("MENUS : " + menus);
+					System.out.println("ROLE ID : " + user.getRole_id());
+
+					// SESSION TIMEOUT
+					request.getSession().setMaxInactiveInterval(SESSION_TIMEOUT_IN_SECONDS);
+
+					// SESSION ATTRIBUTES
+					request.getSession().setAttribute("USERID", user.getUserid());
+
+					request.getSession().setAttribute("USERNAME", user.getUsername());
+
+					request.getSession().setAttribute("ROLEID", user.getRole_id());
+
+					request.getSession().setAttribute("DOMAINID", user.getDomain_id());
+
+					request.getSession().setAttribute("PERMISSIONS", user.getPermissions());
+
+					request.getSession().setAttribute("WORKCLASS", user.getWork_class());
+
+					request.getSession().setAttribute("MOBILENUMBER", user.getMob_number());
+
+					request.getSession().setAttribute("ROLEDESC", user.getRole_desc());
+
+					request.getSession().setAttribute("ACCESSCODE", user.getAcct_access_code());
+
+					request.getSession().setAttribute("BRANCHCODE", user.getBranch_code());
+
+					request.getSession().setAttribute("BRANCHNAME", user.getBranch_name());
+
+					// STORE MENU LIST
+					request.getSession().setAttribute("MENULIST", menus);
+
+					// GENERATE OTP
+					String otp = String.valueOf((int) (Math.random() * 900000) + 100000);
+
+					System.out.println("Your Login OTP is : " + otp);
+
+					// SEND OTP
+					loginServices.sendclientotp(otp, user.getRole_id(), user);
+
+					// STORE OTP IN SESSION
+					request.getSession().setAttribute("otp", otp);
+
+					System.out.println("THE LOGIN ROLE ID IS : " + user.getRole_id());
+
+					// REDIRECT TO OTP PAGE
+					response.sendRedirect("systemotp");
+
+				} catch (Exception e) {
+
+					e.printStackTrace();
+
+					response.sendRedirect("login?error=Authentication Failed");
+				}
 			}
-
 		};
-
 	}
 
 	@Bean

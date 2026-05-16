@@ -163,15 +163,16 @@
 
 		.nav-tabs .nav-item.show .nav-link,
 		.nav-tabs .nav-link.active {
-		    color: #fff;
-		    background-color: #0062cc;
-		    border-color: #fff;
+			color: #fff;
+			background-color: #0062cc;
+			border-color: #fff;
 		}
 
 		.nav-tabs .nav-link {
-		    color: #fff;
-		    background-color: #e77400; /* For inactive tabs */
-		    border-color: #fff;
+			color: #fff;
+			background-color: #e77400;
+			/* For inactive tabs */
+			border-color: #fff;
 		}
 
 
@@ -361,7 +362,7 @@
 
 			url = /*[[@{/document/XBRL.pdf}]]*/'';
 
-		var pageNum = 0;
+			var pageNum = 0;
 			if (page == "UserProfile") {
 				pageNum = 1;
 			}
@@ -468,30 +469,39 @@
 			<!-- 
  	th:if="${session.ROLEID == 'ADM' or session.ROLEID == 'AC'}"  -->
 			<li class="nav-item">
-				<a class="nav-link d-flex justify-content-between align-items-center"
-				   data-toggle="collapse" href="#adminsubmenu">
-				
-				    <span>
-				        <i class="fa fa-user-shield mr-2"></i>Admin
-				    </span>
-				
-				    <i class="fa fa-caret-down"></i>
+				<a class="nav-link d-flex justify-content-between align-items-center" data-toggle="collapse"
+					href="#adminsubmenu">
+
+					<span>
+						<i class="fa fa-user-shield mr-2"></i>Admin
+					</span>
+
+					<i class="fa fa-caret-down"></i>
 				</a>
 
 				<div id="adminsubmenu" class="collapse submenu1 ">
 					<ul class="nav flex-column">
-						<li class="nav-item" th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'admin')}">
+						<li class="nav-item"
+							th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'admin')}">
 							<a class="nav-link" id="UserProfile" style="padding-left: 30px;" href="#"
 								onclick="contentLoad(this)">User
-								Profile </a></li>
+								Profile </a>
+						</li>
 
 
 						<li class="nav-item"><a class="nav-link" id="AccessandRoles" style="padding-left: 30px;"
-								href="#" onclick="contentLoad(this)"
-								th:if="${session.ROLEID == 'Superadmin'}">Access and
+								href="#" onclick="contentLoad(this)" th:if="${session.ROLEID == 'Superadmin'}">Access
+								and
 								Roles</a></li>
-	
-<!-- 
+						<li class="nav-item"
+							th:if="${session.DOMAINID != null and #strings.contains(session.DOMAINID,'AUDIT INQUIRIES')}">
+
+							<a class="nav-link" id="Auditenquiries" style="padding-left: 30px;" href="#"
+								onclick="contentLoad(this)">
+								Audit Enquiries
+							</a>
+						</li>
+						<!-- 
 						<li class="nav-item"><a class="nav-link" id="BankMaster" style="padding-left: 30px;" href="#"
 								onclick="contentLoad(this)"
 								th:if="${session.ROLEID == 'Superadmin'}">Bank
@@ -531,7 +541,7 @@
 				class="nav-link" id="RBSCONTACT" href="#"
 				style="padding-left: 30px;" onclick="contentLoad(this)"> Contact
 					Information</a></li>  -->
-<!-- 
+						<!-- 
 						<li class="nav-item" th:if="${session.ROLEID == 'Superadmin'}"><a class="nav-link"
 								id="AlertNotificationmodel" href="#" style="padding-left: 30px;"
 								onclick="contentLoad(this)"> Alert
@@ -552,7 +562,7 @@
 								th:if="${session.ROLEID == 'Superadmin'}">Audit
 								Logs</a></li>
  -->
-					<!-- 	<li class="nav-item"><a class="nav-link" style="padding-left: 30px;" data-toggle="collapse"
+						<!-- 	<li class="nav-item"><a class="nav-link" style="padding-left: 30px;" data-toggle="collapse"
 								href="#reportparametersubmenu"
 								th:if="${session.ROLEID == 'Superadmin'}">Report
 								Parameter<i id="dropico" class="fa fa-caret-down" aria-hidden="true"></i>
@@ -592,66 +602,136 @@
 					</ul>
 				</div>
 			</li>
-			
-			<!-- REPORT PARAMETER MENU -->
-			<li class="nav-item">
-			    <a class="nav-link d-flex justify-content-between align-items-center"
-				   data-toggle="collapse" href="#reportsubmenu">
-				
-				    <span>
-				        <i class="fa fa-file-alt mr-2"></i>Report Parameter
-				    </span>
-				
-				    <i class="fa fa-caret-down"></i>
+			<li class="nav-item" th:if="${session.DOMAINID != null and
+			    (
+			        #strings.containsIgnoreCase(session.DOMAINID,'GLMapping')
+			        or
+			        #strings.containsIgnoreCase(session.DOMAINID,'ReportCodeMapping')
+			    )}">
+
+				<a class="nav-link d-flex justify-content-between align-items-center" data-toggle="collapse"
+					href="#reportsubmenu">
+
+					<span>
+						<i class="fa fa-file-alt mr-2"></i>Report Parameter
+					</span>
+
+					<i class="fa fa-caret-down"></i>
+
 				</a>
-			
-			    <div id="reportsubmenu" class="collapse submenu1">
-			        <ul class="nav flex-column">
-			
-			            <li class="nav-item">
-			                <a class="nav-link" id="GLMapping"
-			                   style="padding-left: 30px;"
-			                   href="#" onclick="contentLoad(this)">
-			                    GL Configuration
-			                </a>
-			            </li>
-			
-			            <li class="nav-item">
-			                <a class="nav-link" id="ReportCodeMapping"
-			                   style="padding-left: 30px;"
-			                   href="#" onclick="contentLoad(this)">
-			                    Report Code Mapping
-			                </a>
-			            </li>
-			
-			        </ul>
-			    </div>
+
+				<div id="reportsubmenu" class="collapse submenu1">
+
+					<ul class="nav flex-column">
+
+						<!-- GL CONFIGURATION -->
+
+						<li class="nav-item" th:if="${#strings.containsIgnoreCase(session.DOMAINID,'GLMapping')}">
+
+							<a class="nav-link" id="GLMapping" style="padding-left: 30px;" href="#"
+								onclick="contentLoad(this)">
+
+								GL Configuration
+
+							</a>
+
+						</li>
+
+						<!-- REPORT CODE MAPPING -->
+
+						<li class="nav-item"
+							th:if="${#strings.containsIgnoreCase(session.DOMAINID,'ReportCodeMapping')}">
+
+							<a class="nav-link" id="ReportCodeMapping" style="padding-left: 30px;" href="#"
+								onclick="contentLoad(this)">
+
+								Report Code Mapping
+
+							</a>
+
+						</li>
+
+					</ul>
+
+				</div>
+
 			</li>
+			<!-- REPORT PARAMETER MENU -->
+			<!--<li class="nav-item">
+				<a class="nav-link d-flex justify-content-between align-items-center" data-toggle="collapse"
+					href="#reportsubmenu">
+
+					<span>
+						<i class="fa fa-file-alt mr-2"></i>Report Parameter
+					</span>
+
+					<i class="fa fa-caret-down"></i>
+				</a>
+
+				<div id="reportsubmenu" class="collapse submenu1">
+					<ul class="nav flex-column">
+
+						<li class="nav-item">
+							<a class="nav-link" id="GLMapping" style="padding-left: 30px;" href="#"
+								onclick="contentLoad(this)">
+								GL Configuration
+							</a>
+						</li>
+
+						<li class="nav-item">
+							<a class="nav-link" id="ReportCodeMapping" style="padding-left: 30px;" href="#"
+								onclick="contentLoad(this)">
+								Report Code Mapping
+							</a>
+						</li>
+
+					</ul>
+				</div>
+			</li>-->
 			<!-- 
 th:if="${session.ROLEID == 'GEN' or session.ROLEID == 'ADM' or 
 			  session.ROLEID == 'IT'or session.ROLEID == 'HR' or session.ROLEID == 'OP' or session.ROLEID == 'AC'}" -->
-			<li class="nav-item" th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'BRF_REPORTS')}">
-				<a class="nav-link d-flex justify-content-between align-items-center"
-				   data-toggle="collapse" href="#brfreportssubmenu">
-				
-				    <span>
-				        <i class="fa fa-file-excel mr-2"></i>BRF Reports
-				    </span>
-				
-				    <i class="fa fa-caret-down"></i>
+			<!--<li class="nav-item"
+				th:if="${session.DOMAINID != null and #strings.containsIgnoreCase(session.DOMAINID, 'BRF_REPORTS')}">-->
+			<!--	<li class="nav-item"
+				    th:if="${session.DOMAINID != null and
+				    (
+				        #strings.containsIgnoreCase(session.DOMAINID,'Monthly1')
+				        or
+				        #strings.containsIgnoreCase(session.DOMAINID,'Monthly2')
+				        or
+				        #strings.containsIgnoreCase(session.DOMAINID,'Monthly3')
+				        or
+				        #strings.containsIgnoreCase(session.DOMAINID,'Quarterly1')
+				        or
+				        #strings.containsIgnoreCase(session.DOMAINID,'Quarterly2')
+				        or
+				        #strings.containsIgnoreCase(session.DOMAINID,'HalfYearly1')
+				        or
+				        #strings.containsIgnoreCase(session.DOMAINID,'HalfYearly2')
+				        or
+				        #strings.containsIgnoreCase(session.DOMAINID,'Yearly')
+				    )}">
+				<a class="nav-link d-flex justify-content-between align-items-center" data-toggle="collapse"
+					href="#brfreportssubmenu">
+
+					<span>
+						<i class="fa fa-file-excel mr-2"></i>BRF Reports
+					</span>
+
+					<i class="fa fa-caret-down"></i>
 				</a>
 
 				<div id="brfreportssubmenu" class="collapse submenu1 ">
 					<ul class="nav flex-column">
 
 
-						<!-- <li class="nav-item"><a class="nav-link" id="fort"
-								style="padding-left: 30px;" href="#" onclick="contentLoad(this)">Fortnightly </a></li> -->
-						<li class="nav-item"><a class="nav-link" id="monthly1"
-								style="padding-left: 30px;" href="#"
+						 <li class="nav-item"><a class="nav-link" id="fort"
+								style="padding-left: 30px;" href="#" onclick="contentLoad(this)">Fortnightly </a></li> 
+						<li class="nav-item"><a class="nav-link" id="monthly1" style="padding-left: 30px;" href="#"
 								onclick="contentLoad(this)">Monthly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1
 							</a></li>
-						<!-- <li class="nav-item"><a class="nav-link" id="monthly2"
+						 <li class="nav-item"><a class="nav-link" id="monthly2"
 								style="padding-left: 30px;" href="#"
 								onclick="contentLoad(this)">Monthly&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2
 							</a></li>
@@ -682,14 +762,138 @@ th:if="${session.ROLEID == 'GEN' or session.ROLEID == 'ADM' or
 						<li class="nav-item"><a class="nav-link" id="opmodel"
 								style="padding-left: 30px;" href="#" onclick="contentLoad(this)">OPERATION </a></li>
 						<li class="nav-item" th:if="${session.ROLEID == 'AC'}"><a class="nav-link" id="acmodel"
-								style="padding-left: 30px;" href="#" onclick="contentLoad(this)">ACCOUNTS </a></li> -->
+								style="padding-left: 30px;" href="#" onclick="contentLoad(this)">ACCOUNTS </a></li> 
+					</ul>
+				</div>
+			</li>-->
+			<li class="nav-item" th:if="${session.DOMAINID != null and
+				(
+					#strings.containsIgnoreCase(session.DOMAINID,'Fortnightly')
+					or #strings.containsIgnoreCase(session.DOMAINID,'Monthly1')
+					or #strings.containsIgnoreCase(session.DOMAINID,'Monthly2')
+					or #strings.containsIgnoreCase(session.DOMAINID,'Monthly3')
+					or #strings.containsIgnoreCase(session.DOMAINID,'Quarterly1')
+					or #strings.containsIgnoreCase(session.DOMAINID,'Quarterly2')
+					or #strings.containsIgnoreCase(session.DOMAINID,'HalfYearly1')
+					or #strings.containsIgnoreCase(session.DOMAINID,'HalfYearly2')
+					or #strings.containsIgnoreCase(session.DOMAINID,'Yearly')
+					or #strings.containsIgnoreCase(session.DOMAINID,'HR')
+					or #strings.containsIgnoreCase(session.DOMAINID,'IT')
+					or #strings.containsIgnoreCase(session.DOMAINID,'OPERATION')
+					or #strings.containsIgnoreCase(session.DOMAINID,'ACCOUNTS')
+				)}">
+
+				<a class="nav-link d-flex justify-content-between align-items-center" data-toggle="collapse"
+					href="#brfreportssubmenu">
+
+					<span>
+						<i class="fa fa-file-excel mr-2"></i>BRF Reports
+					</span>
+
+					<i class="fa fa-caret-down"></i>
+				</a>
+
+				<div id="brfreportssubmenu" class="collapse submenu1">
+					<ul class="nav flex-column">
+
+						<li class="nav-item" th:if="${#strings.containsIgnoreCase(session.DOMAINID,'Fortnightly')}">
+							<a class="nav-link" id="fort" style="padding-left:30px;" href="#"
+								onclick="contentLoad(this)">
+								Fortnightly
+							</a>
+						</li>
+
+						<li class="nav-item" th:if="${#strings.containsIgnoreCase(session.DOMAINID,'Monthly1')}">
+							<a class="nav-link" id="monthly1" style="padding-left:30px;" href="#"
+								onclick="contentLoad(this)">
+								Monthly 1
+							</a>
+						</li>
+
+						<li class="nav-item" th:if="${#strings.containsIgnoreCase(session.DOMAINID,'Monthly2')}">
+							<a class="nav-link" id="monthly2" style="padding-left:30px;" href="#"
+								onclick="contentLoad(this)">
+								Monthly 2
+							</a>
+						</li>
+
+						<li class="nav-item" th:if="${#strings.containsIgnoreCase(session.DOMAINID,'Monthly3')}">
+							<a class="nav-link" id="monthly3" style="padding-left:30px;" href="#"
+								onclick="contentLoad(this)">
+								Monthly 3
+							</a>
+						</li>
+
+						<li class="nav-item" th:if="${#strings.containsIgnoreCase(session.DOMAINID,'Quarterly1')}">
+							<a class="nav-link" id="quarterly1" style="padding-left:30px;" href="#"
+								onclick="contentLoad(this)">
+								Quarterly 1
+							</a>
+						</li>
+
+						<li class="nav-item" th:if="${#strings.containsIgnoreCase(session.DOMAINID,'Quarterly2')}">
+							<a class="nav-link" id="quarterly2" style="padding-left:30px;" href="#"
+								onclick="contentLoad(this)">
+								Quarterly 2
+							</a>
+						</li>
+
+						<li class="nav-item" th:if="${#strings.containsIgnoreCase(session.DOMAINID,'HalfYearly1')}">
+							<a class="nav-link" id="halfyearly1" style="padding-left:30px;" href="#"
+								onclick="contentLoad(this)">
+								Half Yearly 1
+							</a>
+						</li>
+
+						<li class="nav-item" th:if="${#strings.containsIgnoreCase(session.DOMAINID,'HalfYearly2')}">
+							<a class="nav-link" id="halfyearly2" style="padding-left:30px;" href="#"
+								onclick="contentLoad(this)">
+								Half Yearly 2
+							</a>
+						</li>
+
+						<li class="nav-item" th:if="${#strings.containsIgnoreCase(session.DOMAINID,'Yearly')}">
+							<a class="nav-link" id="yearly" style="padding-left:30px;" href="#"
+								onclick="contentLoad(this)">
+								Yearly
+							</a>
+						</li>
+
+						<li class="nav-item" th:if="${#strings.containsIgnoreCase(session.DOMAINID,'HR')}">
+							<a class="nav-link" id="hrmodel" style="padding-left:30px;" href="#"
+								onclick="contentLoad(this)">
+								HR
+							</a>
+						</li>
+
+						<li class="nav-item" th:if="${#strings.containsIgnoreCase(session.DOMAINID,'IT')}">
+							<a class="nav-link" id="itmodel" style="padding-left:30px;" href="#"
+								onclick="contentLoad(this)">
+								IT
+							</a>
+						</li>
+
+						<li class="nav-item" th:if="${#strings.containsIgnoreCase(session.DOMAINID,'OPERATION')}">
+							<a class="nav-link" id="opmodel" style="padding-left:30px;" href="#"
+								onclick="contentLoad(this)">
+								OPERATION
+							</a>
+						</li>
+
+						<li class="nav-item"
+							th:if="${#strings.containsIgnoreCase(session.DOMAINID,'ACCOUNTS')} and ${session.ROLEID == 'AC'}">
+							<a class="nav-link" id="acmodel" style="padding-left:30px;" href="#"
+								onclick="contentLoad(this)">
+								ACCOUNTS
+							</a>
+						</li>
+
 					</ul>
 				</div>
 			</li>
-			
 			<li class="nav-item">
-    			<a class="nav-link" id="Archival" href="#" onclick="contentLoad(this)">
-        			<i class="fa fa-archive mr-2" aria-hidden="true"></i>Archival</a>
+				<a class="nav-link" id="Archival" href="#" onclick="contentLoad(this)">
+					<i class="fa fa-archive mr-2" aria-hidden="true"></i>Archival</a>
 			</li>
 
 			<!-- th:if="${session.ROLEID == 'ADM'}" -->
@@ -792,7 +996,7 @@ th:if="${session.ROLEID == 'GEN' or session.ROLEID == 'ADM' or
 
 					</ul>
 				</div></li> -->
-			 <!-- <li class="nav-item" th:if="${session.ROLEID == 'ADM'}"><a
+			<!-- <li class="nav-item" th:if="${session.ROLEID == 'ADM'}"><a
 				class="nav-link" data-toggle="collapse" href="#scorecard">ScoreCard<i
 					id="dropico" class="fa fa-caret-down" aria-hidden="true"></i></a>
 
@@ -836,7 +1040,7 @@ th:if="${session.ROLEID == 'GEN' or session.ROLEID == 'RECONADM' or session.ROLE
 
 
 
-		<!-- 	<li class="nav-item" th:if="${session.ROLEID == 'Superadmin' }"><a
+			<!-- 	<li class="nav-item" th:if="${session.ROLEID == 'Superadmin' }"><a
 					class="nav-link" data-toggle="collapse" href="#auditmenu">
 					<i class="fa fa-clipboard-list mr-2"></i>Audit
 					Inquiries<i id="dropico" class="fa fa-caret-down" aria-hidden="true"></i>
@@ -992,8 +1196,8 @@ th:if="${session.ROLEID == 'ADM' or session.ROLEID == 'RBR'  or session.ROLEID =
 					class="nav-link" id="VatIncoice" style="padding-left: 15px;" href="#"
 					onclick="contentLoad(this)">
 					<i class="fa fa-file-alt mr-2"></i>Invoice Data</a></li> -->
-					
-					<!-- <li class="nav-item"
+
+			<!-- <li class="nav-item"
 									th:if="${session.ROLEID == 'DCD_BRANCH' or session.ROLEID == 'DCD_ADMIN' or session.ROLEID == 'Superadmin'}">
 									<a class="nav-link" data-toggle="collapse" href="#dataqualityDCC">
 										<i class="fa fa-shield-alt mr-2"></i>

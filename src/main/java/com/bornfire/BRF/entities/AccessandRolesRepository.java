@@ -14,7 +14,10 @@ public interface AccessandRolesRepository extends JpaRepository<AccessAndRoles, 
 
 	@Query(value = "select * from BRF_ACCES_ROLES_TABLE  where ROLE_ID =?1", nativeQuery = true)
 	String FindByAll(String roleId);
-
+	
+	@Query(value = "select MENULIST from BRF_ACCES_ROLES_TABLE where ROLE_ID=?1 and DEL_FLG='N'", nativeQuery = true)
+	String getMenulist(String roleId);
+	
 	@Query(value = "select * from BRF_ACCES_ROLES_TABLE where DEL_FLG!='Y'", nativeQuery = true)
 	List<AccessAndRoles> rulelist();
 

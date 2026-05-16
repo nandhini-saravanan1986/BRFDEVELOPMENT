@@ -254,6 +254,8 @@ public class BRFNavigationController {
 		} else if (formmode.equals("add")) {
 			md.addAttribute("menuname", "ACCESS AND ROLES - ADD");
 			md.addAttribute("formmode", "add");
+			AccessAndRoles IPSAccessRole = new AccessAndRoles();
+			md.addAttribute("IPSAccessRole",IPSAccessRole);
 		} else if (formmode.equals("edit")) {
 			md.addAttribute("menuname", "ACCESS AND ROLES - EDIT");
 			md.addAttribute("formmode", formmode);
