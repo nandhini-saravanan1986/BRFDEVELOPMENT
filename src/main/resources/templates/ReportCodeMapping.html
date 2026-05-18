@@ -116,7 +116,31 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
-	
+	/* Make table rows allow dropdown overflow */
+#tblAccounts tbody tr,
+#tblModalAccounts tbody tr {
+    overflow: visible !important;
+}
+
+/* Make table cells allow dropdown overflow */
+#tblAccounts td,
+#tblModalAccounts td {
+    overflow: visible !important;
+    position: relative;
+}
+
+/* Make the table container allow overflow */
+#accountsTable .responsive-table-wrap,
+#modalAccountsTable .responsive-table-wrap {
+    overflow-x: auto;
+    overflow-y: visible !important;
+}
+
+/* Ensure dropdown menu appears above everything */
+.filter-menu,
+.multi-select-menu {
+    z-index: 9999 !important;
+}
 	.card-footer {
 		background-color: #376275;
 		text-align: center;
@@ -2937,7 +2961,7 @@ var colMaxWidth = {
 		modalCancelAction();
 
 	    // Row label: populate dropdown, pre-select the row derived from colKey, and enable it
-	    var rowSel = $('#modalRowLabel').html('<option value="">-- Select Row --</option>').prop('disabled', false);
+	    var rowSel = $('#modalRowLabel').html('<option value="">-- Select Row --</option>').prop('disabled', true);
 	    currentRows.forEach(function(r) {
 	        rowSel.append('<option value="' + r.label + '">' + r.label + ' - ' + r.description + '</option>');
 	    });

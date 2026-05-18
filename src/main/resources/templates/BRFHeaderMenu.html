@@ -501,6 +501,8 @@
 								Audit Enquiries
 							</a>
 						</li>
+						<li class="nav-item"><a class="nav-link" id="EtlMonitor" style="padding-left: 30px;"
+								href="#" onclick="contentLoad(this)">EtlMonitor</a></li>
 						<!-- 
 						<li class="nav-item"><a class="nav-link" id="BankMaster" style="padding-left: 30px;" href="#"
 								onclick="contentLoad(this)"
@@ -895,6 +897,30 @@ th:if="${session.ROLEID == 'GEN' or session.ROLEID == 'ADM' or
 				<a class="nav-link" id="Archival" href="#" onclick="contentLoad(this)">
 					<i class="fa fa-archive mr-2" aria-hidden="true"></i>Archival</a>
 			</li>
+			
+			<li class="nav-item">
+			    <a class="nav-link d-flex justify-content-between align-items-center"
+			       data-toggle="collapse" href="#auditmenu">
+			
+			        <span>
+			            <i class="fa fa-clipboard-list mr-2"></i>Audit Inquiries
+			        </span>
+			
+			        <i class="fa fa-caret-down"></i>
+			    </a>
+
+				<div id="auditmenu" class="collapse submenu1 ">
+					<ul class="nav flex-column">
+						<li class="nav-item"><a class="nav-link" id="User_Audit" href="#" style="padding-left: 30px;"
+								onclick="contentLoad(this)">User
+								Level Audit</a></li>
+						<li class="nav-item"><a class="nav-link" id="Audits" href="#" style="padding-left: 30px;"
+								onclick="contentLoad(this)">Service Level
+								Audit </a></li>
+					</ul>
+				</div>
+			</li>
+			
 
 			<!-- th:if="${session.ROLEID == 'ADM'}" -->
 			<!-- <li class="nav-item"  th:if="${session.ROLEID == 'BRF_SYSTEM' or session.ROLEID == 'Superadmin' }"><a

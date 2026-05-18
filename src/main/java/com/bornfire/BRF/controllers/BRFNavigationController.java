@@ -10,6 +10,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -65,6 +66,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.bornfire.BRF.config.PasswordEncryption;
+//import com.bornfire.BRF.entities.AUD_SERVICE_REPO;
 import com.bornfire.BRF.entities.AccessAndRoles;
 import com.bornfire.BRF.entities.AccessandRolesRepository;
 import com.bornfire.BRF.entities.BRF1_REPORT_ENTITY;
@@ -80,7 +82,9 @@ import com.bornfire.BRF.entities.UserProfileRep;
 import com.bornfire.BRF.services.AccessAndRolesServices;
 import com.bornfire.BRF.services.LoginServices;
 import com.bornfire.BRF.services.MappingAccountService;
+import com.bornfire.BRF.services.Procedure_Common_Service;
 import com.bornfire.BRF.services.ReportServices;
+import com.bornfire.BRF.entities.MANUAL_Service_Entity;
 import com.sun.xml.messaging.saaj.util.FinalArrayList;
 
 import groovyjarjarantlr4.v4.parse.ANTLRParser.finallyClause_return;
@@ -93,6 +97,11 @@ import com.bornfire.BRF.entities.RRReport;
 import com.bornfire.BRF.services.CalculationService;
 import com.bornfire.BRF.services.ReportGenerationService;
 import com.bornfire.BRF.entities.BrfCommonMappingRepository;
+import com.bornfire.BRF.entities.ETL_MONITORING_DETAILS_ENTITY;
+import com.bornfire.BRF.entities.MANUAL_Service_Rep;
+import com.bornfire.BRF.entities.ETL_MONITORING_MAIN_REPO;
+import com.bornfire.BRF.entities.ETL_MONITORING_DETAILS_REPO;
+
 import org.apache.poi.ss.usermodel.*;
 
 import java.util.ArrayList;
@@ -132,6 +141,23 @@ public class BRFNavigationController {
 
 	@Autowired
 	BRFValidationsRepo brfValidationsRepo;
+	
+	@Autowired
+	MANUAL_Service_Rep mANUAL_Service_Rep;
+	
+	
+//	AUD_SERVICE_REPO AUD_SERVICE_REPO;
+	
+	@Autowired
+	ETL_MONITORING_MAIN_REPO ETL_MONITORING_MAIN_REPO;
+	@Autowired
+	ETL_MONITORING_DETAILS_REPO ETL_MONITORING_DETAILS_REPO;
+	
+	@Autowired
+	Procedure_Common_Service Procedure_Common_Service;
+
+	
+	private String auditRefNo;
 	
 	private final MappingAccountService mappingAccountService;
 	
@@ -811,7 +837,7 @@ public class BRFNavigationController {
 
                 // ── 7. BUILD THE HTML TABLE (Using SMART boundaries) ──
                 // The outer container must be position: relative for sticky elements inside to anchor correctly.
-                html.append("<div class='table-responsive' style='width: 100%; height: calc(100vh - 300px); min-height: 530px; overflow: auto; position: relative;'>");
+                html.append("<div class='table-responsive' style='width: 100%; height: calc(100vh - 270px); min-height: 500px; overflow: auto; position: relative;'>");
                 html.append("<table class='table table-bordered table-sm' style='font-family: Calibri, verdana, sans-serif; font-size: 13px; width: max-content; background: white; margin-bottom: 0; border-collapse: separate; border-spacing: 0;'>");
 
                 // ── STRICT STICKY HEADERS (Top Row) ──
@@ -1298,7 +1324,7 @@ html.append("</tbody></table></div>");
                     .append("</div>");
 
                 // Table
-                html.append("<div style='overflow: auto; width: 100%; height: calc(100vh - 350px); min-height: 580px; position: relative;'>")
+                html.append("<div style='overflow: auto; width: 100%; height: calc(100vh - 320px); min-height: 550px; position: relative;'>")
                     .append("<table id='rawExcelTable' style='border-collapse: collapse; font-family: Calibri, verdana, sans-serif; "
                           + "font-size: 13px; width: max-content; background: white;'>")
                     .append("<thead><tr>")
@@ -1714,4 +1740,132 @@ html.append("</tbody></table></div>");
 		public List<Object[]> getAccountMappings(@RequestParam String accountId) {
 		    return BrfCommonMappingRepository.findDistinctCombinationsByAccountId(accountId);
 		}
+		
+		@RequestMapping(value = "User_Audit", method = RequestMethod.GET)
+		public String Service_Audit(Model md, HttpServletRequest req) {
+			String userid = (String) req.getSession().getAttribute("USERID");
+			System.out.println("The login userid is : " + userid);
+
+			LocalDateTime localDateTime = new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+			System.out.println("The time is " + localDateTime);
+
+			md.addAttribute("menu", "Audit");
+
+			// Add both lists to the mode
+			md.addAttribute("userAuditLevels", reportServices.getUserAuditLevelList());
+
+			return "User_Audit";
+		}
+		
+		@RequestMapping(value = "Audits", method = { RequestMethod.GET, RequestMethod.POST })
+		public String Audits(@RequestParam(required = false) String formmode,
+				@RequestParam(required = false) String delete_cust_id,
+				@RequestParam(value = "page", required = false) Optional<Integer> page,
+				@RequestParam(value = "size", required = false) Optional<Integer> size, Model md, HttpServletRequest req) {
+			List<MANUAL_Service_Entity> changes = mANUAL_Service_Rep.getServiceAuditList(auditRefNo); // or use
+																										// findByAuditRefNo()
+
+			if (changes == null || changes.isEmpty()) {
+				return "";
+			}
+
+			StringBuilder sb = new StringBuilder();
+			for (MANUAL_Service_Entity entity : changes) {
+				sb.append(entity.getField_name()).append(": OldValue: ").append(entity.getOld_value())
+						.append(", NewValue: ").append(entity.getNew_value()).append("|||");
+			}
+			String loginuserid = (String) req.getSession().getAttribute("USERID");
+			List<UserProfile> list = loginServices.getUsersListone(loginuserid);
+			md.addAttribute("domainid", list);
+			if (formmode == null || formmode.equals("list")) {
+				System.out.println("hi");
+				md.addAttribute("formmode", "list");
+				List<MANUAL_Service_Entity> serviceAudits = mANUAL_Service_Rep.getServiceAuditList(auditRefNo);
+				md.addAttribute("audits", serviceAudits);
+			}
+			// md.addAttribute("inlist", AUD_SERVICE_REPO.findbyId(delete_cust_id));
+
+			// to set which form - valid values are "edit" , "add" & "list"
+			// md.addAttribute("CustomerKYC",
+			// CMGrepository.findAll(PageRequest.of(currentPage, pageSize)));
+
+//			else if (formmode.equals("edit")) {
+//				System.out.println("hlo");
+//				md.addAttribute("formmode", "edit");
+//				/* md.addAttribute("inlist", AUD_SERVICE_REPO.getInquirelist()); */
+//				md.addAttribute("audit", reportServices.getUserAuditLevelList());
+//
+//			} else if (formmode.equals("add")) {
+//				md.addAttribute("formmode", "add");
+//				/* md.addAttribute("inlist", AUD_SERVICE_REPO.getInquirelist()); */
+//				md.addAttribute("inlist", AUD_SERVICE_REPO.getInquirelist());
+//
+//			} else if (formmode.equals("delete")) {
+//				md.addAttribute("formmode", "delete");
+//				md.addAttribute("inlist", AUD_SERVICE_REPO.getInquirelist());
+//
+//			} else if (formmode.equals("download")) {
+//				md.addAttribute("formmode", "download");
+//				md.addAttribute("inlist", AUD_SERVICE_REPO.getInquirelist());
+//
+//			}
+
+			else {
+
+				md.addAttribute("formmode", formmode);
+			}
+
+			return "Audits";
+		}
+		
+		@RequestMapping(value = "EtlMonitor", method = RequestMethod.GET)
+		public String etlMonitor1(@RequestParam(required = false) String displaymode,
+				@RequestParam(required = false) BigDecimal id, Model md, HttpServletRequest req) {
+			String userid = (String) req.getSession().getAttribute("USERID");
+			System.out.println("Display Mode : " + displaymode);
+
+			if (displaymode == "list" || displaymode == null) {
+				md.addAttribute("EtlStatus", ETL_MONITORING_MAIN_REPO.getdatalist());
+				md.addAttribute("displaymode", "list");
+			} else if (displaymode == "detaillist" || displaymode.equals("detaillist")) {
+				System.out.println("ID : " + id);
+				//List<ETL_MONITORING_DETAILS_ENTITY> datalist = ETL_MONITORING_DETAILS_REPO.getbymoduleid(id);
+				List<ETL_MONITORING_DETAILS_ENTITY> successdatalist = ETL_MONITORING_DETAILS_REPO.getbymoduleidandstatus(id,"Y");
+				List<ETL_MONITORING_DETAILS_ENTITY> errordatalist = ETL_MONITORING_DETAILS_REPO.getbymoduleidandstatus(id,"N");
+				List<ETL_MONITORING_DETAILS_ENTITY> rerundatalist = ETL_MONITORING_DETAILS_REPO.getbymoduleidandstatus(id,"S");
+				System.out.println("Success Size : " + successdatalist.size());
+				System.out.println("Error Size : " + errordatalist.size());
+				System.out.println("Error Size : " + rerundatalist.size());			
+				md.addAttribute("EtlSuccess", successdatalist);
+				md.addAttribute("EtlError", errordatalist);
+				md.addAttribute("Rerun", rerundatalist);
+				md.addAttribute("displaymode", "detaillist");
+			}
+
+			md.addAttribute("menu", "EtlMonitor");
+
+			return "XBRLEtlMonitor1";
+		}
+		
+
+		@PostMapping("/etlrerunprocedure")
+		public ResponseEntity<String> etlrerunprocedure(
+				@RequestParam(value = "id", required = false) BigDecimal id, HttpServletRequest req) {
+			try {
+				ETL_MONITORING_DETAILS_ENTITY entity =ETL_MONITORING_DETAILS_REPO.findById(id).get();
+				
+				//String sql = "CALL "+entity.getProcedure_name();
+				//jdbcTemplate.update(sql);
+				
+				Procedure_Common_Service.executeetlProcedure(id);
+				
+				return ResponseEntity.ok("{\"message\": \"Procedure executed successfully!\"}");
+			} catch (Exception e) {
+				e.printStackTrace();
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+						.body("{\"error\": \"Failed to execute procedure: " + e.getMessage() + "\"}");
+			}
+		}
+		
+		
 }

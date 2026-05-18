@@ -42,7 +42,12 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.transaction.annotation.Transactional;
 import com.bornfire.BRF.controllers.BRFReportsController;
+
 import com.bornfire.BRF.entities.AccessandRolesRepository;
+
+import com.bornfire.BRF.entities.UserAuditLevel_Entity;
+import com.bornfire.BRF.entities.UserAuditRepo;
+
 import com.bornfire.BRF.entities.UserProfile;
 import com.bornfire.BRF.entities.UserProfileRep;
 
@@ -63,6 +68,9 @@ public class BRFWebSecurity extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	SequenceGenerator sequence;
+	
+	@Autowired
+	UserAuditRepo userAuditRepo;
 
 	@Autowired
 	AccessandRolesRepository accessRepository;
@@ -240,9 +248,34 @@ public class BRFWebSecurity extends WebSecurityConfigurerAdapter {
 
 					UserProfile user = up.get();
 
+/*<<<<<<< Updated upstream
 					// RESET LOGIN ATTEMPTS
 					user.setNo_of_attmp(0);
 					user.setUser_locked_flg("N");
+=======*/
+				String roleId = user.getRole_id();
+				System.out.println("THE LOGIN ROLE ID IS " + roleId); 
+				
+				UserAuditLevel_Entity audit = new UserAuditLevel_Entity();
+				LocalDateTime currentDateTime = LocalDateTime.now();
+				Date dateValue = Date.from(currentDateTime.atZone(ZoneId.systemDefault()).toInstant());
+				audit.setAudit_date(new Date());
+				audit.setEntry_time(dateValue);
+				audit.setEntry_user(user.getUserid());
+				audit.setFunc_code("LOGIN");
+				audit.setRemarks("Login Successfully");
+				audit.setAudit_table("BRFUSERPROFILETABLE");
+				audit.setAudit_screen("LOGIN");
+				audit.setEvent_id(user.getUserid());
+				audit.setEvent_name(user.getUsername());
+				audit.setModi_details("Login Successfully");
+				UserProfile auth_user = userProfileRep.getRole(user.getUserid());
+				String auth_user_val = auth_user.getAuth_user();
+				Date auth_user_date = auth_user.getAuth_time();
+				audit.setAuth_user(auth_user_val);
+				audit.setAuth_time(auth_user_date);
+				audit.setAudit_ref_no(auditID.toString());
+				userAuditRepo.save(audit);
 
 					userProfileRep.save(user);
 
@@ -343,6 +376,26 @@ public class BRFWebSecurity extends WebSecurityConfigurerAdapter {
 					UserProfile user1 = up.get();
 					String roleId = user1.getRole_id();
 					System.out.println("THE LOGOUT ROLE ID IS " + roleId);
+					UserProfile user = up.get();
+					UserAuditLevel_Entity audit = new UserAuditLevel_Entity();
+					String Number1 = sequence.generateRequestUUId();
+					audit.setAudit_date(new Date());
+					audit.setEntry_time(new Date());
+					audit.setEntry_user(user.getUserid());
+					audit.setFunc_code("LOGOUT");
+					audit.setRemarks("Logout Successfully");
+					audit.setAudit_table("BRFUSERPROFILETABLE");
+					audit.setAudit_screen("LOGOUT");
+					audit.setEvent_id(user.getUserid());
+					audit.setEvent_name(user.getUsername());
+					UserProfile auth_user = userProfileRep.getRole(user.getUserid());
+					String auth_user_val = auth_user.getAuth_user();
+					Date auth_user_date = auth_user.getAuth_time();
+					audit.setAuth_user(auth_user_val);
+					audit.setAuth_time(auth_user_date);
+					audit.setModi_details("Logout Successfully");
+					audit.setAudit_ref_no(Number1.toString());
+					userAuditRepo.save(audit);
 
 				} catch (Exception e) {
 					System.out.println("Exception in logout handler: " + e.getMessage());

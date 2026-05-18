@@ -682,5 +682,40 @@ public class LoginServices {
 		}
 
 	};
+	
+	public List<UserProfile> getUsersListone(String username) {
+		Optional<UserProfile> users = userProfileRep.findById(username);
+		System.out.println("The domain id is: "+users.get().getDomain_id());
+		String[] dataArray = users.get().getDomain_id().split(",");
+		List<String> item=new ArrayList<String>();
+		List<UserProfile> itemw=new ArrayList<UserProfile>();
+		 for (String ss  : dataArray) {
+	            item.add(ss);
+				  }
+		//The entity object created for storing the separate domain id values
+			UserProfile userProfile= new UserProfile(); 
+         for(int i=0;i<item.size();i++) {
+        	 if(i==0) {
+ 			userProfile.setUserid(item.get(i));
+        	 }
+ 			else if(i==1) {
+ 				userProfile.setUsername(item.get(i));
+				}
+			else if(i==2) {
+				userProfile.setBranch_name(item.get(i));
+				}
+			else if(i==3) {
+				userProfile.setBank_name(item.get(i));
+				}
+			else if(i==4) {
+				userProfile.setRole_desc(item.get(i));
+				}
+			else if(i==5) {
+				userProfile.setRole_id(item.get(i));
+				}
+ 			itemw.add(userProfile);
+         }
+		return itemw;
+	}
 
 }

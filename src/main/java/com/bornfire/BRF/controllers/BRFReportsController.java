@@ -41,6 +41,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.http.HttpStatus;
 
 import com.bornfire.BRF.services.ReportServices;
+import com.bornfire.BRF.entities.BRF3_DETAILTABLE;
+import com.bornfire.BRF.entities.BRF4_DETAIL_ENTITY;
+import com.bornfire.BRF.entities.AuditReasonDTO;
+import com.bornfire.BRF.entities.BRF2_DETAIL_ENTITY;
 
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -69,8 +73,12 @@ import com.bornfire.BRF.entities.BRF2_DetaiRep;
 import com.bornfire.BRF.entities.BRF4_DetaiRep;
 import com.bornfire.BRF.entities.UserProfileRep;
 import com.bornfire.BRF.entities.BrfBaseMappingRepository;
+import com.bornfire.BRF.services.AuditService;
 //import com.bornfire.xbrl.services.BRF94ReportService;
 import com.bornfire.BRF.services.BRF001ReportService;
+import com.bornfire.BRF.services.BRF002ReportService;
+import com.bornfire.BRF.services.BRF003ReportService;
+import com.bornfire.BRF.services.BRF004ReportService;
 import com.bornfire.BRF.services.BRF_DetailExcel_Service;
 import com.bornfire.BRF.services.Exceltopdfservice;
 import com.bornfire.BRF.services.LoginServices;
@@ -167,6 +175,15 @@ public class BRFReportsController {
 	RegulatoryReportServices regreportServices;
 	@Autowired
 	BRF001ReportService BRF001ReportService;
+	
+	@Autowired
+	BRF002ReportService BRF002ReportService;
+	
+	@Autowired
+	BRF003ReportService bRF003ReportService;
+	
+	@Autowired
+	BRF004ReportService BRF004ReportService;
 
 	@Autowired
 	SequenceGenerator sequence;
@@ -368,8 +385,9 @@ public class BRFReportsController {
 		return mv;
 
 	}
-
-
+	
+	@Autowired
+	private AuditService auditService;
 
 	@RequestMapping(value = "{reportid}/Download", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
@@ -392,6 +410,8 @@ public class BRFReportsController {
 					"Getting download File :" + reportid + ", FileType :" + filetype + ", SubreportId :" + subreportid);
 			
 			System.out.println("page size " + pagesize );
+			
+			auditService.saveCommonAudit(reportid, filetype);
 			
 			HttpHeaders headers = new HttpHeaders();
 			
@@ -671,6 +691,61 @@ public class BRFReportsController {
 		String msg = "success";
 		System.out.println(msg);
 		return msg;
+	}
+	
+	@RequestMapping(value = "CustomerDetailEditBrf2", method = RequestMethod.POST)
+	@ResponseBody
+	public String CustomerDetailEditBrf2(@ModelAttribute("singledetail") BRF2_DETAIL_ENTITY detail,
+			HttpServletRequest hs, @RequestParam("foracid") String foracid,
+			@RequestParam("report_label_1") String report_label_1,
+			@RequestParam("act_balance_amt_lc") BigDecimal act_balance_amt_lc,
+			@RequestParam("report_name_1") String report_name_1,
+			@RequestParam("report_addl_criteria_1") String report_addl_criteria_1,@RequestParam("report_date") String report_date,
+			@RequestParam(value = "reason", required = false) String reason) {
+		System.out.println("foracid " + foracid);
+		System.out.println("ReportLabel" + report_label_1);
+		AuditReasonDTO dto = new AuditReasonDTO();
+		dto.setReason(reason);
+		return BRF002ReportService.detailChanges2(detail, report_label_1, act_balance_amt_lc, foracid, report_name_1,
+				report_addl_criteria_1,report_date);
+
+	}
+	
+	@RequestMapping(value = "CustomerDetailEditBrf3", method = RequestMethod.POST)
+	@ResponseBody
+	public String CustomerDetailEditBrf3(@ModelAttribute("singledetail") BRF3_DETAILTABLE detail, HttpServletRequest hs,
+			@RequestParam("foracid") String foracid,
+			@RequestParam("report_addl_criteria_1") String report_addl_criteria_1,
+			@RequestParam("act_balance_amt_lc") BigDecimal act_balance_amt_lc,
+			@RequestParam("report_label_1") String report_label_1,
+			@RequestParam("report_name_1") String report_name_1,@RequestParam("report_date") String report_date,
+			@RequestParam(value = "reason", required = false) String reason) {
+		System.out.println("edit");
+
+		System.out.println("Acct no " + foracid);
+
+		AuditReasonDTO dto = new AuditReasonDTO();
+		dto.setReason(reason);
+		return bRF003ReportService.detailChanges3(detail, foracid, report_addl_criteria_1, act_balance_amt_lc,
+				report_label_1, report_name_1,report_date);
+	}
+	
+	@RequestMapping(value = "CustomerDetailEditBrf4", method = RequestMethod.POST)
+	@ResponseBody
+	public String CustomerDetailEditBrf4(@ModelAttribute("singledetail") BRF4_DETAIL_ENTITY detail,
+			HttpServletRequest hs, @RequestParam("foracid") String foracid,
+			@RequestParam("report_label_1") String report_label_1,
+			@RequestParam("act_balance_amt_lc") BigDecimal act_balance_amt_lc,
+			@RequestParam("report_name_1") String report_name_1,
+			@RequestParam("report_addl_criteria_1") String report_addl_criteria_1,
+			@RequestParam("report_date") String report_date,
+			@RequestParam(value = "reason", required = false) String reason) {
+		System.out.println("foracid " + foracid);
+		System.out.println("ReportLabel" + report_label_1);
+		AuditReasonDTO dto = new AuditReasonDTO();
+		dto.setReason(reason);
+		return BRF004ReportService.detailChanges4(detail, report_label_1, act_balance_amt_lc, foracid, report_name_1,
+				report_addl_criteria_1,report_date);
 	}
 
 }

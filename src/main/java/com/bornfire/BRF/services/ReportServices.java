@@ -24,13 +24,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Service; 
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bornfire.BRF.entities.BRFReportsMasterRep;
 import com.bornfire.BRF.entities.RRReportRepo;
 import com.bornfire.BRF.entities.ReportTemplateConfig;
 import com.bornfire.BRF.entities.ReportTemplateConfigRepository;
+import com.bornfire.BRF.entities.UserAuditLevel_Entity;
+import com.bornfire.BRF.entities.UserAuditRepo;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -62,6 +64,9 @@ public class ReportServices {
 	
 	@Autowired
 	RRReportRepo rrReportRepo;
+	
+	@Autowired
+	private UserAuditRepo userAuditRepo;
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
@@ -901,6 +906,13 @@ public class ReportServices {
 	        .replaceAll("\\s{2,}", " ")
 	        .replaceAll("[\\s\\-–]+$", "")
 	        .trim();
+	}
+	
+	public List<UserAuditLevel_Entity> getUserAuditLevelList() {
+		System.out.println("Fetching USER_AUDIT_LEVEL data...");
+		List<UserAuditLevel_Entity> result = userAuditRepo.getUserAuditList();
+		System.out.println("Size: " + result.size());
+		return result;
 	}
 
 }
