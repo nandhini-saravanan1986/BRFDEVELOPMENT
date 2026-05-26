@@ -84,6 +84,7 @@ import com.bornfire.BRF.services.LoginServices;
 import com.bornfire.BRF.services.MappingAccountService;
 import com.bornfire.BRF.services.Procedure_Common_Service;
 import com.bornfire.BRF.services.ReportServices;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.bornfire.BRF.entities.MANUAL_Service_Entity;
 import com.sun.xml.messaging.saaj.util.FinalArrayList;
 
@@ -95,8 +96,11 @@ import com.bornfire.BRF.entities.BRFValidationsRepo;
 import com.bornfire.BRF.entities.BrfCommonMapping;
 import com.bornfire.BRF.entities.RRReport;
 import com.bornfire.BRF.services.CalculationService;
+import com.bornfire.BRF.services.DataComparisonService;
 import com.bornfire.BRF.services.ReportGenerationService;
 import com.bornfire.BRF.entities.BrfCommonMappingRepository;
+import com.bornfire.BRF.entities.DataMapping_Entity;
+import com.bornfire.BRF.entities.DataMapping_Repo;
 import com.bornfire.BRF.entities.ETL_MONITORING_DETAILS_ENTITY;
 import com.bornfire.BRF.entities.MANUAL_Service_Rep;
 import com.bornfire.BRF.entities.ETL_MONITORING_MAIN_REPO;
@@ -155,6 +159,15 @@ public class BRFNavigationController {
 	
 	@Autowired
 	Procedure_Common_Service Procedure_Common_Service;
+	
+	@Autowired
+    private DataMapping_Repo dataMappingRepository;
+
+    @Autowired
+    private DataComparisonService comparisonService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
 	
 	private String auditRefNo;
@@ -1503,7 +1516,9 @@ html.append("</tbody></table></div>");
 
 			List<Map<String, String>> parsedList = new ArrayList<>();
 			Map<String, String> rowMap = new HashMap<>();
+			List<Map<String, String>> tablesList = new ArrayList<>();
 			rowMap.put("tableName", "CBS DATA");
+			rowMap.put("dbName", "GENERAL_MASTER_TABLE");
 
 			String sql = "SELECT CASE "
 					+ "WHEN NVL(SUM(ACT_BALANCE_AMT_LC),0) >= 0 AND NVL(SUM(ACT_BALANCE_AMT_LC),0) < 1 "
@@ -1541,6 +1556,7 @@ html.append("</tbody></table></div>");
 
 				Map<String, String> looprowMap = new HashMap<>();
 				looprowMap.put("tableName", displayName);
+				looprowMap.put("dbName", tablename);
 
 				String countsql = "SELECT COUNT(*) " + "FROM " + tablename + " WHERE  report_date = ?";
 				Integer countresult = jdbcTemplate.queryForObject(countsql, new Object[] { report_date },
@@ -1866,6 +1882,121 @@ html.append("</tbody></table></div>");
 						.body("{\"error\": \"Failed to execute procedure: " + e.getMessage() + "\"}");
 			}
 		}
+
+		@GetMapping("/datamapping")
+		public String datamapping(Model model) {
+
+			List<Map<String, String>> tablesList = new ArrayList<>();
+
+			Map<String, String> table1 = new HashMap<>();
+			table1.put("dbName", "BRF_TREASURY_MASTER_TB");
+			table1.put("displayName", "TREASURY MASTER DATA");
+			tablesList.add(table1);
+
+			Map<String, String> table2 = new HashMap<>();
+			table2.put("dbName", "BRF_TREASURY_PLACEMENT_ID");
+			table2.put("displayName", "TREASURY PLACEMENT DATA");
+			tablesList.add(table2);
+
+			Map<String, String> table3 = new HashMap<>();
+			table3.put("dbName", "BRF_TREASURY_INVEST_TB");
+			table3.put("displayName", "TREASURY INVESTMENT DATA");
+			tablesList.add(table3);
+
+			Map<String, List<Map<String, Object>>> tableFields = new HashMap<>();
+			
+			// Columns for BRF_TREASURY_MASTER_TB
+			List<Map<String, Object>> orderFields = new ArrayList<>();
+			orderFields.add(createField("ENTITY", "ENTITY",
+					comparisonService.getAllDistinctvalues("ENTITY", "BRF_TREASURY_MASTER_TB")));
+			orderFields.add(createField("ACCT_NO", "Account Number",
+					comparisonService.getAllDistinctvalues("ACCT_NO", "BRF_TREASURY_MASTER_TB")));
+			orderFields.add(createField("CURRENCY", "Currency",
+					comparisonService.getAllDistinctvalues("CURRENCY", "BRF_TREASURY_MASTER_TB")));
+			tableFields.put("BRF_TREASURY_MASTER_TB", orderFields);
+
+			// Columns for BRF_TREASURY_PLACEMENT_ID
+			List<Map<String, Object>> userFields = new ArrayList<>();
+			userFields.add(createField("TITRE", "TITRE",
+					comparisonService.getAllDistinctvalues("TITRE", "BRF_TREASURY_PLACEMENT_ID")));
+			userFields.add(createField("ENTITE", "ENTITE",
+					comparisonService.getAllDistinctvalues("ENTITE", "BRF_TREASURY_PLACEMENT_ID")));
+			userFields.add(createField("PORTEFEUILLE", "PORTEFEUILLE",
+					comparisonService.getAllDistinctvalues("PORTEFEUILLE", "BRF_TREASURY_PLACEMENT_ID")));
+			userFields.add(createField("CONTREPARTIE", "CONTREPARTIE",
+					comparisonService.getAllDistinctvalues("CONTREPARTIE", "BRF_TREASURY_PLACEMENT_ID")));
+			tableFields.put("BRF_TREASURY_PLACEMENT_ID", userFields);
+
+			List<DataMapping_Entity> rawRecords = dataMappingRepository.findAll();
+			List<Map<String, Object>> savedMappingsList = new ArrayList<>();
+
+			for (DataMapping_Entity record : rawRecords) {
+				Map<String, Object> wrapper = new HashMap<>();
+				wrapper.put("ENTITY_DATA", record);
+				try {
+					wrapper.put("JSON_STRING", objectMapper.writeValueAsString(record));
+				} catch (Exception e) {
+					wrapper.put("JSON_STRING", "{}");
+				}
+				savedMappingsList.add(wrapper);
+			}
+
+			model.addAttribute("savedMappingsList", savedMappingsList);
+
+			model.addAttribute("tablesList", tablesList);
+			model.addAttribute("tableFields", tableFields);
+
+			return "datamapping";
+		}
+
+		private Map<String, Object> createField(String dbName, String displayName, List<String> actions) {
+			Map<String, Object> field = new HashMap<>();
+			field.put("dbName", dbName);
+			field.put("displayName", displayName);
+			field.put("actions", actions);
+			return field;
+		}
+
+		@PostMapping("/saveMapping")
+		@ResponseBody
+		public ResponseEntity<String> saveMapping(@RequestBody DataMapping_Entity payload) {
+			try {
+				if (payload.getMAPPING_ID() == null) {
+					BigDecimal currentMax = dataMappingRepository.findMaxId();
+					BigDecimal nextId = currentMax.add(BigDecimal.ONE);
+					payload.setMAPPING_ID(nextId);
+				}
+
+				dataMappingRepository.save(payload);
+				return ResponseEntity.ok(payload.getMAPPING_ID().toString());
+			} catch (Exception e) {
+				return ResponseEntity.status(500).body("Error");
+			}
+		}
+
+		@PostMapping("/deleteMapping")
+		@ResponseBody
+		public ResponseEntity<String> deleteMapping(@RequestParam("id") BigDecimal id) {
+			try {
+				dataMappingRepository.deleteById(id);
+				return ResponseEntity.ok("Deleted");
+			} catch (Exception e) {
+				return ResponseEntity.status(500).body("Error");
+			}
+		}
 		
+		@GetMapping("/mappingDetails")
+		public ResponseEntity<List<Map<String, Object>>> getMappingDetails(@RequestParam("tableName") String tableName,
+				@RequestParam("reportDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date reportDate) {
+			try {
+				//System.out.println("Table name : "+ tableName +" Report date : "+reportDate);
+				List<Map<String, Object>> details = comparisonService.getDetailedMappingReport(tableName, reportDate);
+				return ResponseEntity.ok(details);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return ResponseEntity.status(500).body(null);
+			}
+		}
+		    
 		
 }

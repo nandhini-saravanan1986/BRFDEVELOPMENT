@@ -1,0 +1,440 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<link rel="stylesheet" type="text/css"
+	href="/webjars/bootstrap/4.3.1/css/bootstrap.min.css"
+	th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+<link rel="stylesheet" type="text/css"
+	href="/webjars/font-awesome/5.9.0/css/all.min.css"
+	th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+<link rel="stylesheet" type="text/css"
+	href="/webjars/jquery-ui/1.12.1/jquery-ui.min.css"
+	th:href="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.css}">
+
+<script src="/webjars/jquery/3.4.1/jquery.min.js"
+	th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+<script src="/webjars/popper.js/1.14.7/umd/popper.min.js"
+	th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+<script src="/webjars/bootstrap/4.3.1/js/bootstrap.min.js"
+	th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+
+<style>
+.btn-primary {
+	background-color: #E77400;
+	border-color: #0c0c0c;
+}
+
+.btn-primary:hover {
+	background-color: #cc6600;
+}
+
+.fields-container {
+	height: 350px;
+	overflow-y: auto;
+	background: #ffffff;
+	border: 1px solid #ced4da;
+	border-radius: 4px;
+	padding: 5px;
+}
+
+.field-item {
+	padding: 8px 12px;
+	border-bottom: 1px solid #f4f4f5;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.field-item:last-child {
+	border-bottom: none;
+}
+
+.field-label {
+	font-size: 14px;
+	font-weight: 500;
+	color: #495057;
+}
+
+.multiselect-dropdown .dropdown-toggle {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background-color: #fff;
+	border: 1px solid #ced4da;
+	width: 160px;
+	cursor: pointer;
+	padding: 4px 10px;
+	border-radius: 4px;
+	color: #495057;
+}
+
+.multiselect-dropdown .dropdown-menu {
+	max-height: 200px;
+	overflow-y: auto;
+	min-width: 160px;
+	margin-top: 4px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.multiselect-dropdown .dropdown-item {
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	padding: 6px 12px;
+	font-size: 13px;
+}
+
+.multiselect-dropdown .dropdown-item:hover {
+	background-color: #f4f4f5;
+}
+</style>
+</head>
+<title>Data Mapping</title>
+<body>
+	<div th:insert="BRFHeaderMenu :: header"></div>
+
+	<div class="container content" style="margin-top: 100px;">
+		<div class="card" style="width: 100%;">
+			<div class="card-header"
+				style="background-color: #376275; display: flex; justify-content: space-between; align-items: center;">
+				<div>
+					<h5 style="color: white; margin: 0;">Data Integrations</h5>
+				</div>
+				<div>
+					<button type="button" class="btn btn-sm btn-primary"
+						onclick="openMappingModal()">
+						<i class="fas fa-plus"></i> New Table Mapping
+					</button>
+				</div>
+			</div>
+
+			<div class="card-body p-0">
+				<div style="overflow-x: auto; max-height: 650px; overflow-y: auto;">
+					<table
+						class="table table-bordered table-hover table-condensed table-sm mb-0"
+						id="savedMappingsTable">
+						<thead class="thead-light">
+							<tr>
+								<th style="width: 15%;">Source Table</th>
+								<th style="width: 30%;">Source Mapped Fields</th>
+								<th style="width: 15%;">Destination Table</th>
+								<th style="width: 30%;">Destination Mapped Fields</th>
+								<th style="width: 12%; text-align: center;">Action</th>
+							</tr>
+						</thead>
+						<tbody id="savedListContainer">
+							<tr th:each="item : ${savedMappingsList}" class="saved-data-row"
+								th:id="${item.ENTITY_DATA.MAPPING_ID}"
+								th:data-payload="${item.JSON_STRING}"></tr>
+
+							<tr id="emptyStateRow"
+								th:style="${#lists.isEmpty(savedMappingsList)} ? 'display: table-row;' : 'display: none;'">
+								<td colspan="5"
+									style="text-align: center; color: red; padding: 20px;">No
+									Table Mappings Found</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<div class="card-footer text-center"
+				style="background-color: #386276;">
+				<button type="button" class="btn btn-xs btn-primary"
+					onclick="window.history.back();">Back</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="mappingModal" tabindex="-1" role="dialog"
+		data-backdrop="static">
+		<div class="modal-dialog modal-dialog-centered modal-lg"
+			style="max-width: 900px;" role="document">
+			<div class="modal-content">
+				<input type="hidden" id="editingRowId" value="">
+
+				<div class="modal-header"
+					style="background-color: #386276; color: white;">
+					<h5 class="modal-title" style="font-weight: bold;">Map Data
+						Fields</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close" style="color: white;">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+
+				<div class="modal-body" style="background-color: #f4f4f5;">
+					<div class="row">
+						<div class="col-sm-6">
+							<div class="card shadow-sm">
+								<div class="card-header bg-white font-weight-bold py-2">Source
+									Table</div>
+								<div class="card-body p-2">
+									<select class="form-control form-control-sm mb-2"
+										id="sourceTableSelect"
+										onchange="handleTableSelection('source')">
+										<option value="">-- Select a Source Table --</option>
+									</select>
+									<div class="fields-container" id="sourceFields">
+										<div class="text-muted text-center mt-4">Select a table
+											to view fields</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-sm-6">
+							<div class="card shadow-sm">
+								<div class="card-header bg-white font-weight-bold py-2">Destination
+									Table</div>
+								<div class="card-body p-2">
+									<select class="form-control form-control-sm mb-2"
+										id="destTableSelect" onchange="handleTableSelection('dest')">
+										<option value="">-- Select a Destination Table --</option>
+									</select>
+									<div class="fields-container" id="destFields">
+										<div class="text-muted text-center mt-4">Select a table
+											to view fields</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary btn-sm"
+						data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary btn-sm"
+						id="saveModalBtn" onclick="saveMapping()">Save Mapping</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script th:inline="javascript">
+    const tablesList = /*[[${tablesList}]]*/ []; 
+    const tableFieldsMap = /*[[${tableFields}]]*/ {};
+
+    const sourceSelect = document.getElementById('sourceTableSelect');
+    const destSelect = document.getElementById('destTableSelect');
+
+    document.addEventListener("DOMContentLoaded", function() {
+        tablesList.forEach(table => {
+            sourceSelect.add(new Option(table.displayName, table.dbName));
+            destSelect.add(new Option(table.displayName, table.dbName));
+        });
+        
+        initializeSavedTableRows();
+    });
+
+    function initializeSavedTableRows() {
+        const rows = document.querySelectorAll('.saved-data-row');
+        rows.forEach(tr => {
+            const payload = JSON.parse(tr.dataset.payload);
+            const srcTableObj = tablesList.find(t => t.dbName === payload.SOURCE_TABLE);
+            const destTableObj = tablesList.find(t => t.dbName === payload.DEST_TABLE);
+            
+            const srcDispName = srcTableObj ? srcTableObj.displayName : payload.SOURCE_TABLE;
+            const destDispName = destTableObj ? destTableObj.displayName : payload.DEST_TABLE;
+
+            let sourceItems = [], destItems = [];
+            try { sourceItems = JSON.parse(payload.SOURCE_RULES || '[]'); } catch(e){}
+            try { destItems = JSON.parse(payload.DEST_RULES || '[]'); } catch(e){}
+
+            tr.innerHTML = `
+                <td class=" align-middle">${srcDispName}</td>
+                <td>${generateListHtml(sourceItems)}</td>
+                <td class="align-middle">${destDispName}</td>
+                <td>${generateListHtml(destItems)}</td>
+                <td class="text-center align-middle">
+                    <button class="btn btn-sm btn-outline-info mr-1" title="Edit Mapping" onclick="editMapping(this)"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-outline-danger" title="Delete Mapping" onclick="deleteMapping(this, '${payload.MAPPING_ID}')"><i class="fas fa-trash"></i></button>
+                </td>
+            `;
+        });
+    }
+
+    document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('mapping-cb')) {
+            const dropdown = e.target.closest('.multiselect-dropdown');
+            const checkedOptions = Array.from(dropdown.querySelectorAll('.mapping-cb:checked')).map(cb => cb.value);
+            const btnText = dropdown.querySelector('.btn-text');
+            
+            if (checkedOptions.length === 0) { 
+                btnText.innerText = "Unmapped"; 
+                btnText.classList.add("text-muted"); 
+            } else if (checkedOptions.length <= 2) { 
+                btnText.innerText = checkedOptions.join(', '); 
+                btnText.classList.remove("text-muted"); 
+            } else { 
+                btnText.innerText = checkedOptions.length + " Selected"; 
+                btnText.classList.remove("text-muted"); 
+            }
+        }
+    });
+
+    $(document).on('click', '.multiselect-dropdown .custom-dd-btn', function(e) {
+        e.preventDefault(); e.stopPropagation();
+        const $menu = $(this).siblings('.dropdown-menu');
+        const isCurrentlyOpen = $menu.hasClass('show');
+        $('.multiselect-dropdown .dropdown-menu').removeClass('show');
+        if (!isCurrentlyOpen) $menu.addClass('show');
+    });
+
+    $(document).on('click', function(e) { 
+        if (!$(e.target).closest('.multiselect-dropdown').length) $('.multiselect-dropdown .dropdown-menu').removeClass('show'); 
+    });
+
+    $(document).on('keyup', '.dd-search-input', function(e) {
+        const searchTerm = $(this).val().toLowerCase();
+        $(this).closest('.dropdown-menu').find('.mapping-action-label').each(function() {
+            $(this).css('display', $(this).text().toLowerCase().indexOf(searchTerm) > -1 ? 'flex' : 'none');
+        });
+    });
+
+    // --- MODAL GENERATION LOGIC ---
+    function openMappingModal() {
+        sourceSelect.value = ""; destSelect.value = "";
+        document.getElementById('sourceFields').innerHTML = '<div class="text-muted text-center mt-4">Select a table to view fields</div>';
+        document.getElementById('destFields').innerHTML = '<div class="text-muted text-center mt-4">Select a table to view fields</div>';
+        document.getElementById('editingRowId').value = "";
+        document.getElementById('saveModalBtn').innerText = "Save Mapping";
+        updateDropdownOptions();
+        $('#mappingModal').modal('show');
+    }
+
+    function handleTableSelection(side) { 
+        updateDropdownOptions(); 
+        loadFields(side); 
+    }
+
+    function updateDropdownOptions() {
+        const srcVal = sourceSelect.value, destVal = destSelect.value;
+        Array.from(sourceSelect.options).forEach(opt => { if(opt.value) opt.disabled = (opt.value === destVal); });
+        Array.from(destSelect.options).forEach(opt => { if(opt.value) opt.disabled = (opt.value === srcVal); });
+    }
+
+    function loadFields(side) {
+        const selectBox = side === 'source' ? sourceSelect : destSelect;
+        const container = side === 'source' ? document.getElementById('sourceFields') : document.getElementById('destFields');
+        const selectedDbName = selectBox.value;
+        container.innerHTML = '';
+        
+        if (!selectedDbName) return container.innerHTML = '<div class="text-muted text-center mt-4">Select a table to view fields</div>';
+
+        (tableFieldsMap[selectedDbName] || []).forEach(field => {
+            let chkHtml = `<div class="px-2 pb-1 pt-2 sticky-top bg-white"><input type="text" class="form-control form-control-sm dd-search-input" placeholder="Search constraints..." onclick="event.stopPropagation();"></div>`;
+            (field.actions || []).forEach(action => chkHtml += `<label class="dropdown-item mapping-action-label" style="cursor:pointer; padding:6px 12px; display:flex;"><input type="checkbox" class="mapping-cb" value="${action}" style="margin-right:8px;"> ${action}</label>`);
+            
+            const fieldDiv = document.createElement('div'); 
+            fieldDiv.className = 'field-item';
+            fieldDiv.innerHTML = `
+                <span class="field-label" data-dbname="${field.dbName}"><i class="far fa-file-alt text-muted mr-1"></i> ${field.displayName}</span>
+                <div class="dropdown multiselect-dropdown" style="width: 160px; position:relative;">
+                    <button class="custom-dd-btn form-control form-control-sm" type="button"><span class="btn-text text-truncate text-muted">Unmapped</span><i class="fas fa-caret-down text-muted"></i></button>
+                    <div class="dropdown-menu p-1 shadow" style="width:100%; margin-top:2px; position:absolute; z-index:1060;" onclick="event.stopPropagation()">${chkHtml}</div>
+                </div>`;
+            container.appendChild(fieldDiv);
+        });
+    }
+
+    // --- CRUD OPERATIONS (Save/Delete/Edit) ---
+    function saveMapping() {
+        if (!sourceSelect.value || !destSelect.value) return alert("Please select both a Source Table and a Destination Table.");
+        
+        let payload = {
+            SOURCE_TABLE: sourceSelect.value, 
+            DEST_TABLE: destSelect.value,
+            SOURCE_RULES: JSON.stringify(getMappingData('#sourceFields')), 
+            DEST_RULES: JSON.stringify(getMappingData('#destFields'))
+        };
+        
+        const editingId = document.getElementById('editingRowId').value;
+        if (editingId) payload.MAPPING_ID = editingId;
+
+        document.getElementById('saveModalBtn').disabled = true;
+        document.getElementById('saveModalBtn').innerText = "Saving...";
+        
+        $.ajax({
+            url: './saveMapping', 
+            type: 'POST', 
+            contentType: 'application/json', 
+            data: JSON.stringify(payload),
+            success: () => window.location.reload(),
+            error: () => { 
+                alert("Failed to save to database. Check console."); 
+                document.getElementById('saveModalBtn').disabled = false; 
+                document.getElementById('saveModalBtn').innerText = "Save Mapping";
+            }
+        });
+    }
+
+    function deleteMapping(btn, mappingId) {
+        if(!confirm("Are you sure you want to permanently delete this mapping?")) return;
+        $.ajax({ 
+            url: './deleteMapping', 
+            type: 'POST', 
+            data: { id: mappingId }, 
+            success: () => window.location.reload() 
+        });
+    }
+
+    function editMapping(btn) {
+        const payload = JSON.parse(btn.closest('tr').dataset.payload);
+        document.getElementById('editingRowId').value = payload.MAPPING_ID;
+        sourceSelect.value = payload.SOURCE_TABLE; 
+        destSelect.value = payload.DEST_TABLE;
+        
+        loadFields('source'); 
+        loadFields('dest');
+        
+        applySavedActionsJSON('#sourceFields', payload.SOURCE_RULES);
+        applySavedActionsJSON('#destFields', payload.DEST_RULES);
+        
+        document.getElementById('saveModalBtn').innerText = "Update Mapping";
+        $('#mappingModal').modal('show');
+    }
+
+    // --- UTILITY METHODS ---
+    function applySavedActionsJSON(containerId, rulesString) {
+        if (!rulesString) return;
+        let rulesArr = []; 
+        try { rulesArr = JSON.parse(rulesString); } catch(e) { return; }
+        
+        document.querySelectorAll(containerId + ' .field-item').forEach(item => {
+            const rule = rulesArr.find(r => r.dbName === item.querySelector('.field-label').dataset.dbname);
+            if (rule && rule.action && rule.action !== 'Unmapped') {
+                const arr = rule.action.split(',').map(s => s.trim());
+                let count = 0;
+                
+                item.querySelectorAll('.mapping-cb').forEach(cb => { 
+                    if (arr.includes(cb.value.trim())) { cb.checked = true; count++; } 
+                });
+                
+                const btnText = item.querySelector('.btn-text');
+                btnText.innerText = count > 2 ? count + " Selected" : arr.join(', ');
+                btnText.classList.remove("text-muted");
+            }
+        });
+    }
+
+    function getMappingData(containerId) {
+        return Array.from(document.querySelectorAll(containerId + ' .field-item')).map(item => {
+            const checked = Array.from(item.querySelectorAll('.mapping-cb:checked')).map(cb => cb.value);
+            return { 
+                displayName: item.querySelector('.field-label').innerText.trim(), 
+                dbName: item.querySelector('.field-label').getAttribute('data-dbname'), 
+                action: checked.length > 0 ? checked.join(', ') : 'Unmapped' 
+            };
+        }).filter(item => item.action !== 'Unmapped');
+    }
+
+    function generateListHtml(items) {
+        if(items.length === 0) return `<li class="text-muted" style="list-style:none;">No fields mapped</li>`;
+        return '<ul style="margin:0; padding-left:20px; font-size:13px;">' + items.map(i => `<li><b>${i.displayName}</b> ➝ ${i.action}</li>`).join('') + '</ul>';
+    }
+    </script>
+</body>
+</html>
