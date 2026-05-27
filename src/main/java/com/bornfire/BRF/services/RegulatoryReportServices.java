@@ -1,15 +1,11 @@
 package com.bornfire.BRF.services;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.Date;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.SessionFactory;
@@ -50,7 +46,18 @@ public class RegulatoryReportServices {
 	BRF003ReportService brf003ReportService;
 	@Autowired
 	BRF004ReportService brf004ReportService;
-
+	@Autowired
+	BRF010ReportService brf010ReportService;
+	@Autowired
+	BRF011ReportService brf011ReportService;
+	@Autowired
+	BRF012ReportService brf012ReportService;
+	@Autowired
+	BRF013ReportService brf013ReportService;
+	@Autowired
+	BRF014ReportService brf014ReportService;
+	
+	
 	String getExportpath() {
 		return exportpath;
 	}
@@ -83,11 +90,29 @@ public class RegulatoryReportServices {
 		case "BRF004":
 			repsummary = brf004ReportService.getBRF004View(reportId, fromdate, todate, currency, dtltype, pageable);
 			break;
+			
+		case "BRF010":
+		        repsummary = brf010ReportService.getBRF010View(reportId, fromdate, todate, currency, dtltype, pageable);
+		        break;
 
+	    case "BRF011":
+		    	repsummary = brf011ReportService.getBRF011View( reportId, fromdate, todate, currency, dtltype, pageable);
+		        break;
+
+		case "BRF012":
+		        repsummary = brf012ReportService.getBRF012View(reportId, fromdate, todate, currency, dtltype, pageable);
+		        break;
+		
+	    case "BRF013":
+			    	repsummary = brf013ReportService.getBRF013View( reportId, fromdate, todate, currency, dtltype, pageable);
+			        break;
+
+	    case "BRF014":
+			        repsummary = brf014ReportService.getBRF014View(reportId, fromdate, todate, currency, dtltype, pageable);
+			        break;
+			}
+		    return repsummary;
 		}
-
-		return repsummary;
-	}
 
 	public ModelAndView getReportSummary(String reportId, String reportDate, String fromdate, String todate,
 			String currency, String dtltype, String subreportid, String secid, String reportingTime, Pageable pageable,
@@ -111,10 +136,27 @@ public class RegulatoryReportServices {
 		case "BRF004":
 			repsummary = brf004ReportService.getBRF004View(reportId, fromdate, todate, currency, dtltype, pageable);
 			break;
-		}
-
-		return repsummary;
-	}
+		case "BRF010":
+				repsummary = brf010ReportService.getBRF010View(reportId, fromdate, todate, currency, dtltype, pageable);
+				break;
+	    case "BRF011":
+	    	repsummary=brf011ReportService.getBRF011View(reportId,fromdate,todate,currency,dtltype,pageable);
+			break;
+	    
+	    case "BRF012":
+	    	repsummary=brf012ReportService.getBRF012View(reportId,fromdate,todate,currency,dtltype,pageable);
+	    break;
+	    case "BRF013":
+	    	repsummary=brf013ReportService.getBRF013View(reportId,fromdate,todate,currency,dtltype,pageable);
+			break;
+	    
+	    case "BRF014":
+	    	repsummary=brf014ReportService.getBRF014View(reportId,fromdate,todate,currency,dtltype,pageable);
+	    break;
+	    }
+	    
+	    return repsummary;
+	    }
 
 	public ModelAndView getReportDetails(String reportId, String instanceCode, String asondate, String fromdate,
 			String todate, String currency, String reportingTime, String dtltype, String subreportid, String secid,
@@ -143,6 +185,28 @@ public class RegulatoryReportServices {
 			repdetail = brf004ReportService.getBRF004currentDtl(reportId, fromdate, todate, currency, dtltype, pageable,
 					Filter, searchVal);
 			break;
+		case "BRF010":
+			repdetail = brf010ReportService.getBRF010currentDtl(reportId, fromdate, todate, currency, dtltype, pageable,
+					Filter, searchVal);
+			break;
+
+		case "BRF011":
+			repdetail = brf011ReportService.getBRF011currentDtl(reportId, fromdate, todate, currency, dtltype, pageable,
+					Filter, searchVal);
+			break;
+		case "BRF012":
+			repdetail = brf012ReportService.getBRF012currentDtl(reportId, fromdate, todate, currency, dtltype, pageable,
+					Filter, searchVal);
+			break;
+
+		case "BRF013":
+			repdetail = brf013ReportService.getBRF013currentDtl(reportId, fromdate, todate, currency, dtltype, pageable,
+					Filter, searchVal);
+			break;
+		case "BRF014":
+			repdetail = brf014ReportService.getBRF014currentDtl(reportId, fromdate, todate, currency, dtltype, pageable,
+					Filter, searchVal);
+			break;
 		}
 		return repdetail;
 	}
@@ -163,15 +227,28 @@ public class RegulatoryReportServices {
 		case "BRF002":
 			repfile = brf002ReportService.getFile(reportId, fromdate, todate, currency, dtltype, filetype, filter);
 			break;
-/*
-		case "BRF003":
-			repfile = brf003ReportService.getFile(reportId, fromdate, todate, currency, dtltype, filetype, filter);
-			break;
-*/
+		/*
+		 * case "BRF003": repfile = brf003ReportService.getFile(reportId, fromdate,
+		 * todate, currency, dtltype, filetype, filter); break;
+		 */
 		case "BRF004":
 			repfile = brf004ReportService.getFile(reportId, fromdate, todate, currency, dtltype, filetype);
 			break;
-			
+		case "BRF010":
+			repfile = brf010ReportService.getFile(reportId, fromdate, todate, currency, dtltype, filetype);
+			break;
+		case "BRF011":
+			repfile = brf011ReportService.getFile(reportId, fromdate, todate, currency, dtltype, filetype);
+			break;
+		case "BRF012":
+			repfile = brf012ReportService.getFile(reportId, fromdate, todate, currency, dtltype, filetype);
+			break;
+		case "BRF013":
+			repfile = brf013ReportService.getFile(reportId, fromdate, todate, currency, dtltype, filetype);
+			break;
+		case "BRF014":
+			repfile = brf014ReportService.getFile(reportId, fromdate, todate, currency, dtltype, filetype);
+			break;
 		}
 
 		return repfile;
@@ -206,7 +283,28 @@ public class RegulatoryReportServices {
 			repsummary = brf004ReportService.getArchieveBRF004View(reportId, fromdate, todate, currency, dtltype,
 					pageable);
 			break;
+		case "BRF010":
+			repsummary = brf010ReportService.getArchieveBRF010View(reportId, fromdate, todate, currency, dtltype,
+					pageable);
+			break;
 
+		case "BRF011":
+			repsummary = brf011ReportService.getArchieveBRF011View(reportId, fromdate, todate, currency, dtltype,
+					pageable);
+			break;
+		case "BRF012":
+			repsummary = brf012ReportService.getArchieveBRF012View(reportId, fromdate, todate, currency, dtltype,
+					pageable);
+			break;
+		case "BRF013":
+			repsummary = brf013ReportService.getArchieveBRF013View(reportId, fromdate, todate, currency, dtltype,
+					pageable);
+			break;
+
+		case "BRF014":
+			repsummary = brf014ReportService.getArchieveBRF014View(reportId, fromdate, todate, currency, dtltype,
+					pageable);
+			break;
 		}
 
 		return repsummary;
@@ -230,6 +328,21 @@ public class RegulatoryReportServices {
 			break;
 		case "BRF004":
 			msg = brf004ReportService.preCheck(reportid, fromdate, todate);
+			break;
+		case "BRF010":
+			msg = brf010ReportService.preCheck(reportid, fromdate, todate);
+			break;
+		case "BRF011":
+			msg = brf011ReportService.preCheck(reportid, fromdate, todate);
+			break;
+		case "BRF012":
+			msg = brf012ReportService.preCheck(reportid, fromdate, todate);
+			break;
+		case "BRF013":
+			msg = brf013ReportService.preCheck(reportid, fromdate, todate);
+			break;
+		case "BRF014":
+			msg = brf014ReportService.preCheck(reportid, fromdate, todate);
 			break;
 		default:
 			logger.info("default -> preCheck()");
@@ -263,6 +376,26 @@ public class RegulatoryReportServices {
 
 		case "BRF004":
 			repdetail = brf004ReportService.ARCHgetBRF004currentDtl(reportId, fromdate, todate, currency, dtltype,
+					pageable, Filter);
+			break;
+		case "BRF010":
+			repdetail = brf010ReportService.ARCHgetBRF010currentDtl(reportId, fromdate, todate, currency, dtltype,
+					pageable, Filter);
+			break;
+		case "BRF011":
+			repdetail = brf011ReportService.ARCHgetBRF011currentDtl(reportId, fromdate, todate, currency, dtltype,
+					pageable, Filter);
+			break;
+		case "BRF012":
+			repdetail = brf012ReportService.ARCHgetBRF012currentDtl(reportId, fromdate, todate, currency, dtltype,
+					pageable, Filter);
+			break;
+		case "BRF013":
+			repdetail = brf013ReportService.ARCHgetBRF013currentDtl(reportId, fromdate, todate, currency, dtltype,
+					pageable, Filter);
+			break;
+		case "BRF014":
+			repdetail = brf014ReportService.ARCHgetBRF014currentDtl(reportId, fromdate, todate, currency, dtltype,
 					pageable, Filter);
 			break;
 		}
