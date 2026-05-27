@@ -42,6 +42,7 @@ import org.springframework.http.HttpStatus;
 
 import com.bornfire.BRF.services.ReportServices;
 import com.bornfire.BRF.entities.BRF3_DETAILTABLE;
+import com.bornfire.BRF.entities.BRF3_DetaiRep;
 import com.bornfire.BRF.entities.BRF4_DETAIL_ENTITY;
 import com.bornfire.BRF.entities.AuditReasonDTO;
 import com.bornfire.BRF.entities.BRF2_DETAIL_ENTITY;
@@ -71,6 +72,10 @@ import com.bornfire.BRF.entities.BRF1_DETAIL_ENTITY;
 import com.bornfire.BRF.entities.BRF1_DetaiRep;
 import com.bornfire.BRF.entities.BRF2_DetaiRep;
 import com.bornfire.BRF.entities.BRF4_DetaiRep;
+import com.bornfire.BRF.entities.BRF5_DetaiRep1;
+import com.bornfire.BRF.entities.BRF7_DetailRep;
+import com.bornfire.BRF.entities.BRF8_DetaiRep;
+import com.bornfire.BRF.entities.BRF9_DetaiRep1;
 import com.bornfire.BRF.entities.UserProfileRep;
 import com.bornfire.BRF.entities.BrfBaseMappingRepository;
 import com.bornfire.BRF.services.AuditService;
@@ -202,9 +207,19 @@ public class BRFReportsController {
 	
 	@Autowired
 	BRF2_DetaiRep brf2_DetaiRep;
-	
+	@Autowired
+	BRF3_DetaiRep brf3_DetaiRep;
 	@Autowired
 	BRF4_DetaiRep brf4_DetaiRep;
+	@Autowired
+	BRF5_DetaiRep1 brf5_DetaiRep1;
+	@Autowired
+	BRF7_DetailRep brf7_DetailRep;
+	@Autowired
+	BRF8_DetaiRep brf8_DetaiRep;
+	@Autowired
+	BRF9_DetaiRep1 brf9_DetaiRep1;
+	
 
 	private String pagesize;
 
@@ -276,6 +291,7 @@ public class BRFReportsController {
 		md.addAttribute("type", type);
 		md.addAttribute("reportingTime", reportingTime);
 		md.addAttribute("reportTitle", reportServices.getReportName(reportid));
+		System.out.println("reportTitle - "+reportServices.getReportName(reportid));
 
 		logger.info("Getting ModelandView :" + reportid);
 		ModelAndView mv = new ModelAndView();
@@ -422,7 +438,12 @@ public class BRFReportsController {
 	            switch (reportid) {
 	                case "BRF001": entityList = brf1_DetaiRep.find(); break;
 	                case "BRF002": entityList = brf2_DetaiRep.find(); break;
+	                case "BRF003": entityList = brf3_DetaiRep.find(); break;
 	                case "BRF004": entityList = brf4_DetaiRep.find(); break;
+	                case "BRF005": entityList = brf5_DetaiRep1.find(); break;
+	                case "BRF007": entityList = brf7_DetailRep.find(); break;
+	                case "BRF008": entityList = brf8_DetaiRep.find(); break;
+	                case "BRF009": entityList = brf9_DetaiRep1.find(); break;
 	                default: throw new RuntimeException("Unknown reportid: " + reportid);
 	            }
 
@@ -444,7 +465,12 @@ public class BRFReportsController {
 			    switch (reportid) {
 			        case "BRF001": entityList = brf1_DetaiRep.find(); break;
 			        case "BRF002": entityList = brf2_DetaiRep.find(); break;
+			        case "BRF003": entityList = brf3_DetaiRep.find(); break;
 			        case "BRF004": entityList = brf4_DetaiRep.find(); break;
+			        case "BRF005": entityList = brf5_DetaiRep1.find(); break;
+	                case "BRF007": entityList = brf7_DetailRep.find(); break;
+	                case "BRF008": entityList = brf8_DetaiRep.find(); break;
+	                case "BRF009": entityList = brf9_DetaiRep1.find(); break;
 			        default: throw new RuntimeException("Unknown reportid: " + reportid);
 			    }
 
