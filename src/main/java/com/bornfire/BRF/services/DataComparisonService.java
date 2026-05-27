@@ -30,7 +30,7 @@ public class DataComparisonService {
 	public String getAmountColumn(String tableName) {
 		switch (tableName.toUpperCase()) {
 		case "BRF_TREASURY_MASTER_TB":
-			return "AMOUNT_LC";
+			return "AMOUNT_AC";
 		case "BRF_TREASURY_PLACEMENT_ID":
 			return "NOMINAL_1";		
 		default:

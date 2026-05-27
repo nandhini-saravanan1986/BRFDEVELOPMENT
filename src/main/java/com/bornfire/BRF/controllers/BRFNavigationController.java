@@ -1567,9 +1567,18 @@ html.append("</tbody></table></div>");
 					dataValidation = "INVALID";
 					status = "FAIL";
 				}
+				
+				boolean isTableValid = comparisonService.compareMappingsForSpecificTable(tablename, report_date);
+
+	            String logicValidation = isTableValid ? "VALID" : "INVALID";
+
+	            if ("INVALID".equals(dataValidation) || "INVALID".equals(logicValidation)) {
+	                status = "FAIL";
+	            }
+	            
 
 				looprowMap.put("dataValidation", dataValidation);
-				looprowMap.put("logicValidation", "-");
+				looprowMap.put("logicValidation",logicValidation);
 				looprowMap.put("status", status);
 				parsedList.add(looprowMap);
 			}
