@@ -296,14 +296,14 @@ public class BRFBaseTableController {
     public Map<String, Object> deleteMapping(
             @RequestParam String accountId,
             @RequestParam String reportCode,
-            @RequestParam String rowId) {
+            @RequestParam String rowId,@RequestParam String columnId) {
 
         Map<String, Object> response = new LinkedHashMap<>();
 
         try {
             BrfCommonMappingId pk =
                 new BrfCommonMappingId(
-                    accountId.trim(), reportCode.trim(), rowId.trim());
+                    accountId.trim(), reportCode.trim(), rowId.trim(),columnId.trim());
 
             if (!commonMappingRepo.existsById(pk)) {
                 response.put("status",  "NOT_FOUND");
@@ -340,6 +340,7 @@ public class BRFBaseTableController {
             String accountId    = nvl(row.get("accountId")).trim();
             String reportCode   = nvl(row.get("reportCode")).trim();
             String oldRowId     = nvl(row.get("oldRowId")).trim();   // original key
+            String oldColumnId     = nvl(row.get("oldColumnId")).trim();
             String newRowId     = nvl(row.get("rowId")).trim();      // possibly changed
             String columnId     = nvl(row.get("columnId")).trim();
             String balanceLc    = nvl(row.get("balanceLc"));
@@ -358,7 +359,7 @@ public class BRFBaseTableController {
             }
 
             // 1. Find the ORIGINAL record by the old composite key
-            BrfCommonMappingId oldPk = new BrfCommonMappingId(accountId, reportCode, oldRowId);
+            BrfCommonMappingId oldPk = new BrfCommonMappingId(accountId, reportCode, oldRowId,oldColumnId);
             BrfCommonMapping existing = commonMappingRepo.findById(oldPk).orElse(null);
 
             if (existing == null) {
@@ -373,7 +374,7 @@ public class BRFBaseTableController {
             if (rowIdChanged) {
                 // ROW_ID is part of the PK — we must delete old + insert new
                 // 2a. Check if the new composite key already exists (avoid duplicate PK)
-                BrfCommonMappingId newPk = new BrfCommonMappingId(accountId, reportCode, newRowId);
+                BrfCommonMappingId newPk = new BrfCommonMappingId(accountId, reportCode, newRowId,oldColumnId);
                 if (commonMappingRepo.existsById(newPk)) {
                     response.put("status",  "DUPLICATE");
                     response.put("message", "A record already exists for rowId=" + newRowId

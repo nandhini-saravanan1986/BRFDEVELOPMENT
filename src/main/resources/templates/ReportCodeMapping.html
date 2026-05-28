@@ -1494,7 +1494,8 @@
 							</div>
 						</div>
 						<input type="hidden" id="editReportCode"> <input
-							type="hidden" id="editOldRowId"> <input type="hidden"
+							type="hidden" id="editOldRowId"><input
+							type="hidden" id="editOldColumnId"> <input type="hidden"
 							id="editMode" value="mapped">
 						<div class="form-row mb-2">
 							<div class="col">
@@ -2676,6 +2677,7 @@ var colMaxWidth = {
 	    var rowIdxVal   = $('#rowLabelSelect').val();
 	    var rowId       = (rowIdxVal !== '' && currentRows[parseInt(rowIdxVal)]) ? currentRows[parseInt(rowIdxVal)].label : '';
 	    var columnId    = $('#colLabelSelect').val().trim();
+	    if (columnId === '') columnId = 'none';
 	    var solIdValue  = getMenuValues('solIdMenu');
 	    var constCode   = getMenuValues('constCodeMenu');
 	    var legalEntity = getMenuValues('legalEntityMenu');
@@ -3413,6 +3415,7 @@ var colMaxWidth = {
 	    var reportCode  = $('#reportCodeSelect').val().trim();
 	    var rowId       = $('#modalRowLabel').val().trim();
 	    var columnId    = $('#modalColLabel').val().trim();
+	    if (columnId === '') columnId = 'none';
 	    var solIdValue  = getMenuValues('modalSolIdMenu');
 	    var constCode   = getMenuValues('modalConstCodeMenu');
 	    var legalEntity = getMenuValues('modalLegalEntityMenu');
@@ -3537,6 +3540,7 @@ var colMaxWidth = {
 	    /* Keys */
 	   $('#editReportCode').val($('#reportCodeSelect').val());
 	    $('#editOldRowId').val('');
+	    $('#editOldColumnId').val('');
 	    $('#editMode').val('unmapped');
 	
 	    /* Populate ROW ID dropdown */
@@ -3582,6 +3586,7 @@ var colMaxWidth = {
 	    /* Hidden keys */
 	    $('#editReportCode').val(nvl(row['REPORT_CODE']));
 	    $('#editOldRowId').val(nvl(row['ROW_ID']));
+	    $('#editOldColumnId').val(nvl(row['COLUMN_ID']));
 	    $('#editMode').val('mapped');
 	
 	    /* Populate ROW ID dropdown from currentRows */
@@ -3640,6 +3645,7 @@ var colMaxWidth = {
 		
 	    var rowId    = $('#editRowId').val();
 	    var columnId = $('#editColumnId').val();
+	    if (!columnId || columnId.trim() === '') columnId = 'none';
 	    var balanceLc = $('#editBalanceLc').val();
 	
 	    if (!rowId)                       { alert('Please select a Row ID.'); return; }
@@ -3650,6 +3656,7 @@ var colMaxWidth = {
 	    var payload = {
 	        accountId        : $('#editAccountId').val().trim(),
 	        oldRowId         : $('#editOldRowId').val().trim(),
+	        oldColumnId      : $('#editOldColumnId').val().trim() || 'none',
 	        balanceLc        : balanceLc,
 	        reportCode       : $('#editReportCode').val().trim(),
 	        rowId            : rowId,
@@ -3777,7 +3784,7 @@ var colMaxWidth = {
 	    $('#confirmDeleteMappedBtn').prop('disabled', true).text('Deleting...');
 	    $.ajax({
 	        url: '/BRF/BRFCommonTable/deleteMapping', type: 'GET',
-	        data: { accountId: nvl(row['ACCOUNT_ID_BACID']), reportCode: nvl(row['REPORT_CODE']), rowId: nvl(row['ROW_ID']) },
+	        data: { accountId: nvl(row['ACCOUNT_ID_BACID']), reportCode: nvl(row['REPORT_CODE']), rowId: nvl(row['ROW_ID']) , columnId: nvl(row['COLUMN_ID']) || 'none'},
 	        success: function() {
 	            $('#confirmDeleteMappedBtn').prop('disabled', false).text('Delete');
 	            $('#deleteMappedModal').modal('hide');

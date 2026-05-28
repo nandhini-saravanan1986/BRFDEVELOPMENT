@@ -10,13 +10,15 @@ public class BrfCommonMappingId implements Serializable {
     private String accountIdBacid;
     private String reportCode;
     private String rowId;
+    private String columnId;
 
     public BrfCommonMappingId() {}
 
-    public BrfCommonMappingId(String accountIdBacid, String reportCode, String rowId) {
+    public BrfCommonMappingId(String accountIdBacid, String reportCode, String rowId,String columnId) {
         this.accountIdBacid = accountIdBacid;
         this.reportCode     = reportCode;
         this.rowId          = rowId;
+        this.columnId          = columnId;
     }
 
     public String getAccountIdBacid()             { return accountIdBacid; }
@@ -24,9 +26,17 @@ public class BrfCommonMappingId implements Serializable {
     public String getReportCode()                 { return reportCode; }
     public void   setReportCode(String v)         { this.reportCode = v; }
     public String getRowId()                      { return rowId; }
-    public void   setRowId(String v)              { this.rowId = v; }
+    public void   setRowId(String v)              { this.rowId = v; }    
 
-    // REQUIRED by JPA for composite key equality checks
+    public String getColumnId() {
+		return columnId;
+	}
+
+	public void setColumnId(String columnId) {
+		this.columnId = columnId;
+	}
+
+	// REQUIRED by JPA for composite key equality checks
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -34,11 +44,12 @@ public class BrfCommonMappingId implements Serializable {
         BrfCommonMappingId that = (BrfCommonMappingId) o;
         return Objects.equals(accountIdBacid, that.accountIdBacid)
             && Objects.equals(reportCode,     that.reportCode)
-            && Objects.equals(rowId,          that.rowId);
+            && Objects.equals(rowId,          that.rowId)
+            && Objects.equals(columnId,          that.columnId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(accountIdBacid, reportCode, rowId);
+        return Objects.hash(accountIdBacid, reportCode, rowId,columnId);
     }
 }
