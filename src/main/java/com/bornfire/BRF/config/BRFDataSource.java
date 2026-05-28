@@ -59,14 +59,18 @@ public class BRFDataSource {
 	}
 
 	@Bean
-	DataSource srcdataSource() throws SQLException {
-		OracleDataSource dataSource = new OracleDataSource();
-		dataSource.setUser(username);
-		dataSource.setPassword(password);
-		dataSource.setURL(url);
-		dataSource.setImplicitCachingEnabled(true);
-		dataSource.setFastConnectionFailoverEnabled(true);
-		return dataSource;
+	public DataSource srcdataSource() {
+	    com.zaxxer.hikari.HikariDataSource ds = new com.zaxxer.hikari.HikariDataSource();
+	    ds.setJdbcUrl(url);
+	    ds.setUsername(username);
+	    ds.setPassword(password);
+	    ds.setDriverClassName("oracle.jdbc.OracleDriver");
+	    ds.setMaximumPoolSize(20);
+	    ds.setMinimumIdle(5);
+	    ds.setIdleTimeout(30000);
+	    ds.setConnectionTimeout(60000);
+	    ds.setMaxLifetime(1800000);
+	    return ds;
 	}
 
 	@Bean

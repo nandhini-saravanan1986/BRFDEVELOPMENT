@@ -203,10 +203,10 @@
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.oracle/ojdbc7 -->
 		<dependency>
-			<groupId>com.oracle</groupId>
-			<artifactId>ojdbc7</artifactId>
-			<version>12.1.0.2</version>
-		</dependency>
+    <groupId>com.oracle.database.jdbc</groupId>
+    <artifactId>ojdbc8</artifactId>
+    <version>21.11.0.0</version>
+</dependency>
 
 
 		<dependency>
