@@ -58,7 +58,7 @@ public class RegulatoryReportServices {
 	BRF014ReportService brf014ReportService;
 	
 	
-
+	@Autowired
 	BRF005ReportService brf005ReportService;
 	@Autowired
 	BRF007ReportService brf007ReportService;
