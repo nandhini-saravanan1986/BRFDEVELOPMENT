@@ -1533,6 +1533,7 @@ html.append("</tbody></table></div>");
 			String status = "OK";
 			if (result1 == 0) {
 				dataValidation = "INVALID";
+				result= "NO DATA FOUND";
 			}
 			if (result1 == 0 || "INVALID".equals(result)) {
 				status = "FAIL";
@@ -1574,6 +1575,7 @@ html.append("</tbody></table></div>");
 
 	            if ("INVALID".equals(dataValidation) || "INVALID".equals(logicValidation)) {
 	                status = "FAIL";
+	                logicValidation="NO DATA FOUND";
 	            }
 	            
 
@@ -1916,8 +1918,8 @@ html.append("</tbody></table></div>");
 			
 			// Columns for BRF_TREASURY_MASTER_TB
 			List<Map<String, Object>> orderFields = new ArrayList<>();
-			orderFields.add(createField("ENTITY", "ENTITY",
-					comparisonService.getAllDistinctvalues("ENTITY", "BRF_TREASURY_MASTER_TB")));
+			/*orderFields.add(createField("ENTITY", "ENTITY",
+					comparisonService.getAllDistinctvalues("ENTITY", "BRF_TREASURY_MASTER_TB")));*/
 			orderFields.add(createField("ACCT_NO", "Account Number",
 					comparisonService.getAllDistinctvalues("ACCT_NO", "BRF_TREASURY_MASTER_TB")));
 			orderFields.add(createField("CURRENCY", "Currency",
@@ -1928,8 +1930,8 @@ html.append("</tbody></table></div>");
 			List<Map<String, Object>> userFields = new ArrayList<>();
 			userFields.add(createField("TITRE", "TITRE",
 					comparisonService.getAllDistinctvalues("TITRE", "BRF_TREASURY_PLACEMENT_ID")));
-			userFields.add(createField("ENTITE", "ENTITE",
-					comparisonService.getAllDistinctvalues("ENTITE", "BRF_TREASURY_PLACEMENT_ID")));
+			/*userFields.add(createField("ENTITE", "ENTITE",
+					comparisonService.getAllDistinctvalues("ENTITE", "BRF_TREASURY_PLACEMENT_ID")));*/
 			userFields.add(createField("PORTEFEUILLE", "PORTEFEUILLE",
 					comparisonService.getAllDistinctvalues("PORTEFEUILLE", "BRF_TREASURY_PLACEMENT_ID")));
 			userFields.add(createField("CONTREPARTIE", "CONTREPARTIE",
@@ -2006,6 +2008,16 @@ html.append("</tbody></table></div>");
 				return ResponseEntity.status(500).body(null);
 			}
 		}
-		    
-		
+
+		@GetMapping("/singleTableDetails")
+		public ResponseEntity<Map<String, Object>> getSingleTableDetails(@RequestParam("tableName") String tableName,
+				@RequestParam("reportDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date reportDate) {
+			try {
+				Map<String, Object> details = comparisonService.getSingleTableValidationReport(tableName, reportDate);
+				return ResponseEntity.ok(details);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return ResponseEntity.status(500).body(null);
+			}
+		}
 }

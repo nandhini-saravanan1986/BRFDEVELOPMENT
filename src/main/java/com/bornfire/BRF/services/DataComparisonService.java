@@ -32,7 +32,9 @@ public class DataComparisonService {
 		case "BRF_TREASURY_MASTER_TB":
 			return "AMOUNT_AC";
 		case "BRF_TREASURY_PLACEMENT_ID":
-			return "NOMINAL_1";		
+			return "NOMINAL_1";
+		case "BRF_TREASURY_INVEST_TB":
+			return "ACCT_BALANCE_LC";
 		default:
 			return "AMOUNT";
 		}
@@ -44,8 +46,27 @@ public class DataComparisonService {
 			return "REPORT_DATE";
 		case "BRF_TREASURY_PLACEMENT_ID":
 			return "REPORT_DATE";
+		case "BRF_TREASURY_INVEST_TB":
+			return "REPORT_DATE";
 		default:
 			return "REPORT_DATE";
+		}
+	}
+
+	public String getDisplayName(String dbName) {
+		if (dbName == null)
+			return "Unknown";
+		switch (dbName.toUpperCase()) {
+		case "BRF_TREASURY_MASTER_TB":
+			return "TREASURY MASTER DATA";
+		case "BRF_TREASURY_PLACEMENT_ID":
+			return "TREASURY PLACEMENT DATA";
+		case "BRF_TREASURY_INVEST_TB":
+			return "TREASURY INVESTMENT DATA";
+		case "GENERAL_MASTER_TABLE":
+			return "CBS DATA";
+		default:
+			return dbName;
 		}
 	}
 
@@ -103,6 +124,12 @@ public class DataComparisonService {
 		BigDecimal destAmt = calculateTableAmount(destTable, targetDate, destRules);
 
 		System.out.println("Source value : " + srcAmt + " | Destination value : " + destAmt);
+
+		if (srcAmt == null && destAmt == null)
+			return true;
+		if (srcAmt == null || destAmt == null)
+			return false;
+
 		return srcAmt.compareTo(destAmt) == 0;
 	}
 
@@ -115,6 +142,9 @@ public class DataComparisonService {
 					|| targetTableName.equalsIgnoreCase(mapping.getDEST_TABLE())) {
 
 				Map<String, Object> details = new HashMap<>();
+
+				details.put("sourceDisplayName", getDisplayName(mapping.getSOURCE_TABLE()));
+				details.put("destDisplayName", getDisplayName(mapping.getDEST_TABLE()));
 				details.put("sourceTable", mapping.getSOURCE_TABLE());
 				details.put("destTable", mapping.getDEST_TABLE());
 				details.put("sourceRules", mapping.getSOURCE_RULES());
@@ -124,9 +154,16 @@ public class DataComparisonService {
 						mapping.getSOURCE_RULES());
 				BigDecimal destAmt = calculateTableAmount(mapping.getDEST_TABLE(), targetDate, mapping.getDEST_RULES());
 
-				details.put("sourceAmount", srcAmt);
-				details.put("destAmount", destAmt);
-				details.put("isMatch", srcAmt.compareTo(destAmt) == 0);
+				details.put("sourceAmount", srcAmt != null ? srcAmt : "No data found");
+				details.put("destAmount", destAmt != null ? destAmt : "No data found");
+
+				boolean isMatch = false;
+				if (srcAmt == null && destAmt == null) {
+					isMatch = true;
+				} else if (srcAmt != null && destAmt != null) {
+					isMatch = srcAmt.compareTo(destAmt) == 0;
+				}
+				details.put("isMatch", isMatch);
 
 				reportList.add(details);
 			}
@@ -137,8 +174,12 @@ public class DataComparisonService {
 	public Map<String, Object> getSingleTableValidationReport(String tableName, Date targetDate) {
 		Map<String, Object> details = new HashMap<>();
 
-		String col1 = "CREDIT_AMOUNT";
-		String col2 = "DEBIT_AMOUNT";
+		String col1 = "ACT_BALANCE_AMT_LC";
+		String col2 = "ACCT_BALANCE_AMT_AC";
+
+		String col1Display = "Local Currency";
+		String col2Display = "Another Currency";
+
 		String dateCol = getDateColumn(tableName);
 
 		String sql = "SELECT SUM(" + col1 + ") AS AMT1, SUM(" + col2 + ") AS AMT2 FROM " + tableName + " WHERE "
@@ -146,20 +187,32 @@ public class DataComparisonService {
 
 		try {
 			Map<String, Object> row = jdbcTemplate.queryForMap(sql, new java.sql.Date(targetDate.getTime()));
-			BigDecimal amt1 = row.get("AMT1") != null ? new BigDecimal(row.get("AMT1").toString()).abs()
-					: BigDecimal.ZERO;
-			BigDecimal amt2 = row.get("AMT2") != null ? new BigDecimal(row.get("AMT2").toString()).abs()
-					: BigDecimal.ZERO;
+
+			BigDecimal amt1 = row.get("AMT1") != null ? new BigDecimal(row.get("AMT1").toString()) : null;
+			BigDecimal amt2 = row.get("AMT2") != null ? new BigDecimal(row.get("AMT2").toString()) : null;
 
 			details.put("tableName", tableName);
+
 			details.put("col1Name", col1);
 			details.put("col2Name", col2);
-			details.put("col1Amount", amt1);
-			details.put("col2Amount", amt2);
-			details.put("isMatch", amt1.compareTo(amt2) == 0);
+
+			details.put("col1DisplayName", col1Display);
+			details.put("col2DisplayName", col2Display);
+
+			details.put("col1Amount", amt1 != null ? amt1 : "No data found");
+			details.put("col2Amount", amt2 != null ? amt2 : "No data found");
+
+			BigDecimal val1 = amt1 != null ? amt1 : BigDecimal.ZERO;
+			BigDecimal val2 = amt2 != null ? amt2 : BigDecimal.ZERO;
+
+			boolean isVal1Valid = val1.compareTo(BigDecimal.ZERO) >= 0 && val1.compareTo(BigDecimal.ONE) < 0;
+			boolean isVal2Valid = val2.compareTo(BigDecimal.ZERO) >= 0 && val2.compareTo(BigDecimal.ONE) < 0;
+
+			details.put("isMatch", isVal1Valid && isVal2Valid);
+
 		} catch (Exception e) {
-			details.put("col1Amount", BigDecimal.ZERO);
-			details.put("col2Amount", BigDecimal.ZERO);
+			details.put("col1Amount", "No data found");
+			details.put("col2Amount", "No data found");
 			details.put("isMatch", false);
 		}
 		return details;
@@ -207,12 +260,17 @@ public class DataComparisonService {
 		}
 
 		List<Map<String, Object>> data = jdbcTemplate.queryForList(sql.toString(), params.toArray());
+
+		boolean hasData = false;
 		BigDecimal totalAmount = BigDecimal.ZERO;
+
 		for (Map<String, Object> row : data) {
 			if (row.get("AMOUNT") != null) {
+				hasData = true;
 				totalAmount = totalAmount.add(new BigDecimal(row.get("AMOUNT").toString()).abs());
 			}
 		}
-		return totalAmount;
+
+		return hasData ? totalAmount : null;
 	}
 }
