@@ -2204,6 +2204,7 @@
 	    
 	    
 	    var code = $('#reportCodeSelect').val();
+	    window._globalMappedData = null;
 	
 	    // ── 1. RESET / EMPTY STATE ──
 	    if (!code) {
@@ -3306,6 +3307,8 @@ var colMaxWidth = {
 	}
 	
 	function highlightMappedRows() {
+		$('#rawExcelTable tbody tr').removeClass('mapped-row-green');
+	    if (!window._globalMappedData || window._globalMappedData.length === 0) return;
 	    if (!window._globalMappedData) return;
 	    var mappedRowIds = new Set();
 	    window._globalMappedData.forEach(function(r) { if (r['ROW_ID']) mappedRowIds.add(r['ROW_ID']); });
