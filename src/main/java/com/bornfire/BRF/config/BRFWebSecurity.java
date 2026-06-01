@@ -324,7 +324,7 @@ public class BRFWebSecurity extends WebSecurityConfigurerAdapter {
 					System.out.println("Your Login OTP is : " + otp);
 
 					// SEND OTP
-					loginServices.sendclientotp(otp, user.getRole_id(), user);
+					//loginServices.sendclientotp(otp, user.getRole_id(), user);
 
 					// STORE OTP IN SESSION
 					request.getSession().setAttribute("otp", otp);
