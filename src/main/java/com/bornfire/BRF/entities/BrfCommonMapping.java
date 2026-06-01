@@ -82,6 +82,12 @@ public class BrfCommonMapping {
 
     @Column(name = "AUTH_USER",             length = 20)
     private String authUser;
+    
+    @Column(name = "ASST_CLS",             length = 20)
+    private String asstCls;
+    
+    @Column(name = "PURPOSE_OF_ADVN",      length = 20)
+    private String purposeOfAdvn;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "ENTRY_TIME")
@@ -210,4 +216,8 @@ public class BrfCommonMapping {
     public void   setAuthTime(Date v)               { this.authTime = v; }
     public Date   getReportDate()                   { return reportDate; }
     public void   setReportDate(Date v)             { this.reportDate = v; }
+    public String getAsstCls() { return asstCls; }
+    public void setAsstCls(String asstCls) { this.asstCls = asstCls; }
+    public String getPurposeOfAdvn() { return purposeOfAdvn; }
+    public void setPurposeOfAdvn(String purposeOfAdvn) { this.purposeOfAdvn = purposeOfAdvn; }
 }

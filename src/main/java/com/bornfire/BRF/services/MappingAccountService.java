@@ -68,6 +68,8 @@ public class MappingAccountService {
             view.put("TURNOVER",            nvl(row.getTurnover()));
             view.put("FILTER_COLUMNS",      nvl(row.getFilterColumns()));
             view.put("SCHEME_TYPE",      nvl(row.getSchemeType()));
+            view.put("ASST_CLS",         nvl(row.getAsstCls()));    
+            view.put("PURPOSE_OF_ADVN",  nvl(row.getPurposeOfAdvn())); 
 
             result.add(view);
         }

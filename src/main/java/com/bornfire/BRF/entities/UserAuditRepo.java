@@ -9,7 +9,7 @@ import com.bornfire.BRF.entities.UserAuditLevel_Entity;
 
 public interface UserAuditRepo extends JpaRepository<UserAuditLevel_Entity, String> {
 
-    @Query(value = "SELECT * FROM USER_AUDIT_LEVEL", nativeQuery = true)
+    @Query(value = "SELECT * FROM USER_AUDIT_LEVEL ORDER BY AUDIT_DATE DESC", nativeQuery = true)
     List<UserAuditLevel_Entity> getUserAuditList();
 }
 

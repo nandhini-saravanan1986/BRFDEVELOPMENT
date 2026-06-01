@@ -144,6 +144,8 @@ public class BRFBaseTableController {
                 String turnover      = row.get("turnover");
                 String filterColumns = row.get("filterColumns");
                 String schemeType    = row.get("schemeType");
+                String asstCls       = row.get("assetClass");  
+                String purposeOfAdvn = row.get("purposeOfAdvn"); 
                 
                 if (accountId == null || accountId.trim().isEmpty()) continue;
 
@@ -158,6 +160,8 @@ public class BRFBaseTableController {
                 if (turnover     == null) turnover     = "";
                 if (filterColumns == null) filterColumns = "";
                 if (schemeType   == null) schemeType   = "";
+                if (asstCls       == null) asstCls       = ""; 
+                if (purposeOfAdvn == null) purposeOfAdvn = ""; 
                 
                 // 3. Trim and finalize
                 final String fAccountId    = accountId.trim();
@@ -172,6 +176,8 @@ public class BRFBaseTableController {
                 final String fTurnover     = turnover.trim();
                 final String fFilterColumns = filterColumns.trim();
                 final String fSchemeType    = schemeType.trim();
+                final String fAsstCls       = asstCls.trim();  
+                final String fPurposeOfAdvn = purposeOfAdvn.trim(); 
                 
                 // 4. Block cross-report duplicates
                 Optional<BrfCommonMapping> conflicting =
@@ -255,6 +261,8 @@ public class BRFBaseTableController {
                 record.setTurnover(fTurnover);
                 record.setFilterColumns(fFilterColumns);
                 record.setSchemeType(fSchemeType);
+                record.setAsstCls(fAsstCls);      
+                record.setPurposeOfAdvn(fPurposeOfAdvn);
                 
                 // 8. Single save — JPA decides INSERT or UPDATE via composite key
                 commonMappingRepo.save(record);
@@ -350,7 +358,9 @@ public class BRFBaseTableController {
             String hniNetworth  = nvl(row.get("hniNetworth")).trim();
             String turnover     = nvl(row.get("turnover")).trim();
             String filterCols   = nvl(row.get("filterColumns")).trim();
-            String schemeType   = nvl(row.get("schemeType")).trim(); 
+            String schemeType   = nvl(row.get("schemeType")).trim();
+            String asstCls      = nvl(row.get("assetClass")).trim();  
+            String purposeOfAdvn = nvl(row.get("purposeOfAdvn")).trim();
 
             if (accountId.isEmpty() || reportCode.isEmpty() || oldRowId.isEmpty()) {
                 response.put("status",  "ERROR");
@@ -426,6 +436,8 @@ public class BRFBaseTableController {
                 newRecord.setTurnover(turnover);
                 newRecord.setFilterColumns(filterCols);
                 newRecord.setSchemeType(schemeType);
+                newRecord.setAsstCls(asstCls);         
+                newRecord.setPurposeOfAdvn(purposeOfAdvn);
 
                 commonMappingRepo.save(newRecord);
 
@@ -443,6 +455,9 @@ public class BRFBaseTableController {
                 existing.setTurnover(turnover);
                 existing.setFilterColumns(filterCols);
                 existing.setSchemeType(schemeType);
+                existing.setAsstCls(asstCls);          
+                existing.setPurposeOfAdvn(purposeOfAdvn); 
+                
                 commonMappingRepo.save(existing);
 
                 System.out.println("UPDATE (fields only): " + accountId

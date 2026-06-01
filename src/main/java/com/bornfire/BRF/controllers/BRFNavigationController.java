@@ -508,6 +508,51 @@ public class BRFNavigationController {
 		List<Object[]> reportCodes = reportServices.getDropdownReportCodes();
 
 	    model.addAttribute("reportCodes", reportCodes);
+	    
+	    // ASST_CLS from DB
+	    List<String> asstClsList = jdbcTemplate.queryForList(
+	        "SELECT DISTINCT ASST_CLS FROM general_master_table WHERE ASST_CLS IS NOT NULL", String.class
+	    );
+	    model.addAttribute("asstClsList", asstClsList);
+	    System.out.println("asset - " + asstClsList);
+	    
+	    List<String> purposeOfAdvn = jdbcTemplate.queryForList(
+		        "SELECT DISTINCT PURPOSE_OF_ADVN FROM general_master_table WHERE PURPOSE_OF_ADVN IS NOT NULL", String.class
+		    );
+		model.addAttribute("purposeOfAdvn", purposeOfAdvn);
+	    
+	    // Constitution Code options
+	    List<String> constCodeOptions = Arrays.asList(
+	        "LLTCO","DMCC","FZC","FZE","FZCLL","OFC","FZELL","OPLLC","PROPR","SPLLC",
+	        "PROPM","11512","PVTCO","PRTNR","ESTB","11505","33201","FGNCO","FZLLC","PBPVT",
+	        "PJSC","PRTNF","61003","ASSOC","71001","CGPSU","INSTU","SGPSU","PBCLI","33199",
+	        "BUC","11599","11501","11699","33101","FI","BFC","MXC","11507","NBFC","GOENT",
+	        "44111","44116","INDL","44101","INDVM","INDVF","44108","WPS","44212","44205",
+	        "44201","44217","44299","44214","44199","44209","44115","44107","44203","SGOVT",
+	        "71002","61012","PCLBG","SOCIE","GEMS","PROPF","PBCNL","REALE","CC","SA","GOVT",
+	        "61002","EDTRU","GOVCO","11409","RFC","11700","FGNSO","NFLLC","ULTCO",
+	        "22302","BUEBC","56700","SHGOT","33299","11604","REAL","11401","11601",
+	        "11403","NPO","44103","71005","44207","44216","44106","44208","44102",".","44109","44113",
+	        "NREIN","44210","44112","RESIN","0","44202","33104","11510","11506","33107","-","33103","BR",
+	        "44104","44105","44110","44114","44204","44206","44211","44213","44215","HUFJT","INDL ","INDVM"
+	    );
+	    model.addAttribute("constCodeOptions", constCodeOptions);
+
+	    // Legal Entity options
+	    List<String> legalEntityOptions = Arrays.asList(
+	        "SAL","WT","HOSP","PRTNR","MXC","FORSV","PFINS","GT","NPO","EDINS","FI","FGNBK","GOVTE",
+	        "ASSN","RT","OFC","JJWEL","NBFC","RWTO","MILLS","EMBSY","COFTZ","TRAVL","PARTY","THEAT","EXSTF",
+	        "PSE","BUSIN","SSI","PVTCO","GOVT","HOTEL","COMBK","PROPR","RECLB","CGOVB","INDVL","IMEX",
+	        "PBLCO","PROF","SERV","FGBBK","STAFF","GOVTL","PSEC","INSP","STBRK","CB","MNC","MLI","OTH",
+	        "EMBAS","SHOPS","HUWIF","INSG","AGRI","GOVTF","PSENO","PSEN","PSECO","MXC  ","NBFC "
+	    );
+	    model.addAttribute("legalEntityOptions", legalEntityOptions);
+
+	    // Scheme Type options
+	    List<String> schemeTypeOptions = Arrays.asList(
+	        "SBA","CLA","CAA","LAA","ODA","DDA","OAB","FBA","PCA","OAP","TDA","OSP"
+	    );
+	    model.addAttribute("schemeTypeOptions", schemeTypeOptions);
 		
         return "ReportCodeMapping";
     }
