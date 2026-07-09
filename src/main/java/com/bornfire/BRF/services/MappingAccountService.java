@@ -206,12 +206,14 @@ public class MappingAccountService {
     public String saveBaseMappingParam(Map<String, String> body) {
     	
         String accountId = body.get("accountIdBacid");
+        String currency = body.get("currency");
+        //System.out.println("Currency :  " + currency);
         
         if (accountId == null || accountId.trim().isEmpty()) {
             return "ACCOUNT_ID_BACID is required";
         }
         // CHECK DUPLICATE
-        if (baseMappingRepo.findByAccountIdBacid(accountId.trim()).isPresent()) {
+		if (baseMappingRepo.findByAccountIdBacidAndCurrency(accountId.trim(), currency.trim()).isPresent()) {
             return "Account ID already exists: " + accountId;
         }
 

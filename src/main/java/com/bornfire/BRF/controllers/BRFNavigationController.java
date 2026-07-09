@@ -1,6 +1,9 @@
 package com.bornfire.BRF.controllers;
 
 import java.io.ByteArrayInputStream;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -44,6 +47,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.dao.DataAccessException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -2064,5 +2068,252 @@ html.append("</tbody></table></div>");
 				e.printStackTrace();
 				return ResponseEntity.status(500).body(null);
 			}
+		}
+		@GetMapping("/brfvalidationdetails")
+		public ResponseEntity<Map<String, List<Map<String, String>>>> brfvalidationdetails(
+				@RequestParam(value = "srlno", required = false) String srlno,
+				@RequestParam(value = "reportdate", required = false) String reportdate) {
+
+			// System.out.println("Report Date : " + reportdate);
+			DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy");
+			LocalDate parsedDate = LocalDate.parse(reportdate, inputFormatter);
+			String formattedDate = parsedDate.format(dateFormatter);
+			// System.out.println("Report_Date Formatted Date : " + formattedDate);
+
+			Map<String, List<Map<String, String>>> combinedResponse = new HashMap<>();
+
+			List<Map<String, String>> srcparsedList = new ArrayList<>();
+			List<Map<String, String>> destparsedList = new ArrayList<>();
+			List<Map<String, String>> calcvalueList = new ArrayList<>();
+			List<Map<String, String>> errorList = new ArrayList<>();
+
+			boolean calcorerror = true;
+
+			BRFValidations entity = brfValidationsRepo.findById(srlno).get();
+
+			if (entity.getSRC_FORMULA() != null && !entity.getSRC_FORMULA().equals(null) && entity.getDEST_FORMULA() != null
+					&& !entity.getDEST_FORMULA().equals(null) && entity.getSRC_TABLE() != null
+					&& !entity.getSRC_TABLE().equals(null) && entity.getDEST_TABLE() != null
+					&& !entity.getDEST_TABLE().equals(null) && entity.getSRC_COLUMN() != null
+					&& !entity.getSRC_COLUMN().equals(null) && entity.getDEST_COLUMN() != null
+					&& !entity.getDEST_COLUMN().equals(null)) {
+				List<String> srcformulalist = CalculationService.extractCombinations(entity.getSRC_FORMULA());
+				List<String> destformulalist = CalculationService.extractCombinations(entity.getDEST_FORMULA());
+
+				List<String> srcreportcodelist = CalculationService.extractlefttext(entity.getSRC_TABLE());
+				List<String> srcreportnamelist = CalculationService.extractrighttext(entity.getSRC_TABLE());
+				List<String> destreportcodelist = CalculationService.extractlefttext(entity.getDEST_TABLE());
+				List<String> destreportnamelist = CalculationService.extractrighttext(entity.getDEST_TABLE());
+
+				List<String> srcsrlnolist = CalculationService.extractlefttext(entity.getSRC_COLUMN());
+				List<String> srcdesclist = CalculationService.extractrighttext(entity.getSRC_COLUMN());
+				List<String> destsrlnolist = CalculationService.extractlefttext(entity.getDEST_COLUMN());
+				List<String> destdesclist = CalculationService.extractrighttext(entity.getDEST_COLUMN());
+
+				List<String> srcvalues = new ArrayList<>();
+				List<String> destvalues = new ArrayList<>();
+
+				for (String singleformula : srcformulalist) {
+					if (CalculationService.fetchSingleValue(singleformula, formattedDate) == null
+							|| CalculationService.fetchSingleValue(singleformula, formattedDate).equals(null)) {
+						srcvalues.add("No Data Found");
+						calcorerror = false;
+					} else {
+						srcvalues.add(CalculationService.fetchSingleValue(singleformula, formattedDate).toString());
+					}
+				}
+				for (String singleformula : destformulalist) {
+					if (CalculationService.fetchSingleValue(singleformula, formattedDate) == null
+							|| CalculationService.fetchSingleValue(singleformula, formattedDate).equals(null)) {
+						destvalues.add("No Data Found");
+					} else {
+						destvalues.add(CalculationService.fetchSingleValue(singleformula, formattedDate).toString());
+					}
+				}
+
+				for (int i = 0; i < srcformulalist.size(); i++) {
+					Map<String, String> srcrowMap = new HashMap<>();
+					srcrowMap.put("reportname", srcreportnamelist.get(i));
+					srcrowMap.put("reportcode", srcreportcodelist.get(i));
+					srcrowMap.put("srlno", srcsrlnolist.get(i));
+					srcrowMap.put("desc", srcdesclist.get(i));
+					srcrowMap.put("value", srcvalues.get(i));
+					srcparsedList.add(srcrowMap);
+				}
+				// System.out.println("Size of the Source list :" + srcformulalist.size() + " & Destination list : " + destformulalist.size());
+				if (srcformulalist.size() > 1) {
+					Map<String, String> calcvalueMap = new HashMap<>();
+					calcvalueMap.put("desc", "Calculated Value");
+					calcvalueMap.put("value",
+							CalculationService.calculate(entity.getSRC_FORMULA(), formattedDate).toString());
+					// System.out.println(" Calculated Value : "+ CalculationService.calculate(entity.getSRC_FORMULA(),formattedDate).toString());
+					calcvalueList.add(calcvalueMap);
+				}
+				for (int i = 0; i < destformulalist.size(); i++) {
+					Map<String, String> destrowMap = new HashMap<>();
+					destrowMap.put("reportname", destreportnamelist.get(i));
+					destrowMap.put("reportcode", destreportcodelist.get(i));
+					destrowMap.put("srlno", destsrlnolist.get(i));
+					destrowMap.put("desc", destdesclist.get(i));
+					destrowMap.put("value", destvalues.get(i));
+					destparsedList.add(destrowMap);
+				}
+
+				if (calcorerror) {
+					combinedResponse.put("calclist", calcvalueList);
+				} else {
+					Map<String, String> errorvalueMap = new HashMap<>();
+					errorvalueMap.put("desc", "Cannot calculate due to insufficient data");
+					errorList.add(errorvalueMap);
+					combinedResponse.put("errorlist", errorList);
+				}
+
+				combinedResponse.put("srclist", srcparsedList);
+				combinedResponse.put("destlist", destparsedList);
+			} else {
+				Map<String, String> errorvalueMap = new HashMap<>();
+				errorvalueMap.put("desc", "No Data Found");
+				errorList.add(errorvalueMap);
+				combinedResponse.put("errorlist", errorList);
+			}
+			return ResponseEntity.ok(combinedResponse);
+		}
+
+		@GetMapping("/ALAccounts")
+		public String BRFALAccounts(@RequestParam(required = false) String date,
+		        @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
+		        @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+		        @RequestParam(value = "size", required = false, defaultValue = "10") int size, Model model) {
+
+		    if (date == null || date.isEmpty()) {
+		        String sql = "SELECT TO_CHAR(report_date, 'DD-MM-YYYY') AS \"Report Date\" "
+		                   + "FROM general_master_table " 
+		                   + "GROUP BY report_date " 
+		                   + "ORDER BY report_date DESC";
+		        List<Map<String, Object>> distinctDates = jdbcTemplate.queryForList(sql);
+		        model.addAttribute("dateList", distinctDates);
+		    } else {
+		        try {
+		            String baseSql = "SELECT t1.ACCT_NUMBER, t1.ACCT_NAME, t1.ACT_BALANCE_AMT_LC, t1.GL_CODE, "
+		                    + "t1.GL_SUB_HEAD_CODE, t1.ACCT_CRNCY_CODE, t1.SOL_ID, t1.CONSTITUTION_CODE, "
+		                    + "t1.LEGAL_ENTITY_TYPE, t1.SCHM_TYPE, (CASE WHEN EXISTS ( "
+		                    + "  SELECT 1 FROM BRF_COMMON_MAPPING_TABLE t2 "
+		                    + "  WHERE t2.GL_SUBHEAD_CODE = t1.GL_SUB_HEAD_CODE AND t2.REPORT_CODE IN ('BRF001','BRF002','BRF004') "
+		                    + "  AND t2.CURRENCY = t1.ACCT_CRNCY_CODE "
+		                    + "  AND t2.ACCOUNT_ID_BACID = LTRIM(REGEXP_REPLACE(t1.ACCT_NUMBER, '^(9001|9002|9003|9004|9005|9008)'), '0') "
+		                    + ") THEN 1 ELSE 0 END) AS \"is_match\" " 
+		                    + "FROM general_master_table t1 "
+		                    + "WHERE TO_CHAR(t1.report_date, 'DD-MM-YYYY') = ? " 
+		                    + "AND t1.ACT_BALANCE_AMT_LC <> 0 "
+		                    + "AND (t1.ACCT_NUMBER, t1.ACCT_CRNCY_CODE) NOT IN (SELECT m1.FORACID, m1.ACCT_CRNCY_CODE FROM brf1_mapping_table m1 WHERE TO_CHAR(m1.report_date, 'DD-MM-YYYY') = ?) "
+		                    + "AND (t1.ACCT_NUMBER, t1.ACCT_CRNCY_CODE) NOT IN (SELECT m2.FORACID, m2.ACCT_CRNCY_CODE FROM brf2_mapping_table m2 WHERE TO_CHAR(m2.report_date, 'DD-MM-YYYY') = ?) "
+		                    + "AND (t1.ACCT_NUMBER, t1.ACCT_CRNCY_CODE) NOT IN (SELECT m3.FORACID, m3.ACCT_CRNCY_CODE FROM brf4_mapping_table m3 WHERE TO_CHAR(m3.report_date, 'DD-MM-YYYY') = ?) "
+		                    + "AND t1.SOL_ID IN ('9001','9002','9003','9004','9005','9006','9008')";
+
+		            List<Object> paramList = new ArrayList<>();
+		            paramList.add(date);
+		            paramList.add(date);
+		            paramList.add(date);
+		            paramList.add(date);
+
+		            if (keyword != null && !keyword.trim().isEmpty()) {
+		                baseSql += " AND (UPPER(CAST(t1.ACCT_NUMBER AS VARCHAR2(100))) LIKE ? "
+		                         + " OR UPPER(CAST(t1.GL_SUB_HEAD_CODE AS VARCHAR2(100))) LIKE ? "
+		                         + " OR UPPER(CAST(t1.ACCT_NAME AS VARCHAR2(255))) LIKE ? "
+		                         + " OR UPPER(CAST(t1.ACCT_CRNCY_CODE AS VARCHAR2(10))) LIKE ?) ";
+		                
+		                String searchPattern = "%" + keyword.trim().toUpperCase() + "%";
+		                
+		                paramList.add(searchPattern);
+		                paramList.add(searchPattern);
+		                paramList.add(searchPattern);
+		                paramList.add(searchPattern);
+		            }
+
+		            String countSql = "SELECT COUNT(1) FROM (" + baseSql + ") count_table";
+		            Integer totalRecords = jdbcTemplate.queryForObject(countSql, Integer.class, paramList.toArray());
+		            if (totalRecords == null) totalRecords = 0;
+
+		            int offset = page * size;
+		            String paginatedSql = baseSql + " ORDER BY \"is_match\" DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+		            
+		            List<Object> paginationParams = new ArrayList<>(paramList);
+		            paginationParams.add(offset);
+		            paginationParams.add(size);
+
+		            List<Map<String, Object>> detailedData = jdbcTemplate.queryForList(paginatedSql, paginationParams.toArray());
+
+		            Pageable pageable = PageRequest.of(page, size);
+		            PageImpl<Map<String, Object>> pageData = new PageImpl<>(detailedData, pageable, totalRecords);
+
+		            model.addAttribute("selectedDate", date);
+		            model.addAttribute("keyword", keyword);
+		            model.addAttribute("dynamicData", detailedData);
+		            model.addAttribute("page", pageData);
+					List<String> constCodeOptions = Arrays.asList("LLTCO", "DMCC", "FZC", "FZE", "FZCLL", "OFC",
+							"FZELL", "OPLLC", "PROPR", "SPLLC", "PROPM", "11512", "PVTCO", "PRTNR", "ESTB", "11505",
+							"33201", "FGNCO", "FZLLC", "PBPVT", "PJSC", "PRTNF", "61003", "ASSOC", "71001", "CGPSU",
+							"INSTU", "SGPSU", "PBCLI", "33199", "BUC", "11599", "11501", "11699", "33101", "FI", "BFC",
+							"MXC", "11507", "NBFC", "GOENT", "44111", "44116", "INDL", "44101", "INDVM", "INDVF",
+							"44108", "WPS", "44212", "44205", "44201", "44217", "44299", "44214", "44199", "44209",
+							"44115", "44107", "44203", "SGOVT", "71002", "61012", "PCLBG", "SOCIE", "GEMS", "PROPF",
+							"PBCNL", "REALE", "CC", "SA", "GOVT", "61002", "EDTRU", "GOVCO", "11409", "RFC", "11700",
+							"FGNSO", "NFLLC", "ULTCO", "22302", "BUEBC", "56700", "SHGOT", "33299", "11604", "REAL",
+							"11401", "11601", "11403", "NPO", "44103", "71005", "44207", "44216", "44106", "44208",
+							"44102", ".", "44109", "44113", "NREIN", "44210", "44112", "RESIN", "0", "44202", "33104",
+							"11510", "11506", "33107", "-", "33103", "BR", "44104", "44105", "44110", "44114", "44204",
+							"44206", "44211", "44213", "44215", "HUFJT", "INDL ", "INDVM");
+					model.addAttribute("constCodeOptions", constCodeOptions);
+
+					List<String> legalEntityOptions = Arrays.asList("SAL", "WT", "HOSP", "PRTNR", "MXC", "FORSV",
+							"PFINS", "GT", "NPO", "EDINS", "FI", "FGNBK", "GOVTE", "ASSN", "RT", "OFC", "JJWEL", "NBFC",
+							"RWTO", "MILLS", "EMBSY", "COFTZ", "TRAVL", "PARTY", "THEAT", "EXSTF", "PSE", "BUSIN",
+							"SSI", "PVTCO", "GOVT", "HOTEL", "COMBK", "PROPR", "RECLB", "CGOVB", "INDVL", "IMEX",
+							"PBLCO", "PROF", "SERV", "FGBBK", "STAFF", "GOVTL", "PSEC", "INSP", "STBRK", "CB", "MNC",
+							"MLI", "OTH", "EMBAS", "SHOPS", "HUWIF", "INSG", "AGRI", "GOVTF", "PSENO", "PSEN", "PSECO",
+							"MXC  ", "NBFC ");
+					model.addAttribute("legalEntityOptions", legalEntityOptions);
+
+					List<String> schemeTypeOptions = Arrays.asList("SBA", "CLA", "CAA", "LAA", "ODA", "DDA", "OAB",
+							"FBA", "PCA", "OAP", "TDA", "OSP");
+					model.addAttribute("schemeTypeOptions", schemeTypeOptions);
+
+		        } catch (DataAccessException dbEx) {
+		            System.err.println("Database query failed!");
+		            dbEx.printStackTrace();
+		        }
+		    }
+		    return "BRFALAccounts";
+		}
+		@GetMapping("/checkAccountExists")
+		@ResponseBody
+		public boolean checkAccountExists(@RequestParam String accountId) {
+
+		    String sql = "SELECT COUNT(1) FROM BRF_BASE_MAPPING_TABLE WHERE ACCOUNT_ID_BACID = ?";
+		    
+		    Integer count = jdbcTemplate.queryForObject(sql, Integer.class, accountId);
+		    
+		    return count != null && count > 0; 
+		}
+		@GetMapping("/getMappingDetailsunmappedal")
+		@ResponseBody
+		public ResponseEntity<List<Object[]>> getDetailsunmappedal(@RequestParam("glSubHeadCode") String glSubHeadCode) {
+		    try {
+		        List<Object[]> details = BrfCommonMappingRepository.findDistinctCombinationsByGlSubHeadunmappedal(glSubHeadCode);
+		        
+		        return ResponseEntity.ok(details);
+		        
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		    }
+		}
+
+		@GetMapping("/getExistingMappingsByAccount")
+		@ResponseBody
+		public List<Object[]> getExistingMappingsByAccount(@RequestParam String accountId,
+				@RequestParam String currency) {
+			return BrfCommonMappingRepository.findExistingMappingsByAccountAndCurrency(accountId, currency);
 		}
 }

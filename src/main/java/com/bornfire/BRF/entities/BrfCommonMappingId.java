@@ -11,14 +11,16 @@ public class BrfCommonMappingId implements Serializable {
     private String reportCode;
     private String rowId;
     private String columnId;
+    private String currency;
 
     public BrfCommonMappingId() {}
 
-    public BrfCommonMappingId(String accountIdBacid, String reportCode, String rowId,String columnId) {
+    public BrfCommonMappingId(String accountIdBacid, String reportCode, String rowId,String columnId,String currency) {
         this.accountIdBacid = accountIdBacid;
         this.reportCode     = reportCode;
         this.rowId          = rowId;
         this.columnId          = columnId;
+        this.currency          = currency;
     }
 
     public String getAccountIdBacid()             { return accountIdBacid; }
@@ -35,6 +37,15 @@ public class BrfCommonMappingId implements Serializable {
 	public void setColumnId(String columnId) {
 		this.columnId = columnId;
 	}
+	
+
+	public String getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
 
 	// REQUIRED by JPA for composite key equality checks
     @Override
@@ -45,11 +56,12 @@ public class BrfCommonMappingId implements Serializable {
         return Objects.equals(accountIdBacid, that.accountIdBacid)
             && Objects.equals(reportCode,     that.reportCode)
             && Objects.equals(rowId,          that.rowId)
-            && Objects.equals(columnId,          that.columnId);
+            && Objects.equals(columnId,          that.columnId)
+            && Objects.equals(currency,          that.currency);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(accountIdBacid, reportCode, rowId,columnId);
+        return Objects.hash(accountIdBacid, reportCode, rowId,columnId,currency);
     }
 }

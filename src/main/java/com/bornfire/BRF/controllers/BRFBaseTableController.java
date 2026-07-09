@@ -146,6 +146,7 @@ public class BRFBaseTableController {
                 String schemeType    = row.get("schemeType");
                 String asstCls       = row.get("assetClass");  
                 String purposeOfAdvn = row.get("purposeOfAdvn"); 
+                String currency      = row.get("currency");
                 
                 if (accountId == null || accountId.trim().isEmpty()) continue;
 
@@ -162,6 +163,7 @@ public class BRFBaseTableController {
                 if (schemeType   == null) schemeType   = "";
                 if (asstCls       == null) asstCls       = ""; 
                 if (purposeOfAdvn == null) purposeOfAdvn = ""; 
+                if (currency == null) currency = "";
                 
                 // 3. Trim and finalize
                 final String fAccountId    = accountId.trim();
@@ -178,6 +180,7 @@ public class BRFBaseTableController {
                 final String fSchemeType    = schemeType.trim();
                 final String fAsstCls       = asstCls.trim();  
                 final String fPurposeOfAdvn = purposeOfAdvn.trim(); 
+                final String fCurrency      = currency.trim();
                 
                 // 4. Block cross-report duplicates
                 Optional<BrfCommonMapping> conflicting =
@@ -196,16 +199,16 @@ public class BRFBaseTableController {
 
                 // 5. Find existing record by composite key (ACCOUNT_ID_BACID + ROW_ID + REPORT_CODE)
                 //    If not found, build a fresh record from BRF_BASE_MAPPING_TABLE
-                boolean isNew = !commonMappingRepo
-                    .findByAccountIdBacidAndRowIdAndReportCode(fAccountId, fRowId, fReportCode)
-                    .isPresent();
+                BrfCommonMappingId submitPk = new BrfCommonMappingId(fAccountId, fReportCode, fRowId, fColumnId, fCurrency);
+
+                boolean isNew = !commonMappingRepo.existsById(submitPk);
 
                 BrfCommonMapping record = commonMappingRepo
-                    .findByAccountIdBacidAndRowIdAndReportCode(fAccountId, fRowId, fReportCode)
+                    .findById(submitPk)
                     .orElseGet(() -> {
 
                         BrfBaseMapping base = baseMappingRepo
-                            .findByAccountIdBacid(fAccountId)
+                            .findByAccountIdBacidAndCurrency(fAccountId,fCurrency)
                             .orElse(null);
 
                         if (base == null) {
@@ -304,14 +307,14 @@ public class BRFBaseTableController {
     public Map<String, Object> deleteMapping(
             @RequestParam String accountId,
             @RequestParam String reportCode,
-            @RequestParam String rowId,@RequestParam String columnId) {
+            @RequestParam String rowId,@RequestParam String columnId,@RequestParam String currency) {
 
         Map<String, Object> response = new LinkedHashMap<>();
 
         try {
             BrfCommonMappingId pk =
                 new BrfCommonMappingId(
-                    accountId.trim(), reportCode.trim(), rowId.trim(),columnId.trim());
+                    accountId.trim(), reportCode.trim(), rowId.trim(),columnId.trim(),currency.trim());
 
             if (!commonMappingRepo.existsById(pk)) {
                 response.put("status",  "NOT_FOUND");
@@ -361,6 +364,7 @@ public class BRFBaseTableController {
             String schemeType   = nvl(row.get("schemeType")).trim();
             String asstCls      = nvl(row.get("assetClass")).trim();  
             String purposeOfAdvn = nvl(row.get("purposeOfAdvn")).trim();
+            String currency = nvl(row.get("currency")).trim();
 
             if (accountId.isEmpty() || reportCode.isEmpty() || oldRowId.isEmpty()) {
                 response.put("status",  "ERROR");
@@ -369,7 +373,7 @@ public class BRFBaseTableController {
             }
 
             // 1. Find the ORIGINAL record by the old composite key
-            BrfCommonMappingId oldPk = new BrfCommonMappingId(accountId, reportCode, oldRowId,oldColumnId);
+            BrfCommonMappingId oldPk = new BrfCommonMappingId(accountId, reportCode, oldRowId,oldColumnId,currency);
             BrfCommonMapping existing = commonMappingRepo.findById(oldPk).orElse(null);
 
             if (existing == null) {
@@ -379,12 +383,12 @@ public class BRFBaseTableController {
                 return response;
             }
 
-            boolean rowIdChanged = !oldRowId.equals(newRowId);
+            boolean rowIdChanged = !oldRowId.equals(newRowId)|| !oldColumnId.equals(columnId);
 
             if (rowIdChanged) {
                 // ROW_ID is part of the PK — we must delete old + insert new
                 // 2a. Check if the new composite key already exists (avoid duplicate PK)
-                BrfCommonMappingId newPk = new BrfCommonMappingId(accountId, reportCode, newRowId,oldColumnId);
+                BrfCommonMappingId newPk = new BrfCommonMappingId(accountId, reportCode, newRowId,oldColumnId,currency);
                 if (commonMappingRepo.existsById(newPk)) {
                     response.put("status",  "DUPLICATE");
                     response.put("message", "A record already exists for rowId=" + newRowId

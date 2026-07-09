@@ -128,5 +128,17 @@ public interface BrfCommonMappingRepository
 		)
 	List<String> findMappedGlSubheadCodes(@Param("reportCode") String reportCode);
 	
+	@Query(value = "SELECT DISTINCT REPORT_CODE, COALESCE(ROW_ID, ' - '), COALESCE(COLUMN_ID, ' - '), "
+			+ " SOL_ID, CONSTITUTION_CODE, LEGAL_ENTITY_TYPE, SCHEME_TYPE "
+			+ "FROM BRF_COMMON_MAPPING_TABLE " + "WHERE GL_SUBHEAD_CODE = :glSubHead AND REPORT_CODE IN ('BRF001','BRF002','BRF004') ", nativeQuery = true)
+	List<Object[]> findDistinctCombinationsByGlSubHeadunmappedal(@Param("glSubHead") String glSubHead);
+	
+	@Query(value = "SELECT DISTINCT REPORT_CODE, COALESCE(ROW_ID, ' - '), COALESCE(COLUMN_ID, ' - '), "
+	        + " SOL_ID, CONSTITUTION_CODE, LEGAL_ENTITY_TYPE, SCHEME_TYPE "
+	        + "FROM BRF_COMMON_MAPPING_TABLE " 
+	        + "WHERE ACCOUNT_ID_BACID = :accountId AND CURRENCY = :currency AND REPORT_CODE IN ('BRF001','BRF002','BRF004') ", nativeQuery = true)
+	List<Object[]> findExistingMappingsByAccountAndCurrency(@Param("accountId") String accountId, @Param("currency") String currency);
+	
+
 	
 }

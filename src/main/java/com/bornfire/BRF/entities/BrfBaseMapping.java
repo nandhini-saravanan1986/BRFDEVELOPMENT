@@ -4,6 +4,7 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
+@IdClass(BrfBaseMappingId.class)
 @Table(name = "BRF_BASE_MAPPING_TABLE")
 public class BrfBaseMapping {
 
@@ -20,6 +21,7 @@ public class BrfBaseMapping {
     @Column(name = "ACCOUNT_DESCRIPTION",  length = 200)
     private String accountDescription;
 
+    @Id
     @Column(name = "CURRENCY",             length = 50)
     private String currency;
 

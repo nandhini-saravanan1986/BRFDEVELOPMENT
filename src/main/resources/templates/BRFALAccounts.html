@@ -1,0 +1,1571 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" type="text/css"
+	href="/webjars/bootstrap/4.3.1/css/bootstrap.min.css"
+	th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+<link rel="stylesheet" type="text/css"
+	href="/webjars/font-awesome/5.9.0/css/all.min.css"
+	th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+<link rel="stylesheet" type="text/css"
+	href="/webjars/datatables/1.10.19/css/jquery.dataTables.min.css"
+	th:href="@{/webjars/datatables/1.10.19/css/jquery.dataTables.min.css}">
+<link rel="shortcut icon" th:href="@{/favicon.ico}" type="image/x-icon">
+
+<script src="/webjars/jquery/3.4.1/jquery.min.js"
+	th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+<script src="/webjars/popper.js/1.14.7/umd/popper.min.js"
+	th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+<script src="/webjars/bootstrap/4.3.1/js/bootstrap.min.js"
+	th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+<script src="/webjars/jquery-ui/1.12.1/jquery-ui.min.js"
+	th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
+<script src="/webjars/datatables/1.10.19/js/jquery.dataTables.min.js"
+	th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
+<script
+	src="/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js"
+	th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+
+<title>BCDRS</title>
+
+
+<style>
+table.dataTable thead th, table.dataTable tfoot th {
+	font-weight: normal;
+}
+
+table.table .thead-light th {
+	font-size: 13px;
+	border-color: #d4d7da;
+}
+
+.dataTables_scrollBody {
+	overflow: unset !important;
+}
+
+#dynamicDataTb thead th, #dateListTb thead th {
+	background-color: #376275;
+	color: white;
+	font-weight: bold;
+	font-size: 13px;
+	text-align: left;
+	border: 1px solid #dee2e6;
+}
+
+#dynamicDataTb tbody td, #dateListTb tbody td {
+	text-align: left;
+	border: 1px solid #dee2e6;
+	font-size: 13px;
+}
+
+#dynamicDataTb tbody tr:nth-child(odd), #dateListTb tbody tr:nth-child(odd)
+	{
+	background-color: #f9f9f9;
+}
+
+.dataTables_empty {
+	color: red !important;
+	text-align: center;
+}
+
+.table-container {
+	max-height: 650px;
+	overflow-y: auto;
+	margin-top: 10px;
+}
+
+.dataTables_length {
+	float: left !important;
+	margin-bottom: 10px;
+}
+
+.dataTables_filter {
+	float: right !important;
+	margin-bottom: 10px;
+}
+
+.dataTables_info {
+	float: left !important;
+	padding-top: 12px !important;
+}
+
+.dataTables_paginate {
+	float: right !important;
+	padding-top: 8px !important;
+}
+
+.dataTables_wrapper::after {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+body.modal-open {
+	overflow: hidden !important;
+}
+
+.modal {
+	overflow-y: auto !important;
+}
+
+.audit-search-input {
+	padding: 6px 12px;
+	border: 1px solid #cbd5e1;
+	border-radius: 4px;
+	outline: none;
+	font-size: 13px;
+	width: 250px;
+	transition: all 0.2s ease;
+}
+
+.audit-search-input:focus {
+	border-color: #376275;
+	box-shadow: 0 0 0 2px rgba(55, 98, 117, 0.1);
+}
+
+.audit-pagination {
+	display: flex;
+	gap: 5px;
+	margin: 15px 0 5px 0;
+	justify-content: flex-end;
+}
+
+.page-btn {
+	border: 1px solid #dee2e6;
+	background: #fff;
+	color: #376275;
+	padding: 6px 12px;
+	border-radius: 4px;
+	text-decoration: none;
+	font-weight: bold;
+	font-size: 12px;
+}
+
+.page-btn:hover {
+	background: #e9ecef;
+	text-decoration: none;
+	color: #2b506f;
+}
+
+.page-btn.active {
+	background: #376275;
+	color: #fff;
+	border-color: #376275;
+}
+
+.page-btn.disabled {
+	opacity: 0.5;
+	pointer-events: none;
+}
+.audit-loader-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(1px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+.audit-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #cbd5e1;
+    border-top: 4px solid #376275;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin { 
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); } 
+}
+.hidden {
+    display: none !important;
+}
+</style>
+</head>
+
+<body>
+	<div th:insert="BRFHeaderMenu :: header"></div>
+
+	<div class="container content">
+		<div class="card" style="width: 1450px; margin-left: -26px;">
+
+			<div
+				class="card-header d-flex justify-content-between align-items-center"
+				style="background-color: #376275;">
+				<h4 class="mb-0" style="color: white">
+					Asset and Liability Unmapped Check <span
+						th:if="${selectedDate != null}" th:text="' - ' + ${selectedDate}"></span>
+				</h4>
+			</div>
+<div style="position: relative; min-height: 200px;">
+    
+    <div id="tableLoader" class="audit-loader-overlay hidden">
+        <div class="audit-spinner"></div>
+    </div>
+			<div class="table-container p-3">
+
+				<table id="dateListTb" class="table table-bordered table-hover"
+					style="width: 100%" th:if="${dateList != null}">
+					<thead>
+						<tr>
+							<th style="text-align: center; width: 50px;">S.no</th>
+							<th>Available Report Dates</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="row, stat : ${dateList}">
+							<td style="text-align: center;" th:text="${stat.count}"></td>
+							<td><a
+								th:href="@{/ALAccounts(date=${row.get('Report Date')})}"
+								th:text="${row.get('Report Date')}"
+								style="font-weight: bold; color: #376275; text-decoration: underline;">
+							</a></td>
+						</tr>
+						<tr th:if="${#lists.isEmpty(dateList)}">
+							<td colspan="2" class="text-center text-danger">No dates
+								available.</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<div class="d-flex justify-content-between align-items-center mb-2"
+					th:if="${dynamicData != null}">
+					<div>
+						<form id="searchForm" th:action="@{/ALAccounts}" method="get"
+							style="margin: 0;">
+							<input type="hidden" name="date" th:value="${selectedDate}"
+								th:if="${selectedDate != null}"> <input type="text"
+								id="searchInput" name="keyword" th:value="${keyword}"
+								class="audit-search-input" placeholder="Search accounts...">
+						</form>
+					</div>
+				</div>
+
+				<table id="dynamicDataTb" class="table table-bordered table-hover"
+					style="width: 100%" th:if="${dynamicData != null}">
+					<thead>
+						<tr th:if="${not #lists.isEmpty(dynamicData)}">
+							<th style="width: 60px; text-align: center;">Action</th>
+							<th th:each="header : ${dynamicData[0].keySet()}"
+								th:if="${header != 'is_match'}" th:text="${header}"></th>
+						</tr>
+					</thead>
+						<tbody>
+							<tr th:each="row : ${dynamicData}"
+								th:classappend="${row.get('is_match') == 1 ? 'table-success' : ''}">
+								<td style="text-align: center;">
+									<button type="button" class="btn btn-sm btn-primary"
+										th:onclick="openMappingFlow([[${row.get('GL_SUB_HEAD_CODE')}]], [[${row.get('GL_CODE')}]], 
+                [[${row.get('ACCT_NUMBER')}]], [[${row.get('ACCT_CRNCY_CODE')}]], [[${row.get('SOL_ID')}]], 
+                [[${row.get('CONSTITUTION_CODE')}]], [[${row.get('LEGAL_ENTITY_TYPE')}]], [[${row.get('SCHEME_TYPE')}]])">
+										<i class="fas fa-edit"></i>
+									</button>
+								</td>
+								<td th:each="entry : ${row}" th:if="${entry.key != 'is_match'}"
+									th:text="${entry.value}"></td>
+							</tr>
+
+							<tr th:if="${#lists.isEmpty(dynamicData)}">
+								<td colspan="20" class="text-center p-4"
+									style="color: #64748b; font-size: 13px;"><i
+									class="fas fa-search mb-2"
+									style="font-size: 18px; color: #cbd5e1;"></i><br> No
+									matching accounts found for "<strong><span
+										th:text="${keyword}"></span></strong>"</td>
+							</tr>
+						</tbody>
+					</table>
+
+				<div class="d-flex align-items-center justify-content-end"
+					th:if="${page != null and page.totalPages > 1}">
+					<div class="audit-pagination">
+						<a
+							th:href="@{/ALAccounts(page=${page.number - 1}, keyword=${keyword}, date=${selectedDate})}"
+							th:class="${page.first ? 'page-btn disabled' : 'page-btn'}">Previous</a>
+
+						<th:block th:if="${page.totalPages <= 5}">
+							<a th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+								th:href="@{/ALAccounts(page=${i}, keyword=${keyword}, date=${selectedDate})}"
+								th:text="${i + 1}"
+								th:class="${page.number == i ? 'page-btn active' : 'page-btn'}">1</a>
+						</th:block>
+
+						<th:block th:if="${page.totalPages > 5}">
+							<a
+								th:href="@{/ALAccounts(page=0, keyword=${keyword}, date=${selectedDate})}"
+								th:text="1"
+								th:class="${page.number == 0 ? 'page-btn active' : 'page-btn'}">1</a>
+
+							<span th:if="${page.number > 2}"
+								style="padding: 6px; color: #64748b;">...</span>
+
+							<th:block
+								th:with="start=${page.number <= 2 ? 1 : (page.number >= page.totalPages - 3 ? page.totalPages - 4 : page.number - 1)}, end=${page.number <= 2 ? 3 : (page.number >= page.totalPages - 3 ? page.totalPages - 2 : page.number + 1)}">
+								<a th:each="i : ${#numbers.sequence(start, end)}"
+									th:href="@{/ALAccounts(page=${i}, keyword=${keyword}, date=${selectedDate})}"
+									th:text="${i + 1}"
+									th:class="${page.number == i ? 'page-btn active' : 'page-btn'}"></a>
+							</th:block>
+
+							<span th:if="${page.number < page.totalPages - 3}"
+								style="padding: 6px; color: #64748b;">...</span>
+
+							<a
+								th:href="@{/ALAccounts(page=${page.totalPages - 1}, keyword=${keyword}, date=${selectedDate})}"
+								th:text="${page.totalPages}"
+								th:class="${page.number == page.totalPages - 1 ? 'page-btn active' : 'page-btn'}"></a>
+						</th:block>
+
+						<a
+							th:href="@{/ALAccounts(page=${page.number + 1}, keyword=${keyword}, date=${selectedDate})}"
+							th:class="${page.last ? 'page-btn disabled' : 'page-btn'}">Next</a>
+					</div>
+				</div>
+
+			</div>
+</div>
+			<div class="card-footer text-center"
+				style="background-color: #376275;">
+				<button type="button" class="btn btn-xs btn-primary"
+					onclick="goHome();">Home</button>
+				<button type="button" class="btn btn-xs btn-primary"
+					onclick="goBack();">Back</button>
+			</div>
+
+		</div>
+	</div>
+	<div class="modal fade" id="successModal" tabindex="-1" role="dialog"
+		data-backdrop="static">
+		<div class="modal-dialog modal-dialog-centered modal-lg"
+			style="max-width: 1100px;" role="document">
+			<div class="modal-content">
+				<div class="modal-header"
+					style="background-color: #2b506f; color: white;">
+					<h5 class="modal-title"
+						style="font-family: verdana; font-size: 15px; font-weight: bold;">
+						<i class="fas fa-list"></i>&nbsp; Mapping Details
+					</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						style="color: white; opacity: 1;">
+						<span>&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div id="successLoading" class="mt-3 text-center text-muted"
+						style="font-family: verdana; font-size: 13px;">
+						<i class="fas fa-spinner fa-spin"></i>&nbsp; Fetching details...
+					</div>
+
+					<div id="alreadyMappedContainer" class="table-outer mt-2"
+						style="display: none; margin-bottom: 25px;">
+						<h6
+							style="font-family: verdana; font-size: 13px; font-weight: bold; color: #E77400; border-bottom: 1px solid #eee; padding-bottom: 6px; margin-bottom: 10px;">
+							<i class="fas fa-info-circle"></i> Existing Mappings for Account:
+							<span id="lblMappedAcct" class="text-dark"></span> (Curr: <span
+								id="lblMappedCurr" class="text-dark"></span>)
+						</h6>
+						<table class="bmp-table table table-bordered table-sm"
+							style="width: 100%;">
+							<thead style="background-color: #fdf3e8;">
+								<tr>
+									<th>Report Code</th>
+									<th>Row Label</th>
+									<th>Column Label</th>
+									<th style="width: 35%;">Mismatch Reason</th>
+									<th style="text-align: center;">Action</th>
+								</tr>
+							</thead>
+							<tbody id="alreadyMappedBody"></tbody>
+						</table>
+					</div>
+
+					<div id="noDataMessage" class="mt-3 text-center text-muted"
+						style="display: none; font-family: verdana; font-size: 13px;">
+						This GL SUB HEAD has not been mapped to any report yet.</div>
+
+					<div id="successTableContainer" class="table-outer mt-3"
+						style="display: none;">
+						<h6
+							style="font-family: verdana; font-size: 13px; font-weight: bold; color: #376275; border-bottom: 1px solid #eee; padding-bottom: 6px; margin-bottom: 10px;">
+							<i class="fas fa-list-alt"></i> Available Reports for GL Subhead:
+							<span id="lblTargetSubhead" class="text-dark"></span>
+						</h6>
+						<table class="bmp-table table table-bordered" style="width: 100%;">
+							<thead style="background-color: #e9ecf0;">
+								<tr>
+									<th>Report Code</th>
+									<th>Row Label</th>
+									<th>Column Label</th>
+									<th style="width: 35%;">Mismatch Reason</th>
+									<th style="text-align: center;">Action</th>
+								</tr>
+							</thead>
+							<tbody id="successTableBody"></tbody>
+						</table>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="finalMapModal" tabindex="-1" role="dialog"
+		style="z-index: 1060;">
+		<div class="modal-dialog modal-dialog-centered" role="document"
+			style="max-width: 950px; width: 950px;">
+
+			<div class="modal-content" style="height: 650px;">
+				<div class="modal-header py-2"
+					style="background-color: #376275; color: white;">
+					<h6 class="modal-title mb-0"
+						style="font-family: verdana; font-weight: bold;">
+						<i class="fas fa-map-marker-alt"></i>&nbsp; Complete Mapping
+					</h6>
+					<button type="button" class="close" data-dismiss="modal"
+						style="color: white; opacity: 1;">
+						<span>&times;</span>
+					</button>
+				</div>
+
+				<div class="modal-body" style="padding: 16px; overflow-y: auto;">
+
+					<div id="finalMapLoading" class="mt-3 text-center text-muted"
+						style="display: none; font-family: verdana; font-size: 13px;">
+						<i class="fas fa-spinner fa-spin"></i>&nbsp; Fetching existing
+						parameters...
+					</div>
+
+					<div id="existingMappingSection"
+						style="display: none; margin-bottom: 20px; background: #fff; padding: 10px; border: 1px solid #ced4da; border-radius: 4px;">
+						<h6
+							style="font-family: verdana; font-size: 13px; font-weight: bold; color: #E77400; border-bottom: 1px solid #eee; padding-bottom: 6px; margin-bottom: 10px;">
+							<i class="fas fa-list"></i> Existing Mapping Parameters
+						</h6>
+						<div style="max-height: 140px; overflow-y: auto;">
+							<table class="table table-bordered table-sm"
+								style="font-family: verdana; font-size: 11px; margin-bottom: 0; table-layout: fixed; width: 100%; word-break: break-word;">
+								<thead
+									style="background: #e9ecf0; position: sticky; top: 0; z-index: 1;">
+									<tr>
+										<th>Account Number</th>
+										<th>SOL ID</th>
+										<th>Constitution</th>
+										<th>Legal Entity</th>
+										<th>Scheme</th>
+										<th>HNI Networth</th>
+										<th>Turnover</th>
+										<th>Balance (LC)</th>
+									</tr>
+								</thead>
+								<tbody id="existingMappingBody">
+								</tbody>
+							</table>
+						</div>
+					</div>
+
+					<h6
+						style="font-family: verdana; font-size: 13px; font-weight: bold; color: #E77400; border-bottom: 1px solid #eee; padding-bottom: 6px; margin-bottom: 10px;">
+						<i class="fas fa-save"></i> Saved Record Details
+					</h6>
+					<div class="form-row mb-3">
+						<div class="col-md-3">
+							<label
+								style="font-family: verdana; font-size: 12px; font-weight: bold;">GL
+								HEAD</label> <input type="text" id="map_glHead"
+								class="form-control form-control-sm" readonly
+								style="background: #f5f5f5;">
+						</div>
+						<div class="col-md-3">
+							<label
+								style="font-family: verdana; font-size: 12px; font-weight: bold;">GL
+								SUBHEAD</label> <input type="text" id="map_glSubHead"
+								class="form-control form-control-sm" readonly
+								style="background: #f5f5f5;">
+						</div>
+						<div class="col-md-3">
+							<label
+								style="font-family: verdana; font-size: 12px; font-weight: bold;">ACCOUNT
+								ID</label> <input type="text" id="map_accountId"
+								class="form-control form-control-sm" readonly
+								style="background: #f5f5f5;">
+						</div>
+						<div class="col-md-3">
+							<label
+								style="font-family: verdana; font-size: 12px; font-weight: bold;">CURRENCY</label>
+							<input type="text" id="map_currency"
+								class="form-control form-control-sm" readonly
+								style="background: #f5f5f5;">
+						</div>
+					</div>
+
+					<h6
+						style="font-family: verdana; font-size: 13px; font-weight: bold; color: #376275; border-bottom: 1px solid #eee; padding-bottom: 6px; margin-bottom: 10px;">
+						<i class="fas fa-table"></i> Selected Report
+					</h6>
+					<div class="form-row mb-3">
+						<div class="col-md-4">
+							<label
+								style="font-family: verdana; font-size: 12px; font-weight: bold;">REPORT
+								CODE</label> <input type="text" id="map_reportCode"
+								class="form-control form-control-sm" readonly
+								style="background: #f5f5f5;">
+						</div>
+						<div class="col-md-4">
+							<label
+								style="font-family: verdana; font-size: 12px; font-weight: bold;">ROW
+								LABEL</label> <input type="text" id="map_rowLabel"
+								class="form-control form-control-sm" readonly
+								style="background: #f5f5f5;">
+						</div>
+						<div class="col-md-4">
+							<label
+								style="font-family: verdana; font-size: 12px; font-weight: bold;">COLUMN
+								LABEL</label> <input type="text" id="map_colLabel"
+								class="form-control form-control-sm" readonly
+								style="background: #f5f5f5;">
+						</div>
+					</div>
+
+					<div class="d-flex justify-content-between align-items-center mb-2"
+						style="border-bottom: 1px solid #eee; padding-bottom: 6px;">
+						<h6
+							style="font-family: verdana; font-size: 13px; font-weight: bold; color: #376275; margin-bottom: 0;">
+							<i class="fas fa-sliders-h"></i> Mapping Parameters
+						</h6>
+						<button type="button" id="btnAutoFillParams"
+							class="btn btn-sm btn-outline-info"
+							onclick="autoFillMappingParams()"
+							style="display: none; font-family: verdana; font-size: 11px; padding: 2px 8px;">
+							<i class="fas fa-magic"></i> Auto-Fill
+						</button>
+					</div>
+
+					<div class="form-row mb-2"
+						style="flex-wrap: wrap; gap: 10px; align-items: flex-end;">
+						<div class="col-auto" style="position: relative;">
+							<label
+								style="font-family: verdana; font-size: 12px; font-weight: bold;">SOL
+								ID</label><br>
+							<button type="button" id="mapSolIdBtn"
+								onclick="toggleMenuById(event,'mapSolIdMenu')"
+								class="form-control form-control-sm text-left"
+								style="min-width: 160px; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">--
+								Select SOL ID --</button>
+							<div id="mapSolIdMenu" class="multi-select-menu"
+								style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
+						</div>
+						<div class="col-auto" style="position: relative;">
+							<label
+								style="font-family: verdana; font-size: 12px; font-weight: bold;">Constitution
+								Code</label><br>
+							<button type="button" id="mapConstCodeBtn"
+								onclick="toggleMenuById(event,'mapConstCodeMenu')"
+								class="form-control form-control-sm text-left"
+								style="min-width: 160px; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">--
+								Select --</button>
+							<div id="mapConstCodeMenu" class="multi-select-menu"
+								style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
+						</div>
+						<div class="col-auto" style="position: relative;">
+							<label
+								style="font-family: verdana; font-size: 12px; font-weight: bold;">Legal
+								Entity Type</label><br>
+							<button type="button" id="mapLegalEntityBtn"
+								onclick="toggleMenuById(event,'mapLegalEntityMenu')"
+								class="form-control form-control-sm text-left"
+								style="min-width: 160px; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">--
+								Select --</button>
+							<div id="mapLegalEntityMenu" class="multi-select-menu"
+								style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
+						</div>
+						<div class="col-auto" style="position: relative;">
+							<label
+								style="font-family: verdana; font-size: 12px; font-weight: bold;">Scheme
+								Type</label><br>
+							<button type="button" id="mapSchemeTypeBtn"
+								onclick="toggleMenuById(event,'mapSchemeTypeMenu')"
+								class="form-control form-control-sm text-left"
+								style="min-width: 160px; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">--
+								Select --</button>
+							<div id="mapSchemeTypeMenu" class="multi-select-menu"
+								style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
+						</div>
+					</div>
+
+					<div class="form-row mb-2"
+						style="gap: 10px; align-items: flex-end;">
+						<div class="col-auto">
+							<label
+								style="font-family: verdana; font-size: 12px; font-weight: bold;">HNI
+								Networth</label> <input type="text" id="mapHniNetworth"
+								class="form-control form-control-sm" placeholder="Enter Amount"
+								style="min-width: 160px;">
+						</div>
+						<div class="col-auto">
+							<label
+								style="font-family: verdana; font-size: 12px; font-weight: bold;">Turnover</label>
+							<input type="text" id="mapTurnover"
+								class="form-control form-control-sm" placeholder="Enter Amount"
+								style="min-width: 160px;">
+						</div>
+						<div class="col-auto">
+							<label
+								style="font-family: verdana; font-size: 12px; font-weight: bold;">Account
+								Balance (LC)</label> <select id="mapBalanceLc"
+								class="form-control form-control-sm" style="min-width: 160px;">
+								<option value="">-- Select --</option>
+								<option value="<0">Debit</option>
+								<option value=">0">Credit</option>
+								<option value="<>0">Net Off</option>
+							</select>
+						</div>
+						<div class="col-auto" style="position: relative;">
+							<label
+								style="font-family: verdana; font-size: 12px; font-weight: bold;">Filter
+								Columns</label><br>
+							<button type="button"
+								class="form-control form-control-sm filter-btn-final_0"
+								onclick="toggleFilterMenu(event,'final_0')"
+								style="min-width: 150px; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">3
+								selected</button>
+							<div id="filterMenu_final_0"
+								class="multi-select-menu filter-menu"
+								style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 200px; overflow-y: auto; min-width: 180px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15); right: 0;">
+								<div
+									style="padding: 5px 14px; border-bottom: 1px solid #eee; position: sticky; top: -6px; background: #fff; z-index: 2;">
+									<input type="checkbox" id="chk_filterAll_final_0"
+										onclick="toggleAllFilter(this,'final_0')" checked> <label
+										for="chk_filterAll_final_0"
+										style="font-family: verdana; font-size: 12px; font-weight: bold; cursor: pointer; margin: 0;">Select
+										All</label>
+								</div>
+								<div class="cb-item" style="padding: 4px 14px;">
+									<input type="checkbox" class="chk-filter-final_0"
+										id="chk_f1_final_0" value="GL_SUBHEAD_CODE"
+										onchange="onFilterCheck('final_0')" checked> <label
+										for="chk_f1_final_0"
+										style="font-family: verdana; font-size: 12px; cursor: pointer; margin: 0;">GL
+										SUBHEAD CODE</label>
+								</div>
+								<div class="cb-item" style="padding: 4px 14px;">
+									<input type="checkbox" class="chk-filter-final_0"
+										id="chk_f2_final_0" value="ACCOUNT_ID_BACID"
+										onchange="onFilterCheck('final_0')" checked> <label
+										for="chk_f2_final_0"
+										style="font-family: verdana; font-size: 12px; cursor: pointer; margin: 0;">ACCOUNT
+										ID BACID</label>
+								</div>
+								<div class="cb-item" style="padding: 4px 14px;">
+									<input type="checkbox" class="chk-filter-final_0"
+										id="chk_f3_final_0" value="CURRENCY"
+										onchange="onFilterCheck('final_0')" checked> <label
+										for="chk_f3_final_0"
+										style="font-family: verdana; font-size: 12px; cursor: pointer; margin: 0;">CURRENCY</label>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="modal-footer py-2">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Cancel</button>
+					<button type="button" class="btn btn-primary"
+						onclick="submitFinalMapping()">Save Mapping</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="crudModal" tabindex="-1" role="dialog"
+		style="z-index: 1070;">
+		<div class="modal-dialog modal-dialog-centered"
+			style="max-width: 680px;" role="document">
+			<div class="modal-content">
+				<div class="modal-header"
+					style="background-color: #376275; color: white;">
+					<h5 class="modal-title" id="crudModalTitle">
+						<i class="fas fa-plus"></i> Add Missing GL Configuration
+					</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						style="color: white; opacity: 1;">
+						<span>&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<input type="hidden" id="modalRecordId" />
+					<div class="form-row mb-2">
+						<div class="form-group col-md-6">
+							<label
+								style="font-family: verdana; font-size: 13px; font-weight: bold;">GL
+								Head <span class="text-danger">*</span>
+							</label> <input type="text" id="fldGlHead"
+								class="form-control form-control-sm" maxlength="100" />
+						</div>
+						<div class="form-group col-md-6">
+							<label
+								style="font-family: verdana; font-size: 13px; font-weight: bold;">GL
+								Sub Head Code <span class="text-danger">*</span>
+							</label> <input type="text" id="fldGlSubHead"
+								class="form-control form-control-sm" maxlength="100" />
+						</div>
+					</div>
+					<div class="form-row mb-2">
+						<div class="form-group col-md-6">
+							<label
+								style="font-family: verdana; font-size: 13px; font-weight: bold;">Account
+								ID / BACID <span class="text-danger">*</span>
+							</label> <input type="text" id="fldAccountId"
+								class="form-control form-control-sm" maxlength="50" />
+						</div>
+						<div class="form-group col-md-6">
+							<label
+								style="font-family: verdana; font-size: 13px; font-weight: bold;">Account
+								Description <span class="text-danger">*</span>
+							</label> <input type="text" id="fldAccountDesc"
+								class="form-control form-control-sm" maxlength="200"
+								placeholder="Enter Description" />
+						</div>
+					</div>
+					<div class="form-row mb-2">
+						<div class="form-group col-md-6">
+							<label
+								style="font-family: verdana; font-size: 13px; font-weight: bold;">Currency
+								<span class="text-danger">*</span>
+							</label> <select id="fldCurrency" class="form-control form-control-sm">
+								<option value="">-- Select Currency --</option>
+								<option value="USD">USD</option>
+								<option value="GBP">GBP</option>
+								<option value="EUR">EUR</option>
+							</select>
+						</div>
+						<div class="form-group col-md-6">
+							<label
+								style="font-family: verdana; font-size: 13px; font-weight: bold;">Data
+								Type <span class="text-danger">*</span>
+							</label> <select id="fldDataType" class="form-control form-control-sm">
+								<option value="">-- Select Data Type --</option>
+								<option value="GL">GL</option>
+								<option value="TREASURY">TREASURY</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Cancel</button>
+					<button type="button" class="btn btn-primary" id="btnQuickSubmit"
+						onclick="submitQuickAdd()">Submit & Continue</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script th:inline="javascript">
+	$(document).ready(function() {
+	    
+	    const searchForm = document.getElementById('searchForm');
+	    const searchInput = document.getElementById('searchInput');
+	    const tableLoader = document.getElementById('tableLoader');
+
+	    function showLoader() { 
+	        if(tableLoader) tableLoader.classList.remove('hidden'); 
+	    }
+
+	    function triggerServerRequest(params) {
+	        showLoader();
+	        
+	        const url = new URL(window.location.href);
+	        
+	        Object.keys(params).forEach(key => {
+	            if (params[key] === null || params[key] === '') {
+	                url.searchParams.delete(key);
+	            } else {
+	                url.searchParams.set(key, params[key]);
+	            }
+	        });
+
+	        url.searchParams.delete('page');
+	        window.location.replace(url.toString());
+	    }
+
+	    if (searchForm) {
+	        searchForm.addEventListener('submit', function(e) {
+	            e.preventDefault(); 
+	            triggerServerRequest({ keyword: searchInput.value });
+	        });
+	    }
+
+	    let typingTimer;
+	    if (searchInput) {
+	        searchInput.addEventListener('input', function () {
+	            clearTimeout(typingTimer);
+	            typingTimer = setTimeout(() => triggerServerRequest({ keyword: searchInput.value }), 800);
+	        });
+
+	        if (searchInput.value) {
+	            searchInput.focus();
+	            const val = searchInput.value; 
+	            searchInput.value = ''; 
+	            searchInput.value = val;
+	        }
+	    }
+	    document.querySelectorAll('.page-btn').forEach(btn => {
+	        btn.addEventListener('click', function(e) {
+	            e.preventDefault(); 
+	            if(!this.classList.contains('disabled') && !this.classList.contains('active')) {
+	                
+	                showLoader();
+	                
+	                const targetHref = new URL(this.getAttribute('href'), window.location.origin);
+	                const targetPage = targetHref.searchParams.get('page');
+	                
+	                const currentUrl = new URL(window.location.href);
+	                if (targetPage !== null) {
+	                    currentUrl.searchParams.set('page', targetPage);
+	                }
+	                
+	                window.location.replace(currentUrl.toString());
+	            }
+	        });
+	    });
+	});
+		function goHome() {
+			window.location.href = '/BRF/BRFDashboard';
+		}
+
+		function goBack() {
+			var urlParams = new URLSearchParams(window.location.search);
+
+			window.history.back();
+
+		}
+		var _currentMapBtn = null;
+		var _currentExistingParams = [];
+		var _currentRowDetails = {}; 
+
+		var SOL_ID_OPTIONS = [ '9001', '9002', '9003', '9004', '9005', '9008' ];
+		var CONST_CODE_OPTIONS = /*[[${constCodeOptions}]]*/ []; 
+		var LEGAL_ENTITY_OPTIONS = /*[[${legalEntityOptions}]]*/ [];
+		var SCHEME_TYPE_OPTIONS = /*[[${schemeTypeOptions}]]*/ [];
+		$(document).ready(
+				function() {
+					buildMultiMenu('mapSolIdMenu', 'mapSolIdBtn',
+							SOL_ID_OPTIONS, 'fsol');
+					buildMultiMenu('mapConstCodeMenu', 'mapConstCodeBtn',
+							CONST_CODE_OPTIONS, 'fcc');
+					buildMultiMenu('mapLegalEntityMenu', 'mapLegalEntityBtn',
+							LEGAL_ENTITY_OPTIONS, 'fle');
+					buildMultiMenu('mapSchemeTypeMenu', 'mapSchemeTypeBtn',
+							SCHEME_TYPE_OPTIONS, 'fst');
+				});
+
+		function fetchAndShowSuccessDetails(glSubHead) {
+			$('#successTableContainer, #alreadyMappedContainer, #noDataMessage')
+					.hide();
+			$('#successLoading').show();
+			$('#successTableBody, #alreadyMappedBody').empty();
+
+			$('#lblMappedAcct').text(_currentRowDetails.accountId);
+			$('#lblMappedCurr').text(_currentRowDetails.currency);
+			$('#lblTargetSubhead').text(glSubHead);
+
+			$('#successModal').modal('show');
+
+			$
+					.ajax({
+						url : '/BRF/getExistingMappingsByAccount',
+						type : 'GET',
+						data : {
+							accountId : _currentRowDetails.accountId,
+							currency : _currentRowDetails.currency
+						},
+						success : function(mappedRes) {
+							var mappedData = mappedRes.data
+									|| mappedRes.content || mappedRes;
+							$('#alreadyMappedContainer').show();
+							var $mBody = $('#alreadyMappedBody');
+
+							if (mappedData && mappedData.length > 0) {
+								$
+										.each(
+												mappedData,
+												function(i, item) {
+													var rptCode = nvl(item.reportCode
+															|| item[0]);
+													var rRow = nvl(item.rowLabel
+															|| item[1]);
+													var rCol = nvl(item.columnLabel
+															|| item[2]);
+
+													var ruleSolId = nvl(item[3]);
+													var ruleConst = nvl(item[4]);
+													var ruleLegal = nvl(item[5]);
+													var ruleScheme = nvl(item[6]);
+
+													var mismatchReasons = [];
+													function checkRule(
+															ruleString,
+															accountValue,
+															fieldName) {
+														if (ruleString !== '') {
+															var allowedValues = ruleString
+																	.replace(
+																			/'/g,
+																			"")
+																	.split(",");
+															if (!allowedValues
+																	.includes(accountValue)) {
+																mismatchReasons
+																		.push("<b>"
+																				+ fieldName
+																				+ "</b> (Acc has '"
+																				+ (accountValue || "N/A")
+																				+ "', needs '"
+																				+ allowedValues
+																						.join(", ")
+																				+ "')");
+															}
+														}
+													}
+
+													checkRule(
+															ruleSolId,
+															_currentRowDetails.solId,
+															"SOL ID");
+													checkRule(
+															ruleConst,
+															_currentRowDetails.constCode,
+															"Constitution");
+													checkRule(
+															ruleLegal,
+															_currentRowDetails.legalEntity,
+															"Legal Entity");
+													checkRule(
+															ruleScheme,
+															_currentRowDetails.schemeType,
+															"Scheme");
+
+													var reasonHtml = "";
+													if (mismatchReasons.length > 0) {
+														reasonHtml = '<span style="font-size: 11px; color: #dc3545;"> '
+																+ mismatchReasons
+																		.join("<br>")
+																+ '</span>';
+													} else {
+														reasonHtml = '<span style="font-size: 11px; color: #28a745;"> Currently Valid</span>';
+													}
+
+													$mBody
+															.append('<tr>'
+																	+ '<td>'
+																	+ rptCode
+																	+ '</td>'
+																	+ '<td>'
+																	+ rRow
+																	+ '</td>'
+																	+ '<td>'
+																	+ rCol
+																	+ '</td>'
+																	+ '<td>'
+																	+ reasonHtml
+																	+ '</td>'
+																	+ '<td style="text-align:center;">'
+																	+ '<button type="button" class="btn btn-sm btn-primary " '
+																	+ 'onclick="processRowAction(this, \''
+																	+ rptCode
+																	+ '\', \''
+																	+ rRow
+																	+ '\', \''
+																	+ rCol
+																	+ '\')">Map</button>'
+																	+ '</td></tr>');
+												});
+							} else {
+								$mBody
+										.append('<tr><td colspan="5" class="text-center text-muted" style="font-size: 12px;">This account is not currently mapped to any reports.</td></tr>');
+							}
+						},
+						error : function() {
+							$('#alreadyMappedContainer').show();
+							$('#alreadyMappedBody')
+									.append(
+											'<tr><td colspan="5" class="text-center text-danger">Failed to fetch existing mappings.</td></tr>');
+						}
+					});
+
+			$
+					.ajax({
+						url : '/BRF/getMappingDetailsunmappedal',
+						type : 'GET',
+						data : {
+							glSubHeadCode : glSubHead
+						},
+						success : function(res) {
+							$('#successLoading').hide();
+
+							var dataArray = res.data || res.content || res;
+
+							if (dataArray && dataArray.length > 0) {
+								$('#successTableContainer').show();
+								var $tbody = $('#successTableBody');
+
+								$
+										.each(
+												dataArray,
+												function(i, item) {
+													var rptCode = nvl(item.reportCode
+															|| item[0]);
+													var rRow = nvl(item.rowLabel
+															|| item[1]);
+													var rCol = nvl(item.columnLabel
+															|| item[2]);
+
+													var ruleSolId = nvl(item[3]);
+													var ruleConst = nvl(item[4]);
+													var ruleLegal = nvl(item[5]);
+													var ruleScheme = nvl(item[6]);
+
+													var mismatchReasons = [];
+
+													function checkRule(
+															ruleString,
+															accountValue,
+															fieldName) {
+														if (ruleString !== '') {
+															var allowedValues = ruleString
+																	.replace(
+																			/'/g,
+																			"")
+																	.split(",");
+															if (!allowedValues
+																	.includes(accountValue)) {
+																mismatchReasons
+																		.push("<b>"
+																				+ fieldName
+																				+ "</b> (Acc has '"
+																				+ (accountValue || "N/A")
+																				+ "', needs '"
+																				+ allowedValues
+																						.join(", ")
+																				+ "')");
+															}
+														}
+													}
+
+													checkRule(
+															ruleSolId,
+															_currentRowDetails.solId,
+															"SOL ID");
+													checkRule(
+															ruleConst,
+															_currentRowDetails.constCode,
+															"Constitution");
+													checkRule(
+															ruleLegal,
+															_currentRowDetails.legalEntity,
+															"Legal Entity");
+													checkRule(
+															ruleScheme,
+															_currentRowDetails.schemeType,
+															"Scheme");
+
+													var reasonHtml = "";
+													if (mismatchReasons.length > 0) {
+														reasonHtml = '<span style="font-size: 11px; color: #dc3545;"> '
+																+ mismatchReasons
+																		.join("<br>")
+																+ '</span>';
+													} else {
+														reasonHtml = '<span style="font-size: 11px; color: #28a745;"> Eligible for Mapping</span>';
+													}
+
+													$tbody
+															.append('<tr>'
+																	+ '<td>'
+																	+ rptCode
+																	+ '</td>'
+																	+ '<td>'
+																	+ rRow
+																	+ '</td>'
+																	+ '<td>'
+																	+ rCol
+																	+ '</td>'
+																	+ '<td>'
+																	+ reasonHtml
+																	+ '</td>'
+																	+ '<td style="text-align:center;">'
+																	+ '<button type="button" class="btn btn-sm btn-primary" '
+																	+ 'onclick="processRowAction(this, \''
+																	+ rptCode
+																	+ '\', \''
+																	+ rRow
+																	+ '\', \''
+																	+ rCol
+																	+ '\')">Map</button>'
+																	+ '</td></tr>');
+												});
+							} else {
+								$('#noDataMessage')
+										.text(
+												'This GL SUB HEAD has not been mapped to any report yet.')
+										.show();
+							}
+						},
+						error : function() {
+							$('#successLoading').hide();
+							$('#noDataMessage')
+									.html(
+											'<span class="text-danger">Failed to fetch details.</span>')
+									.show();
+						}
+					});
+		}
+		function nvl(val) {
+			return (val !== null && val !== undefined) ? val : '';
+		}
+		function processRowAction(btnElem, reportCode, rowLabel, colLabel) {
+			_currentMapBtn = btnElem;
+
+			$('#map_glHead').val(_currentRowDetails.glHead);
+			$('#map_glSubHead').val(_currentRowDetails.glSubHead);
+			$('#map_accountId').val(_currentRowDetails.accountId);
+			$('#map_currency').val(_currentRowDetails.currency);
+
+			$('#map_reportCode').val(reportCode);
+			$('#map_rowLabel').val(rowLabel);
+			$('#map_colLabel').val(colLabel);
+
+			resetMenu('mapSolIdMenu', 'mapSolIdBtn');
+			resetMenu('mapConstCodeMenu', 'mapConstCodeBtn');
+			resetMenu('mapLegalEntityMenu', 'mapLegalEntityBtn');
+			resetMenu('mapSchemeTypeMenu', 'mapSchemeTypeBtn');
+			$('#mapHniNetworth').val('');
+			$('#mapTurnover').val('');
+			$('#mapBalanceLc').val('');
+
+			$('.chk-filter-final_0').prop('checked', true);
+			onFilterCheck('final_0');
+
+			$('#existingMappingSection').hide();
+			$('#existingMappingBody').empty();
+			$('#finalMapLoading').show();
+			$('#successModal').modal('hide');
+			$('#finalMapModal').modal('show');
+
+			$
+					.ajax({
+						url : '/BRF/getExistingMappingParams',
+						type : 'GET',
+						data : {
+							reportCode : reportCode,
+							rowLabel : (rowLabel.trim() === '-') ? ''
+									: rowLabel.trim(),
+							colLabel : (colLabel.trim() === '-') ? ''
+									: colLabel.trim(),
+							glSubHead : _currentRowDetails.glSubHead
+						},
+						success : function(res) {
+							$('#finalMapLoading').hide();
+							var $tbody = $('#existingMappingBody');
+							if (res && res.length > 0) {
+								$('#existingMappingSection').show();
+								$('#btnAutoFillParams').show();
+								_currentExistingParams = res;
+								$.each(res, function(i, item) {
+									$tbody.append('<tr>' + '<td>'
+											+ nvl(item[0]) + '</td>' + '<td>'
+											+ nvl(item[1]).replace(/'/g, '')
+											+ '</td>' + '<td>'
+											+ nvl(item[2]).replace(/'/g, '')
+											+ '</td>' + '<td>'
+											+ nvl(item[3]).replace(/'/g, '')
+											+ '</td>' + '<td>'
+											+ nvl(item[4]).replace(/'/g, '')
+											+ '</td>' + '<td>' + nvl(item[5])
+											+ '</td>' + '<td>' + nvl(item[6])
+											+ '</td>' + '<td>' + nvl(item[7])
+											+ '</td>' + '</tr>');
+								});
+							} else {
+								$('#btnAutoFillParams').hide();
+								_currentExistingParams = [];
+							}
+						}
+					});
+		}
+
+
+		function resetMenu(menuId, btnId) {
+			$('.cb-' + menuId).prop('checked', false);
+
+			var $btn = $('#' + btnId);
+			var def = $btn.data('default') || '-- Select --';
+			$btn.text(def);
+
+			$('#' + menuId + ' input[type=checkbox][id$="_All"]').prop(
+					'checked', false);
+		}
+
+		function preSelectMenuValues(menuId, btnId, storedStr) {
+			$('.cb-' + menuId).prop('checked', false);
+			if (storedStr) {
+				storedStr.replace(/'/g, '').split(',').forEach(
+						function(v) {
+							var t = v.trim();
+							if (t)
+								$('.cb-' + menuId + '[value="' + t + '"]')
+										.prop('checked', true);
+						});
+			}
+			multiMenuOnCheck(menuId, btnId);
+		}
+
+		function onFilterCheck(idCode) {
+			var all = $('.chk-filter-' + idCode).length;
+			var chk = $('.chk-filter-' + idCode + ':checked').length;
+			$('#chk_filterAll_' + idCode).prop('checked', all === chk);
+			refreshFilterBtnLabel(idCode);
+		}
+
+		function refreshFilterBtnLabel(idCode) {
+			var checked = $('.chk-filter-' + idCode + ':checked');
+			var btn = $('.filter-btn-' + idCode);
+
+			if (checked.length === 0) {
+				btn.text('-- Select --');
+			} else if (checked.length === 1) {
+				btn.text(checked.first().next('label').text());
+			} else {
+				btn.text(checked.length + ' selected');
+			}
+		}
+
+		function toggleFilterMenu(e, idCode) {
+			e.stopPropagation();
+			$('.multi-select-menu').not('#filterMenu_' + idCode).hide();
+			$('.searchable-select-menu').hide();
+			$('#filterMenu_' + idCode).toggle();
+		}
+
+		function toggleAllFilter(masterChk, idCode) {
+			$('.chk-filter-' + idCode).prop('checked', masterChk.checked);
+			refreshFilterBtnLabel(idCode);
+		}
+
+		function getFilterValues(idCode) {
+			return $('.chk-filter-' + idCode + ':checked').map(function() {
+				return this.value;
+			}).get().join(',');
+		}
+
+		function toggleMenuById(e, menuId) {
+			e.stopPropagation();
+			$('.multi-select-menu').not('#' + menuId).hide();
+			$('.searchable-select-menu').hide();
+			$('#' + menuId).toggle();
+		}
+
+		function buildMultiMenu(menuId, btnId, options, prefix) {
+			var $menu = $('#' + menuId).empty();
+			var allId = prefix + '_All';
+			$menu
+					.append('<div style="padding:5px 14px;border-bottom:1px solid #eee;position:sticky;top:-6px;background:#fff;z-index:2;">'
+							+ '<input type="text" class="form-control form-control-sm mb-2" placeholder="Search..." oninput="filterMultiSelect(this)">'
+							+ '<input type="checkbox" id="'
+							+ allId
+							+ '"'
+							+ ' onclick="multiMenuToggleAll(this,\''
+							+ menuId
+							+ '\',\''
+							+ btnId
+							+ '\')">'
+							+ ' <label for="' + allId + '" style="font-family:verdana;font-size:12px;font-weight:bold;cursor:pointer;margin:0;">Select All</label>'
+							+ '</div>');
+			options
+					.forEach(function(val) {
+						var safeId = prefix + '_'
+								+ val.replace(/[^a-zA-Z0-9]/g, '_');
+						$menu
+								.append('<div class="cb-item" style="padding:4px 14px;">'
+										+ '<input type="checkbox" id="'
+										+ safeId
+										+ '" value="'
+										+ val
+										+ '" class="cb-'
+										+ menuId
+										+ '" onchange="multiMenuOnCheck(\''
+										+ menuId
+										+ '\',\''
+										+ btnId
+										+ '\')">'
+										+ ' <label for="' + safeId + '" style="font-family:verdana;font-size:12px;cursor:pointer;margin:0;">'
+										+ val + '</label>' + '</div>');
+					});
+		}
+
+		function multiMenuToggleAll(masterChk, menuId, btnId) {
+			$('.cb-' + menuId).prop('checked', masterChk.checked);
+			multiMenuSyncBtn(menuId, btnId);
+		}
+
+		function multiMenuOnCheck(menuId, btnId) {
+			var total = $('.cb-' + menuId).length;
+			var checked = $('.cb-' + menuId + ':checked').length;
+			$('#' + menuId + ' input[type=checkbox][id$="_All"]').prop(
+					'checked', total > 0 && total === checked);
+			multiMenuSyncBtn(menuId, btnId);
+		}
+
+		function multiMenuSyncBtn(menuId, btnId) {
+			var $checked = $('.cb-' + menuId + ':checked');
+			var $btn = $('#' + btnId);
+			var def = $btn.data('default') || '-- Select --';
+			if ($checked.length === 0)
+				$btn.text(def);
+			else if ($checked.length === 1)
+				$btn.text($checked.first().val());
+			else
+				$btn.text($checked.length + ' selected');
+		}
+
+		function getMenuValues(menuId) {
+			var vals = $('.cb-' + menuId + ':checked').map(function() {
+				return this.value;
+			}).get();
+			return vals.length ? "'" + vals.join("','") + "'" : '';
+		}
+
+		function filterMultiSelect(input) {
+			var filter = $(input).val().toLowerCase();
+			$(input).closest('.multi-select-menu').find('.cb-item').each(
+					function() {
+						$(this)
+								.toggle(
+										$(this).text().toLowerCase().indexOf(
+												filter) > -1);
+					});
+		}
+
+		$(document).on(
+				'click',
+				function(e) {
+					var $t = $(e.target);
+					if (!$t.closest('.multi-select-menu').length
+							&& !$t.is('[onclick*="toggleMenuById"]')
+							&& !$t.is('[onclick*="toggleFilterMenu"]')) {
+						$('.multi-select-menu').hide();
+					}
+				});
+
+		function autoFillMappingParams() {
+			if (!window._currentExistingParams
+					|| window._currentExistingParams.length === 0) {
+				return;
+			}
+
+			var params = window._currentExistingParams[0];
+
+			preSelectMenuValues('mapSolIdMenu', 'mapSolIdBtn', nvl(params[1]));
+			preSelectMenuValues('mapConstCodeMenu', 'mapConstCodeBtn',
+					nvl(params[2]));
+			preSelectMenuValues('mapLegalEntityMenu', 'mapLegalEntityBtn',
+					nvl(params[3]));
+			preSelectMenuValues('mapSchemeTypeMenu', 'mapSchemeTypeBtn',
+					nvl(params[4]));
+
+			$('#mapHniNetworth').val(nvl(params[5]));
+			$('#mapTurnover').val(nvl(params[6]));
+			$('#mapBalanceLc').val(nvl(params[7]));
+
+			var filterRaw = nvl(params[8]);
+			if (filterRaw) {
+				$('.chk-filter-final_0').prop('checked', false);
+				filterRaw.split(',').forEach(
+						function(v) {
+							$('.chk-filter-final_0[value="' + v.trim() + '"]')
+									.prop('checked', true);
+						});
+			} else {
+				$('.chk-filter-final_0').prop('checked', true);
+			}
+			onFilterCheck('final_0');
+		}
+
+		function submitFinalMapping() {
+			var balanceLc = $('#mapBalanceLc').val();
+			if (!balanceLc) {
+				alert('Please select an Account Balance (LC).');
+				$('#mapBalanceLc').focus();
+				return;
+			}
+
+			var rawRow = $('#map_rowLabel').val().trim();
+			var rawCol = $('#map_colLabel').val().trim();
+
+			var finalRow = (rawRow === '-') ? null : rawRow;
+			var finalCol = (rawCol === '-') ? null : rawCol;
+
+			var payload = [ {
+				accountId : $('#map_accountId').val(),
+				reportCode : $('#map_reportCode').val(),
+				rowId : finalRow,
+				columnId : finalCol,
+				balanceLc : balanceLc,
+				solId : getMenuValues('mapSolIdMenu'),
+				constitutionCode : getMenuValues('mapConstCodeMenu'),
+				legalEntityType : getMenuValues('mapLegalEntityMenu'),
+				schemeType : getMenuValues('mapSchemeTypeMenu'),
+				hniNetworth : $('#mapHniNetworth').val().trim(),
+				turnover : $('#mapTurnover').val().trim(),
+				filterColumns : getFilterValues('final_0'),
+				currency : $('#map_currency').val().trim()
+			} ];
+
+			$.ajax({
+				url : '/BRF/BRFCommonTable/submit',
+				type : 'POST',
+				contentType : 'application/json',
+				data : JSON.stringify(payload),
+				success : function(res) {
+					$('#finalMapModal').modal('hide');
+					alert('Mapping saved successfully!');
+
+					if (window._currentMapBtn) {
+						$(window._currentMapBtn).removeClass('btn-primary')
+								.addClass('btn-secondary').prop('disabled',
+										true).html('Mapped');
+
+						window._currentMapBtn = null;
+					}
+				},
+				error : function(xhr, status, error) {
+					alert('Error saving mapping: '
+							+ (xhr.responseText || error));
+				}
+			});
+		}
+		var PREFIX_ARRAY = [ '9001', '9002', '9003', '9004', '9005', '9008' ];
+
+		function openMappingFlow(glSubHead, glHead, accountId, currency, solId,
+				constCode, legalEntity, schemeType) {
+
+			var parsedAccountId = accountId;
+			if (parsedAccountId && parsedAccountId.length >= 4) {
+				var prefix = parsedAccountId.substring(0, 4);
+
+				if (PREFIX_ARRAY.includes(prefix)) {
+					parsedAccountId = parsedAccountId.substring(4);
+
+					while (parsedAccountId.startsWith('0')) {
+						parsedAccountId = parsedAccountId.substring(1);
+					}
+				}
+			}
+
+			_currentRowDetails = {
+				glHead : glHead,
+				glSubHead : glSubHead,
+				accountId : parsedAccountId,
+				currency : currency,
+				solId : nvl(solId),
+				constCode : nvl(constCode),
+				legalEntity : nvl(legalEntity),
+				schemeType : nvl(schemeType)
+			};
+
+			$
+					.ajax({
+						url : '/BRF/checkAccountExists',
+						type : 'GET',
+						data : {
+							accountId : parsedAccountId
+						},
+						success : function(isFound) {
+
+							if (isFound === true || isFound === "true") {
+								fetchAndShowSuccessDetails(glSubHead);
+
+							} else {
+								alert("Account Number not found in system. Please add it first.");
+								openQuickAddModal(parsedAccountId, glHead,
+										glSubHead, currency);
+							}
+						},
+						error : function() {
+							alert("Failed to verify account number with the server.");
+						}
+					});
+		}
+
+		function openQuickAddModal(acctId, glHead, glSubHead, currency) {
+			$('#fldAccountDesc').val('');
+			$('#fldDataType').val('');
+
+			$('#fldAccountId').val(acctId);
+			$('#fldGlHead').val(glHead);
+			$('#fldGlSubHead').val(glSubHead);
+			$('#fldCurrency').val(currency);
+
+			$('#crudModal').modal('show');
+		}
+
+		function submitQuickAdd() {
+			var payload = {
+				glHead : $('#fldGlHead').val().trim(),
+				glSubHeadCode : $('#fldGlSubHead').val().trim(),
+				accountIdBacid : $('#fldAccountId').val().trim(),
+				accountDescription : $('#fldAccountDesc').val().trim(),
+				currency : $('#fldCurrency').val().trim(),
+				dataType : $('#fldDataType').val().trim()
+			};
+
+			if (!payload.accountIdBacid || !payload.accountDescription
+					|| !payload.dataType) {
+				alert("Please fill in all required fields (Description and Data Type).");
+				return;
+			}
+
+			$('#btnQuickSubmit').prop('disabled', true).text('Saving...');
+
+			$.ajax({
+				url : '/BRF/BaseMappingParam/save',
+				type : 'POST',
+				contentType : 'application/json',
+				data : JSON.stringify(payload),
+				success : function() {
+					$('#btnQuickSubmit').prop('disabled', false).text(
+							'Submit & Continue');
+
+					$('#crudModal').modal('hide');
+
+					fetchAndShowSuccessDetails(payload.glSubHeadCode);
+				},
+				error : function(xhr) {
+					$('#btnQuickSubmit').prop('disabled', false).text(
+							'Submit & Continue');
+					alert('Error adding account: '
+							+ (xhr.responseText || 'Server error'));
+				}
+			});
+		}
+		$(document).ready(function() {
+		    $('#finalMapModal').on('hidden.bs.modal', function () {
+		        if (_currentRowDetails && _currentRowDetails.glSubHead) {
+		            fetchAndShowSuccessDetails(_currentRowDetails.glSubHead);
+		        }
+		    });
+		});
+	</script>
+</body>
+</html>

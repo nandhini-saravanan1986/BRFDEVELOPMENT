@@ -31,7 +31,7 @@ public class BrfCommonMapping {
 
     @Column(name = "ACCOUNT_DESCRIPTION",   length = 200)
     private String accountDescription;
-
+    @Id
     @Column(name = "CURRENCY",              length = 50)
     private String currency;
 

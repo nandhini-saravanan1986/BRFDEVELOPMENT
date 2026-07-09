@@ -14,22 +14,17 @@ import java.util.Optional;
 
 @Repository
 public interface BrfBaseMappingRepository
-        extends JpaRepository<BrfBaseMapping, String> {
+        extends JpaRepository<BrfBaseMapping, BrfBaseMappingId> {
 
     /**
      * Returns all base-mapping rows whose ACCOUNT_ID_BACID does NOT appear
      * in BRF_COMMON_MAPPING_TABLE for the given reportCode.
      * These are the "unmapped" accounts.
      */
-	@Query(
-		    value = "SELECT * FROM BRF_BASE_MAPPING_TABLE b " +
-		            "WHERE b.ACCOUNT_ID_BACID NOT IN ( " +
-		            "SELECT c.ACCOUNT_ID_BACID " +
-		            "FROM BRF_COMMON_MAPPING_TABLE c " +
-		            "WHERE c.REPORT_CODE = :reportCode)",
-		    nativeQuery = true
-		)
-		List<BrfBaseMapping> findUnmappedAccounts(@Param("reportCode") String reportCode);
+	@Query(value = "SELECT * FROM BRF_BASE_MAPPING_TABLE b " + "WHERE NOT EXISTS (   SELECT 1 "
+			+ " FROM BRF_COMMON_MAPPING_TABLE c   WHERE c.ACCOUNT_ID_BACID = b.ACCOUNT_ID_BACID "
+			+ " AND c.CURRENCY = b.CURRENCY   AND c.REPORT_CODE = :reportCode )", nativeQuery = true)
+	List<BrfBaseMapping> findUnmappedAccounts(@Param("reportCode") String reportCode);
 	
 	// Used in submitAccounts() 
 	// All 3 params are optional:
@@ -56,7 +51,9 @@ public interface BrfBaseMappingRepository
  // Spring Data derives the SQL automatically from the method name.
     // No @Query needed.
     // Returns empty Optional if account not found.
-    Optional<BrfBaseMapping> findByAccountIdBacid(String accountIdBacid);
+    //Optional<BrfBaseMapping> findByAccountIdBacid(String accountIdBacid);
+    
+    Optional<BrfBaseMapping> findByAccountIdBacidAndCurrency(String accountIdBacid, String currency);
     
     /**
      * LIST  —  GET /BRF/BaseMappingParam/list?page=1&size=20&search=
