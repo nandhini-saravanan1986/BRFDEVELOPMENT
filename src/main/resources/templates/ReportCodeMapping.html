@@ -1381,6 +1381,10 @@
 						
 	<div class="tab-pane fade" id="pane-other-mappings" role="tabpanel">
     <div class="p-3">
+        <div id="otherMappingsSpinner" class="tab-spinner">
+            <i class="fas fa-spinner fa-spin"></i>&nbsp; Loading other mappings…
+        </div>
+        
         <div id="otherMappingsPlaceholder" class="p-4 text-center" style="font-family: verdana; color:#dc3545;">
             <i class="fas fa-exclamation-triangle fa-2x mb-2" style="color:#dc3545;"></i><br>
             Please select a Report Code above to perform other mappings.
@@ -1467,10 +1471,45 @@
                 </div>
             </div>
 
-            <div class="form-footer mt-4">
+            <div class="form-footer mt-4 mb-4">
                 <button type="button" class="btn-cancel" onclick="cancelOtherAction()">Cancel</button>
                 <button type="button" class="btn-submit" id="btnSubmitOtherMappings" onclick="submitOtherMappings()">Save</button>
             </div>
+
+            <hr style="margin: 20px 0;">
+
+            <div id="otherMappingsTableWrap" style="display: none;">
+                <div class="mapped-toolbar">
+                    <div id="otherMappingsInfo" class="mapped-info"></div>
+                    <div class="mapped-search-wrap">
+                        <i class="fas fa-search" style="color: #6B7A8F; font-size: 0.85rem;"></i> 
+                        <input type="text" id="otherMappingsSearch" placeholder="Search records…" oninput="filterOtherMappingsTable()" />
+                        <button onclick="clearOtherMappingsSearch()" title="Clear">
+                            <i class="fas fa-times-circle"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="responsive-table-wrap">
+                    <table class="table table-bordered table-hover table-sm" id="tblOtherMappings">
+                        <thead class="thead-light">
+                            <tr>
+                                <th style="white-space: nowrap;">Action</th>
+                                <th>GL HEAD</th>
+                                <th>GL SUBHEAD CODE</th>
+                                <th>ACCOUNT ID / BACID</th>
+                                <th>REPORT CODE</th>
+                                <th>ROW ID</th>
+                                <th>COLUMN ID</th>
+                                <th>CRITERIA 1</th>
+                                <th>CRITERIA 2</th>
+                                <th>CRITERIA 3</th>
+                            </tr>
+                        </thead>
+                        <tbody id="otherMappingsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
@@ -2229,6 +2268,20 @@
 	    $('#asstClsBtn').data('default',     '-- Select --');
 	    $('#purposeOfAdvnBtn').data('default',  '-- Select --');	
 	
+	    buildMultiMenu('otherSolIdMenu', 'otherSolIdBtn', SOL_ID_OPTIONS, 'osol');
+	    buildMultiMenu('otherConstCodeMenu', 'otherConstCodeBtn', CONST_CODE_OPTIONS, 'occ');
+	    buildMultiMenu('otherLegalEntityMenu', 'otherLegalEntityBtn', LEGAL_ENTITY_OPTIONS, 'ole');
+	    buildMultiMenu('otherSchemeTypeMenu', 'otherSchemeTypeBtn', SCHEME_TYPE_OPTIONS, 'ost');
+	    buildMultiMenu('otherAsstClsMenu', 'otherAsstClsBtn', ASST_CLS_OPTIONS, 'oac');
+	    buildMultiMenu('otherPurposeOfAdvnMenu', 'otherPurposeOfAdvnBtn', PURPOSE_OF_ADVN_OPTIONS, 'opa');
+
+	    $('#otherSolIdBtn').data('default', '-- Select SOL ID --');
+	    $('#otherConstCodeBtn').data('default', '-- Select --');
+	    $('#otherLegalEntityBtn').data('default', '-- Select --');
+	    $('#otherSchemeTypeBtn').data('default', '-- Select --');
+	    $('#otherAsstClsBtn').data('default', '-- Select --');
+	    $('#otherPurposeOfAdvnBtn').data('default', '-- Select --');
+	    
 	    /* Row Mapping Modal */
 	    buildMultiMenu('modalSolIdMenu',       'modalSolIdBtn',       SOL_ID_OPTIONS,       'msol');
 	    buildMultiMenu('modalConstCodeMenu',   'modalConstCodeBtn',   CONST_CODE_OPTIONS,   'mcc');
@@ -2256,11 +2309,19 @@
 	    $('#editSchemeTypeBtn').data('default',  '-- Select --');
 	    $('#editAsstClsBtn').data('default',     '-- Select --');
 	    $('#editPurposeOfAdvnBtn').data('default', '-- Select --');
+	    
+	    $(document).on('click', '.other-mapped-edit-btn', function() {
+	    	openEditMappedModal($(this).data('rowdata'), true);
+	    });
+	    
+	    $(document).on('click', '.other-mapped-del-btn', function() {
+	        openDeleteMappedModal($(this).data('rowdata'));
+	    });
 	
 	    /* Delegated click handlers for Mapped Accounts table — must use .data() not inline onclick
 	       so that buttons continue working after the table is re-rendered on save */
 	    $(document).on('click', '.mapped-edit-btn', function() {
-	        openEditMappedModal($(this).data('rowdata'));
+	    	openEditMappedModal($(this).data('rowdata'), false);
 	    });
 	    $(document).on('click', '.mapped-del-btn', function() {
 	        openDeleteMappedModal($(this).data('rowdata'));
@@ -2360,6 +2421,7 @@
 	        $('#mappedBadge, #unmappedBadge').hide();
 	        
 	   		// Tab 5: Other Mappings
+	   		$('#otherMappingsContent').hide();
             $('#otherMappingsTableWrap').hide();
             $('#otherMappingsPlaceholder').html('<i class="fas fa-exclamation-triangle fa-2x mb-2" style="color:#dc3545;"></i><br>Please select a Report Code above to view Other Mappings.').css('color','#dc3545').show();
             $('#otherMappingsBadge').hide();
@@ -2665,17 +2727,37 @@
 	function populateRowLabelDropdown() {
 	    var sel = $('#rowLabelSelect').prop('disabled', false).html('<option value="">-- Select Row --</option>');
 	    $('#colLabelSelect').prop('disabled', false).html('<option value="">-- Select Column --</option>');
+
+	    var otherSel = $('#otherRowLabelSelect').prop('disabled', false).html('<option value="">-- Select Row --</option>');
+	    $('#otherColLabelSelect').prop('disabled', false).html('<option value="">-- Select Column --</option>');
+
 	    currentRows.forEach(function(row, idx) {
 	        if (row.header === 'Y') return;
-	        sel.append('<option value="' + idx + '">' + row.label + ' - ' + row.description + '</option>');
+	        var opt = '<option value="' + idx + '">' + row.label + ' - ' + row.description + '</option>';
+	        sel.append(opt);
+	        otherSel.append(opt);
 	    });
+
 	    makeSearchableSelect('#rowLabelSelect');
 	    makeSearchableSelect('#colLabelSelect');
+	    makeSearchableSelect('#otherRowLabelSelect');
+	    makeSearchableSelect('#otherColLabelSelect');
 	    
-	    $('#rowLabelSelect').next('.searchable-select-wrapper').find('button')
-        .attr('title', $('#rowLabelSelect').find('option:selected').text() || '-- Select Row --');
+	    $('#rowLabelSelect').next('.searchable-select-wrapper').find('button').attr('title', $('#rowLabelSelect').find('option:selected').text() || '-- Select Row --');
+	    $('#otherRowLabelSelect').next('.searchable-select-wrapper').find('button').attr('title', $('#otherRowLabelSelect').find('option:selected').text() || '-- Select Row --');
 	}
-	
+	function onOtherRowLabelChange() {
+	    var idx    = $('#otherRowLabelSelect').val();
+	    var colSel = $('#otherColLabelSelect').html('<option value="">-- Select Column --</option>');
+	    if (idx === '') return;
+	    var row           = currentRows[parseInt(idx)];
+	    var availableCols = row.availableCols || [];
+	    currentColumns.forEach(function(col) {
+	        if (availableCols.indexOf(col.colCode) === -1) return;
+	        colSel.append('<option value="' + row.label + col.colCode + '">' + row.label + col.colCode + '  -  ' + col.colName + '</option>');
+	    });
+	    makeSearchableSelect('#otherColLabelSelect');
+	}
 	function onRowLabelChange() {
 	    var idx    = $('#rowLabelSelect').val();
 	    var colSel = $('#colLabelSelect').html('<option value="">-- Select Column --</option>');
@@ -4032,10 +4114,18 @@ var colMaxWidth = {
 	    $('#editMappedModal').modal('show');
 	}
 	
-	function openEditMappedModal(rowOrEncoded) {
+	function openEditMappedModal(rowOrEncoded, isOther = false) {
 	    var row = (typeof rowOrEncoded === 'string') ? JSON.parse(decodeURIComponent(rowOrEncoded)) : rowOrEncoded;
 	    window._editMappedRow = row;
 
+	    var fields = ['#editGlHead', '#editGlSubHead', '#editAccountId', '#editCurrency'];
+	    
+	    if (isOther) {
+	        $(fields.join(',')).prop('readonly', false).css('background-color', '#fff');
+	    } else {
+	        $(fields.join(',')).prop('readonly', true).css('background-color', '#f5f5f5');
+	    }
+	    
 	    /* Read-only fields */
 	    $('#editGlHead').val(nvl(row['GL_HEAD']));
 	    $('#editGlSubHead').val(nvl(row['GL_SUBHEAD_CODE']));
@@ -4639,6 +4729,7 @@ var colMaxWidth = {
 	    $('#otherMappingsPlaceholder').hide();
 	    $('#otherMappingsTableWrap').hide();
 	    $('#otherMappingsSpinner').show();
+	    $('#otherMappingsContent').show();
 
 	    $.ajax({
 	        url: '/BRF/otherMappings', type: 'GET', data: { reportCode: reportCode },
@@ -4655,6 +4746,13 @@ var colMaxWidth = {
 	                $.each(data, function(i, row) {
 	                    var $tr = $('<tr></tr>');
 	                    var $actionCell = $('<td style="white-space:nowrap;text-align:center;"></td>');
+	                    var $editBtn = $('<button type="button" class="btn btn-link p-0 mr-2 other-mapped-edit-btn" title="Edit" style="color:#E77400;font-size:14px;line-height:1;vertical-align:middle;"><i class="fas fa-edit"></i></button>');
+	                    var $delBtn  = $('<button type="button" class="btn btn-link p-0 other-mapped-del-btn" title="Delete" style="color:#dc3545;font-size:14px;line-height:1;vertical-align:middle;"><i class="fas fa-trash-alt"></i></button>');
+
+	                    $editBtn.data('rowdata', row);
+	                    $delBtn.data('rowdata', row);
+
+	                    $actionCell.append($editBtn).append($delBtn);
 	                    $tr.append($actionCell);
 	                    $tr.append('<td>' + nvl(row['GL_HEAD'])                + '</td>');
 	                    $tr.append('<td>' + nvl(row['GL_SUBHEAD_CODE'])        + '</td>');
@@ -4697,6 +4795,133 @@ var colMaxWidth = {
      filterOtherMappingsTable(); 
  }
 	function alaccounts() { location.href = '/BRF/ALAccounts'; }
+	
+	function onOtherSourceChange() {
+	    refreshOtherGLCodeList();
+	    refreshOtherGLSubCodeList();
+	}
+
+	function onOtherGLCodeChange() {
+	    refreshOtherGLSubCodeList();
+	}
+
+	function refreshOtherGLCodeList() {
+	    var source = $('#otherSourceSelect').val();
+	    var currentSelection = $('#otherGlCodeSelect').val();
+	    var sel = $('#otherGlCodeSelect').html('<option value="">-- Select GL Code --</option>');
+	    
+	    var filteredData = window.masterGLData;
+	    if (source) {
+	        filteredData = filteredData.filter(function(item) { 
+	            return item.source && item.source.toUpperCase() === source.toUpperCase(); 
+	        });
+	    }
+	    
+	    var uniqueHeads = [];
+	    filteredData.forEach(function(item) {
+	        if (item.glHead && uniqueHeads.indexOf(item.glHead) === -1) {
+	            uniqueHeads.push(item.glHead);
+	        }
+	    });
+	    
+	    uniqueHeads.forEach(function(h) { 
+	        sel.append('<option value="' + h + '">' + h + '</option>'); 
+	    });
+	    
+	    if (uniqueHeads.indexOf(currentSelection) !== -1) {
+	        sel.val(currentSelection);
+	    }
+	    makeSearchableSelect('#otherGlCodeSelect');
+	}
+
+	function refreshOtherGLSubCodeList() {
+	    var source = $('#otherSourceSelect').val();
+	    var glHead = $('#otherGlCodeSelect').val();
+	    
+	    var filteredData = window.masterGLData;
+	    if (source) {
+	        filteredData = filteredData.filter(function(item) { 
+	            return item.source && item.source.toUpperCase() === source.toUpperCase(); 
+	        });
+	    }
+	    if (glHead) {
+	        filteredData = filteredData.filter(function(item) { return item.glHead === glHead; });
+	    }
+	    
+	    var uniqueSubCodes = [];
+	    filteredData.forEach(function(item) {
+	        if (item.subHeadCode && uniqueSubCodes.indexOf(item.subHeadCode) === -1) {
+	            uniqueSubCodes.push(item.subHeadCode);
+	        }
+	    });
+	    
+	    var formattedRows = uniqueSubCodes.map(function(code) { return { subHeadCode: code }; });
+	    buildOtherSubCodeCheckboxes(formattedRows);
+	}
+
+	function buildOtherSubCodeCheckboxes(rows) {
+	    var menu = $('#otherGlSubCodeMenu').html('');
+	    var btn  = $('#otherGlSubCodeBtn');
+	    if (!rows || rows.length === 0) {
+	        menu.html('<div style="padding:8px 14px;font-family:verdana;font-size:12px;color:#888;">No records found</div>');
+	        btn.prop('disabled', false);
+	        return;
+	    }
+	    menu.append(
+	        '<div style="padding:5px 14px;border-bottom:1px solid #eee;position:sticky;top:-6px;background:#fff;z-index:2;">' +
+	        '<input type="text" class="form-control form-control-sm mb-2" placeholder="Search..." oninput="filterMultiSelect(this)">' +
+	        '<input type="checkbox" id="chk_otherSubAll" onclick="toggleAllOtherSubCodes(this)"> ' +
+	        '<label for="chk_otherSubAll" style="font-family:verdana;font-size:12px;font-weight:bold;cursor:pointer;margin:0;">Select All</label></div>'
+	    );
+	    rows.forEach(function(row, i) {
+	        var id = 'chk_other_sub_' + i;
+	        menu.append('<div class="cb-item" style="padding:4px 14px;cursor:pointer;"><input type="checkbox" id="' + id + '" value="' + row.subHeadCode + '" onchange="onOtherSubCodeCheck()"> <label for="' + id + '" style="font-family:verdana;font-size:12px;cursor:pointer;margin:0;">' + row.subHeadCode + '</label></div>');
+	    });
+	    btn.prop('disabled', false).text('-- Select GL Sub Code --');
+	}
+
+	function toggleAllOtherSubCodes(masterChk) { 
+	    $('#otherGlSubCodeMenu input[type=checkbox]:not(#chk_otherSubAll)').prop('checked', masterChk.checked); 
+	    refreshOtherSubCodeBtnLabel(); 
+	}
+
+	function onOtherSubCodeCheck() {
+	    var all = $('#otherGlSubCodeMenu input[type=checkbox]:not(#chk_otherSubAll)').length;
+	    var chk = $('#otherGlSubCodeMenu input[type=checkbox]:not(#chk_otherSubAll):checked').length;
+	    $('#chk_otherSubAll').prop('checked', all === chk && all > 0);
+	    refreshOtherSubCodeBtnLabel();
+	}
+
+	function refreshOtherSubCodeBtnLabel() {
+	    var checked = $('#otherGlSubCodeMenu input[type=checkbox]:not(#chk_otherSubAll):checked');
+	    var btn = $('#otherGlSubCodeBtn');
+	    if (checked.length === 0)      btn.text('-- Select GL Sub Code --');
+	    else if (checked.length === 1) btn.text(checked.first().val());
+	    else                           btn.text(checked.length + ' selected');
+	}
+	function cancelOtherAction() {
+	    $('#otherRowLabelSelect').val('');
+	    $('#otherColLabelSelect').html('<option value="">-- Select Column --</option>');
+	    $('#otherSourceSelect').val('');
+	    $('#otherGlCodeSelect').html('<option value="">-- Select GL Code --</option>').prop('disabled', true);
+	    $('#otherGlSubCodeMenu').hide().html(''); 
+	    $('#otherGlSubCodeBtn').prop('disabled', true).text('-- Select GL Sub Code --');
+	    
+	    resetMenu('otherSolIdMenu',       'otherSolIdBtn');
+	    resetMenu('otherConstCodeMenu',   'otherConstCodeBtn');
+	    resetMenu('otherLegalEntityMenu', 'otherLegalEntityBtn');
+	    resetMenu('otherSchemeTypeMenu',  'otherSchemeTypeBtn');
+	    resetMenu('otherAsstClsMenu',     'otherAsstClsBtn');
+	    resetMenu('otherPurposeOfAdvnMenu', 'otherPurposeOfAdvnBtn');
+	    
+	    $('#otherHniNetworth').val('');
+	    $('#otherTurnover').val('');
+	    $('#otherAccountNumberInput').val('');
+	    
+	    makeSearchableSelect('#otherRowLabelSelect');
+	    makeSearchableSelect('#otherColLabelSelect');
+	    makeSearchableSelect('#otherGlCodeSelect');
+	}
 	</script>
 	
 	</body>

@@ -18,6 +18,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -2316,4 +2317,36 @@ html.append("</tbody></table></div>");
 				@RequestParam String currency) {
 			return BrfCommonMappingRepository.findExistingMappingsByAccountAndCurrency(accountId, currency);
 		}
+		
+		@GetMapping("/otherMappings")
+		@ResponseBody
+		public List<Map<String, Object>> getOtherMappings(@RequestParam("reportCode") String reportCode) {
+		    List<Map<String, Object>> result = new ArrayList<>();
+
+		    try {
+		        List<BrfCommonMapping> otherMappings = BrfCommonMappingRepository.findOtherMappings(reportCode);
+
+		        for (BrfCommonMapping r : otherMappings) {
+		            Map<String, Object> row = new LinkedHashMap<>();
+		            row.put("GL_HEAD", r.getGlHead());
+		            row.put("GL_SUBHEAD_CODE", r.getGlSubheadCode());
+		            row.put("ACCOUNT_ID_BACID", r.getAccountIdBacid());
+		            row.put("REPORT_CODE", r.getReportCode());
+		            row.put("ROW_ID", r.getRowId());
+		            row.put("COLUMN_ID", r.getColumnId());
+		            
+		            row.put("REPORT_ADDL_CRITERIA_1", r.getReportAddlCriteria1());
+		            row.put("REPORT_ADDL_CRITERIA_2", r.getReportAddlCriteria2());
+		            row.put("REPORT_ADDL_CRITERIA_3", r.getReportAddlCriteria3());
+		            
+		            result.add(row);
+		        }
+		    } catch (Exception e) {
+		        System.err.println("ERROR fetching other mappings: " + e.getMessage());
+		        e.printStackTrace();
+		    }
+
+		    return result;
+		}
+		
 }
