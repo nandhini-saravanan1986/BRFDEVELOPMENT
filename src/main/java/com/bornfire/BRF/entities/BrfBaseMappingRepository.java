@@ -126,7 +126,7 @@ public interface BrfBaseMappingRepository
     	            "       ACCOUNT_DESCRIPTION = :accountDescription, " +
     	            "       CURRENCY            = :currency, " +
     	            "       DATA_TYPE           = :dataType " +
-    	            "WHERE ACCOUNT_ID_BACID = :oldId",
+    	            "WHERE ACCOUNT_ID_BACID = :oldId AND CURRENCY = :oldCurrency",
     	    nativeQuery = true
     	)
     int updateRecord(
@@ -136,8 +136,19 @@ public interface BrfBaseMappingRepository
         @Param("currency") String currency,
         @Param("dataType") String dataType,
         @Param("newId") String newId,
-        @Param("oldId") String oldId
+        @Param("oldId") String oldId,
+        @Param("oldCurrency") String oldCurrency
     );
+    
+    @Query(
+    	    value = "SELECT COUNT(*) FROM BRF_BASE_MAPPING_TABLE " +
+    	            "WHERE ACCOUNT_ID_BACID = :accountId AND CURRENCY = :currency",
+    	    nativeQuery = true
+    	)
+    	int countByAccountIdAndCurrency(
+    	    @Param("accountId") String accountId,
+    	    @Param("currency") String currency
+    	);
 
     /**
      * SOFT DELETE  —  DELETE /BRF/BaseMappingParam/delete/{id}
@@ -158,10 +169,10 @@ public interface BrfBaseMappingRepository
     @Transactional
     @Query(
         value = "DELETE FROM BRF_BASE_MAPPING_TABLE " +
-                "WHERE ACCOUNT_ID_BACID = :accountId",
+                "WHERE ACCOUNT_ID_BACID = :accountId AND CURRENCY = :currency",
         nativeQuery = true
     )
-    int deleteRecord(@Param("accountId") String accountId);
+    int deleteRecord(@Param("accountId") String accountId,@Param("currency") String currency);
     
 	@Query(value = "SELECT DISTINCT " + "  DATA_TYPE AS \"source\", " + "  GL_HEAD AS \"glHead\", "
 			+ "  GL_SUBHEAD_CODE AS \"subHeadCode\" " + "FROM BRF_BASE_MAPPING_TABLE "

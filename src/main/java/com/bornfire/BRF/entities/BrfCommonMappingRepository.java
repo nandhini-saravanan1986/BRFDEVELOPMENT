@@ -145,6 +145,32 @@ public interface BrfCommonMappingRepository
 		    nativeQuery = true
 		)
 		List<BrfCommonMapping> findOtherMappings(@Param("reportCode") String reportCode);
+	
+	@Query("SELECT c.accountIdBacid FROM BrfCommonMapping c " +
+		       "WHERE c.reportCode = :reportCode AND c.accountIdBacid LIKE 'OTHMAPP%'")
+		List<String> findAccountIdsByReportCodeAndPrefix(@Param("reportCode") String reportCode);
 
+	@Query("SELECT c FROM BrfCommonMapping c WHERE c.reportCode = :reportCode " +
+		       "AND c.rowId = :rowId AND c.columnId = :columnId " +
+		       "AND COALESCE(c.currency, '') = :currency " +
+		       "AND COALESCE(c.glSubheadCode, '') = :glSubheadCode " +
+		       "AND COALESCE(c.solId, '') = :solId " +
+		       "AND COALESCE(c.constitutionCode, '') = :constitutionCode " +
+		       "AND COALESCE(c.legalEntityType, '') = :legalEntityType " +
+		       "AND COALESCE(c.schemeType, '') = :schemeType " +
+		       "AND COALESCE(c.asstCls, '') = :asstCls " +
+		       "AND COALESCE(c.purposeOfAdvn, '') = :purposeOfAdvn " +
+		       "AND c.accountIdBacid LIKE 'OTHMAPP%'")
+		Optional<BrfCommonMapping> findExistingOtherMapping(@Param("reportCode") String reportCode,
+		                                                      @Param("rowId") String rowId,
+		                                                      @Param("columnId") String columnId,
+		                                                      @Param("currency") String currency,
+		                                                      @Param("glSubheadCode") String glSubheadCode,
+		                                                      @Param("solId") String solId,
+		                                                      @Param("constitutionCode") String constitutionCode,
+		                                                      @Param("legalEntityType") String legalEntityType,
+		                                                      @Param("schemeType") String schemeType,
+		                                                      @Param("asstCls") String asstCls,
+		                                                      @Param("purposeOfAdvn") String purposeOfAdvn);
 	
 }

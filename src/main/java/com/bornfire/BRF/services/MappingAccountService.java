@@ -233,11 +233,27 @@ public class MappingAccountService {
     public String updateBaseMappingParam(Map<String, String> body) {
 
         String oldId = body.get("oldAccountId");        //  OLD ID
+        String oldCurrency = body.get("oldCurrency");   // OLD CURRENCY
         String newId = body.get("accountIdBacid");      //  NEW ID
-
+        String newCurrency = body.get("currency");		// OLD CURRENCY
+        
         if (newId == null || newId.trim().isEmpty()) {
             return "ACCOUNT_ID_BACID is required";
         }
+        
+        if (newCurrency == null || newCurrency.trim().isEmpty()) {
+            return "CURRENCY is required";
+        }
+        
+        boolean keyChanged = !newId.trim().equals(oldId.trim())
+                || !newCurrency.trim().equals(oldCurrency.trim());
+
+		if (keyChanged) {
+		 int existing = baseMappingRepo.countByAccountIdAndCurrency(newId.trim(), newCurrency.trim());
+		 if (existing > 0) {
+		     return "A record with ACCOUNT_ID_BACID " + newId + " and CURRENCY " + newCurrency + " already exists";
+		 }
+		}
 
         int updated = baseMappingRepo.updateRecord(
             nvl(body.get("glHead")),
@@ -246,19 +262,28 @@ public class MappingAccountService {
             nvl(body.get("currency")),
             nvl(body.get("dataType")),
             newId.trim(),     // NEW ID (SET)
-            oldId.trim()      // OLD ID (WHERE)
+            oldId.trim(),      // OLD ID (WHERE)
+            oldCurrency.trim() // OLD CURRENCY (WHERE)
         );
 
         return updated > 0 ? "SUCCESS" : "No active record found for: " + oldId;
     }
     
  // BASE MAPPING PARAM — SOFT DELETE
-    public String deleteBaseMappingParam(String accountId) {
+    public String deleteBaseMappingParam(String accountId, String currency) {
         if (accountId == null || accountId.trim().isEmpty()) {
             return "ACCOUNT_ID_BACID is required";
         }
+        if (currency == null || currency.trim().isEmpty()) {
+            return "CURRENCY is required";
+        }
+        
+        int existing = baseMappingRepo.countByAccountIdAndCurrency(accountId.trim(), currency.trim());
+        if (existing == 0) {
+            return "No active record found for: " + accountId + "/" + currency;
+        }
 
-        int deleted = baseMappingRepo.deleteRecord(accountId.trim());
-        return deleted > 0 ? "SUCCESS" : "No active record found for: " + accountId;
+        int deleted = baseMappingRepo.deleteRecord(accountId.trim(), currency.trim());
+        return deleted > 0 ? "SUCCESS" : "No active record found for: " + accountId + "/" + currency;
     }
 }

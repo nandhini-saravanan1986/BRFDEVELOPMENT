@@ -388,7 +388,7 @@ public class BRFBaseTableController {
             if (rowIdChanged) {
                 // ROW_ID is part of the PK — we must delete old + insert new
                 // 2a. Check if the new composite key already exists (avoid duplicate PK)
-                BrfCommonMappingId newPk = new BrfCommonMappingId(accountId, reportCode, newRowId,oldColumnId,currency);
+                BrfCommonMappingId newPk = new BrfCommonMappingId(accountId, reportCode, newRowId,columnId,currency);
                 if (commonMappingRepo.existsById(newPk)) {
                     response.put("status",  "DUPLICATE");
                     response.put("message", "A record already exists for rowId=" + newRowId
@@ -483,5 +483,143 @@ public class BRFBaseTableController {
 
     private String nvl(String v) {
         return v != null ? v : "";
+    }
+    
+    @PostMapping("/BRFCommonTable/submitOtherMapping")
+    @ResponseBody
+    @Transactional
+    public Map<String, Object> submitOtherMapping(@RequestBody Map<String, Object> payload) {
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        List<Map<String, String>> savedRecords   = new ArrayList<>();
+        List<Map<String, String>> skippedRecords = new ArrayList<>();
+
+        try {
+            String reportCode    = nvl((String) payload.get("reportCode")).trim();
+            String rowId         = nvl((String) payload.get("rowId")).trim();
+            String columnId      = nvl((String) payload.get("columnId")).trim();
+            if (columnId.isEmpty()) columnId = "None";              // ← no Column ID selected => "None", not null
+
+            String glHead        = nvl((String) payload.get("glHead")).trim();
+            String glSubheadCode = nvl((String) payload.get("glSubheadCode")).trim();
+            String solId         = nvl((String) payload.get("solId")).trim();
+            String constCode     = nvl((String) payload.get("constitutionCode")).trim();
+            String legalEntity   = nvl((String) payload.get("legalEntityType")).trim();
+            String hniNetworth   = nvl((String) payload.get("hniNetworth")).trim();
+            String turnover      = nvl((String) payload.get("turnover")).trim();
+            String schemeType    = nvl((String) payload.get("schemeType")).trim();
+            String asstCls       = nvl((String) payload.get("assetClass")).trim();
+            String purposeOfAdvn = nvl((String) payload.get("purposeOfAdvn")).trim();
+
+            if (reportCode.isEmpty() || rowId.isEmpty()) {
+                response.put("status", "ERROR");
+                response.put("message", "reportCode and rowId are required.");
+                return response;
+            }
+
+            String currency = nvl((String) payload.get("currencies")).trim();
+            if (currency.isEmpty()) {
+                response.put("status", "ERROR");
+                response.put("message", "currencies is required.");
+                return response;
+            }
+
+         // 1. Don't create a second mapping for the same reportCode+rowId+columnId
+            Optional<BrfCommonMapping> already =
+            	    commonMappingRepo.findExistingOtherMapping(reportCode, rowId, columnId, currency,
+            	        glSubheadCode, solId, constCode, legalEntity, schemeType, asstCls, purposeOfAdvn);
+
+            if (already.isPresent()) {
+                Map<String, String> skipped = new LinkedHashMap<>();
+                skipped.put("currencies", currency);
+                skipped.put("existingAccountId", already.get().getAccountIdBacid());
+                skippedRecords.add(skipped);
+                System.out.println("OTHER-MAPPING SKIPPED (already exists): existingAccountId=" + already.get().getAccountIdBacid());
+            } else {
+                // 2. Generate the id, then CHECK before inserting.
+                String generatedAccountId = generateNextOthMappAccountId(reportCode);
+                BrfCommonMappingId pk = new BrfCommonMappingId(generatedAccountId, reportCode, rowId, columnId, currency);
+
+                int guard = 0;
+                while (commonMappingRepo.existsById(pk) && guard < 50) {
+                    generatedAccountId = incrementOthMappId(generatedAccountId);
+                    pk = new BrfCommonMappingId(generatedAccountId, reportCode, rowId, columnId, currency);
+                    guard++;
+                }
+
+                if (commonMappingRepo.existsById(pk)) {
+                    Map<String, String> skipped = new LinkedHashMap<>();
+                    skipped.put("currencies", currency);
+                    skipped.put("reason", "Could not allocate a free OTHMAPP id after " + guard + " attempts.");
+                    skippedRecords.add(skipped);
+                } else {
+                    BrfCommonMapping record = new BrfCommonMapping();
+                    record.setAccountIdBacid(generatedAccountId);
+                    record.setReportCode(reportCode);
+                    record.setRowId(rowId);
+                    record.setColumnId(columnId);
+                    record.setCurrency(currency);   // ← comma-joined, single row
+                    record.setGlHead(glHead);
+                    record.setGlSubheadCode(glSubheadCode);
+                    record.setSolId(solId);
+                    record.setConstitutionCode(constCode);
+                    record.setLegalEntityType(legalEntity);
+                    record.setHniNetworth(hniNetworth);
+                    record.setTurnover(turnover);
+                    record.setSchemeType(schemeType);
+                    record.setAsstCls(asstCls);
+                    record.setPurposeOfAdvn(purposeOfAdvn);
+
+                commonMappingRepo.save(record);
+                commonMappingRepo.flush();   // next loop iteration's existsById/generate must see this insert
+
+                Map<String, String> saved = new LinkedHashMap<>();
+                saved.put("accountId", generatedAccountId);
+                saved.put("currency",  currency);
+                savedRecords.add(saved);
+
+                System.out.println("OTHER-MAPPING INSERT: accountId=" + generatedAccountId
+                    + " reportCode=" + reportCode + " currency=" + currency);
+            }
+            }
+
+            response.put("status",   "SUCCESS");
+            response.put("inserted", savedRecords.size());
+            response.put("records",  savedRecords);
+            response.put("skipped",  skippedRecords);
+
+        } catch (Exception e) {
+            System.err.println("SUBMIT OTHER MAPPING ERROR: " + e.getMessage());
+            e.printStackTrace();
+            response.put("status",  "ERROR");
+            response.put("message", "Error: " + e.getMessage());
+        }
+        
+
+        return response;
+    }
+
+    /** OTHMAPP1, OTHMAPP2, ... — counter restarts at 1 for every new report code. */
+    private String generateNextOthMappAccountId(String reportCode) {
+        List<String> existingIds = commonMappingRepo.findAccountIdsByReportCodeAndPrefix(reportCode);
+        int maxNum = 0;
+        for (String id : existingIds) {
+            if (id != null && id.startsWith("OTHMAPP")) {
+                try {
+                    int n = Integer.parseInt(id.substring("OTHMAPP".length()).trim());
+                    if (n > maxNum) maxNum = n;
+                } catch (NumberFormatException ignore) { }
+            }
+        }
+        return "OTHMAPP" + (maxNum + 1);
+    }
+
+    private String incrementOthMappId(String accountId) {
+        try {
+            int n = Integer.parseInt(accountId.substring("OTHMAPP".length()).trim());
+            return "OTHMAPP" + (n + 1);
+        } catch (NumberFormatException e) {
+            return "OTHMAPP1";
+        }
     }
 }

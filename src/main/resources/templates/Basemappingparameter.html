@@ -375,6 +375,7 @@
             </div>
             <div class="modal-body">
                 <input type="hidden" id="modalRecordId" />
+                <input type="hidden" id="modalRecordCurrency" />
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label class="modal-label">GL Head <span class="req">*</span></label>
@@ -961,6 +962,7 @@ function openEditModal(row) {
 /* ── helpers ── */
 function clearModalFields() {
     $('#modalRecordId').val('');
+    $('#modalRecordCurrency').val('');
     $('#fldGlHead').val('');
     $('#fldGlSubHead').val('');
     $('#fldAccountId').val('');
@@ -970,6 +972,7 @@ function clearModalFields() {
 }
 function fillModalFields(row) {
     $('#modalRecordId').val(nvl(row['ACCOUNT_ID_BACID']));
+    $('#modalRecordCurrency').val(nvl(row['CURRENCY']));
     $('#fldGlHead').val(nvl(row['GL_HEAD']));
     $('#fldGlSubHead').val(nvl(row['GL_SUBHEAD_CODE']));
     $('#fldAccountId').val(nvl(row['ACCOUNT_ID_BACID']));
@@ -992,6 +995,7 @@ function submitCrud() {
         glHead             : $('#fldGlHead').val().trim(),
         glSubHeadCode      : $('#fldGlSubHead').val().trim(),
         oldAccountId       : $('#modalRecordId').val().trim(),
+        oldCurrency        : $('#modalRecordCurrency').val().trim(),
         accountIdBacid     : $('#fldAccountId').val().trim(),
         accountDescription : $('#fldAccountDesc').val().trim(),
         currency           : $('#fldCurrency').val().trim(),
@@ -1092,10 +1096,11 @@ function confirmDelete() {
     if (!_deleteTarget) return;
 
     var id = _deleteTarget['ACCOUNT_ID_BACID'];
+    var currency = _deleteTarget['CURRENCY'];
     $('#btnConfirmDelete').prop('disabled', true).text('Deleting…');
 
     $.ajax({
-        url  : '/BRF/BaseMappingParam/delete/' + encodeURIComponent(id),
+        url  : '/BRF/BaseMappingParam/delete/' + encodeURIComponent(id) + '/' + encodeURIComponent(currency),
         type : 'DELETE',
         success: function () {
             $('#btnConfirmDelete').prop('disabled', false).text('Yes, Delete');
