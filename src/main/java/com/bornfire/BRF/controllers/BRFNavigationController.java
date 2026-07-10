@@ -233,10 +233,11 @@ public class BRFNavigationController {
 	        return ResponseEntity.badRequest().body(result);
 	    }
 	
-		@DeleteMapping("/BaseMappingParam/delete/{id}")
+		@DeleteMapping("/BaseMappingParam/delete/{id}/{currency}")
 		@ResponseBody
-	    public ResponseEntity<String> delete(@PathVariable("id") String accountId) {
-	        String result = mappingAccountService.deleteBaseMappingParam(accountId);
+	    public ResponseEntity<String> delete(@PathVariable("id") String accountId,
+	    									@PathVariable("currency") String currency) {
+	        String result = mappingAccountService.deleteBaseMappingParam(accountId, currency);
 	        if ("SUCCESS".equals(result)) {
 	            return ResponseEntity.ok(result);
 	        }
