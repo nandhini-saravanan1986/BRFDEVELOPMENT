@@ -2182,10 +2182,13 @@ html.append("</tbody></table></div>");
 		}
 
 		@GetMapping("/ALAccounts")
-		public String BRFALAccounts(@RequestParam(required = false) String date,
+		public String BRFALAccounts(
+		        @RequestParam(required = false) String date,
+		        @RequestParam(required = false, defaultValue = "CBS") String type,
 		        @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
 		        @RequestParam(value = "page", required = false, defaultValue = "0") int page,
-		        @RequestParam(value = "size", required = false, defaultValue = "10") int size, Model model) {
+		        @RequestParam(value = "size", required = false, defaultValue = "10") int size,
+		        Model model) {
 
 		    if (date == null || date.isEmpty()) {
 		        String sql = "SELECT TO_CHAR(report_date, 'DD-MM-YYYY') AS \"Report Date\" "
@@ -2195,90 +2198,184 @@ html.append("</tbody></table></div>");
 		        List<Map<String, Object>> distinctDates = jdbcTemplate.queryForList(sql);
 		        model.addAttribute("dateList", distinctDates);
 		    } else {
+
 		        try {
-		            String baseSql = "SELECT t1.ACCT_NUMBER, t1.ACCT_NAME, t1.ACT_BALANCE_AMT_LC, t1.GL_CODE, "
-		                    + "t1.GL_SUB_HEAD_CODE, t1.ACCT_CRNCY_CODE, t1.SOL_ID, t1.CONSTITUTION_CODE, "
-		                    + "t1.LEGAL_ENTITY_TYPE, t1.SCHM_TYPE, (CASE WHEN EXISTS ( "
-		                    + "  SELECT 1 FROM BRF_COMMON_MAPPING_TABLE t2 "
-		                    + "  WHERE t2.GL_SUBHEAD_CODE = t1.GL_SUB_HEAD_CODE AND t2.REPORT_CODE IN ('BRF001','BRF002','BRF004') "
-		                    + "  AND t2.CURRENCY = t1.ACCT_CRNCY_CODE "
-		                    + "  AND t2.ACCOUNT_ID_BACID = LTRIM(REGEXP_REPLACE(t1.ACCT_NUMBER, '^(9001|9002|9003|9004|9005|9008)'), '0') "
-		                    + ") THEN 1 ELSE 0 END) AS \"is_match\" " 
-		                    + "FROM general_master_table t1 "
-		                    + "WHERE TO_CHAR(t1.report_date, 'DD-MM-YYYY') = ? " 
-		                    + "AND t1.ACT_BALANCE_AMT_LC <> 0 "
-		                    + "AND (t1.ACCT_NUMBER, t1.ACCT_CRNCY_CODE) NOT IN (SELECT m1.FORACID, m1.ACCT_CRNCY_CODE FROM brf1_mapping_table m1 WHERE TO_CHAR(m1.report_date, 'DD-MM-YYYY') = ?) "
-		                    + "AND (t1.ACCT_NUMBER, t1.ACCT_CRNCY_CODE) NOT IN (SELECT m2.FORACID, m2.ACCT_CRNCY_CODE FROM brf2_mapping_table m2 WHERE TO_CHAR(m2.report_date, 'DD-MM-YYYY') = ?) "
-		                    + "AND (t1.ACCT_NUMBER, t1.ACCT_CRNCY_CODE) NOT IN (SELECT m3.FORACID, m3.ACCT_CRNCY_CODE FROM brf4_mapping_table m3 WHERE TO_CHAR(m3.report_date, 'DD-MM-YYYY') = ?) "
-		                    + "AND t1.SOL_ID IN ('9001','9002','9003','9004','9005','9006','9008')";
 
-		            List<Object> paramList = new ArrayList<>();
-		            paramList.add(date);
-		            paramList.add(date);
-		            paramList.add(date);
-		            paramList.add(date);
+		            if ("CBS".equalsIgnoreCase(type)) {
 
-		            if (keyword != null && !keyword.trim().isEmpty()) {
-		                baseSql += " AND (UPPER(CAST(t1.ACCT_NUMBER AS VARCHAR2(100))) LIKE ? "
-		                         + " OR UPPER(CAST(t1.GL_SUB_HEAD_CODE AS VARCHAR2(100))) LIKE ? "
-		                         + " OR UPPER(CAST(t1.ACCT_NAME AS VARCHAR2(255))) LIKE ? "
-		                         + " OR UPPER(CAST(t1.ACCT_CRNCY_CODE AS VARCHAR2(10))) LIKE ?) ";
+		                String baseSql = "SELECT t1.ACCT_NUMBER, t1.ACCT_NAME, t1.ACT_BALANCE_AMT_LC, t1.GL_CODE, "
+			                    + "t1.GL_SUB_HEAD_CODE, t1.ACCT_CRNCY_CODE, t1.SOL_ID, t1.CONSTITUTION_CODE, "
+			                    + "t1.LEGAL_ENTITY_TYPE, t1.SCHM_TYPE, (CASE WHEN EXISTS ( "
+			                    + "  SELECT 1 FROM BRF_COMMON_MAPPING_TABLE t2 "
+			                    + "  WHERE t2.GL_SUBHEAD_CODE = t1.GL_SUB_HEAD_CODE AND t2.REPORT_CODE IN ('BRF001','BRF002','BRF004') "
+			                    + "  AND t2.CURRENCY = t1.ACCT_CRNCY_CODE "
+			                    + "  AND t2.ACCOUNT_ID_BACID = LTRIM(REGEXP_REPLACE(t1.ACCT_NUMBER, '^(9001|9002|9003|9004|9005|9008)'), '0') "
+			                    + ") THEN 1 ELSE 0 END) AS \"is_match\" " 
+			                    + "FROM general_master_table t1 "
+			                    + "WHERE TO_CHAR(t1.report_date, 'DD-MM-YYYY') = ? " 
+			                    + "AND t1.ACT_BALANCE_AMT_LC <> 0 "
+			                    + "AND (t1.ACCT_NUMBER, t1.ACCT_CRNCY_CODE) NOT IN (SELECT m1.FORACID, m1.ACCT_CRNCY_CODE FROM brf1_mapping_table m1 WHERE TO_CHAR(m1.report_date, 'DD-MM-YYYY') = ?) "
+			                    + "AND (t1.ACCT_NUMBER, t1.ACCT_CRNCY_CODE) NOT IN (SELECT m2.FORACID, m2.ACCT_CRNCY_CODE FROM brf2_mapping_table m2 WHERE TO_CHAR(m2.report_date, 'DD-MM-YYYY') = ?) "
+			                    + "AND (t1.ACCT_NUMBER, t1.ACCT_CRNCY_CODE) NOT IN (SELECT m3.FORACID, m3.ACCT_CRNCY_CODE FROM brf4_mapping_table m3 WHERE TO_CHAR(m3.report_date, 'DD-MM-YYYY') = ?) "
+			                    + "AND t1.SOL_ID IN ('9001','9002','9003','9004','9005','9006','9008')";
+
+			            List<Object> paramList = new ArrayList<>();
+			            paramList.add(date);
+			            paramList.add(date);
+			            paramList.add(date);
+			            paramList.add(date);
+
+			            if (keyword != null && !keyword.trim().isEmpty()) {
+			                baseSql += " AND (UPPER(CAST(t1.ACCT_NUMBER AS VARCHAR2(100))) LIKE ? "
+			                         + " OR UPPER(CAST(t1.GL_SUB_HEAD_CODE AS VARCHAR2(100))) LIKE ? "
+			                         + " OR UPPER(CAST(t1.ACCT_NAME AS VARCHAR2(255))) LIKE ? "
+			                         + " OR UPPER(CAST(t1.ACCT_CRNCY_CODE AS VARCHAR2(10))) LIKE ?) ";
+			                
+			                String searchPattern = "%" + keyword.trim().toUpperCase() + "%";
+			                
+			                paramList.add(searchPattern);
+			                paramList.add(searchPattern);
+			                paramList.add(searchPattern);
+			                paramList.add(searchPattern);
+			            }
+
+			            String countSql = "SELECT COUNT(1) FROM (" + baseSql + ") count_table";
+			            Integer totalRecords = jdbcTemplate.queryForObject(countSql, Integer.class, paramList.toArray());
+			            if (totalRecords == null) totalRecords = 0;
+
+			            int offset = page * size;
+			            String paginatedSql = baseSql + " ORDER BY \"is_match\" DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+			            
+			            List<Object> paginationParams = new ArrayList<>(paramList);
+			            paginationParams.add(offset);
+			            paginationParams.add(size);
+
+			            List<Map<String, Object>> detailedData = jdbcTemplate.queryForList(paginatedSql, paginationParams.toArray());
+
+			            Pageable pageable = PageRequest.of(page, size);
+			            PageImpl<Map<String, Object>> pageData = new PageImpl<>(detailedData, pageable, totalRecords);
+
+			            model.addAttribute("selectedDate", date);
+			            model.addAttribute("keyword", keyword);
+			            model.addAttribute("dynamicData", detailedData);
+			            model.addAttribute("page", pageData);
+						List<String> constCodeOptions = Arrays.asList("LLTCO", "DMCC", "FZC", "FZE", "FZCLL", "OFC",
+								"FZELL", "OPLLC", "PROPR", "SPLLC", "PROPM", "11512", "PVTCO", "PRTNR", "ESTB", "11505",
+								"33201", "FGNCO", "FZLLC", "PBPVT", "PJSC", "PRTNF", "61003", "ASSOC", "71001", "CGPSU",
+								"INSTU", "SGPSU", "PBCLI", "33199", "BUC", "11599", "11501", "11699", "33101", "FI", "BFC",
+								"MXC", "11507", "NBFC", "GOENT", "44111", "44116", "INDL", "44101", "INDVM", "INDVF",
+								"44108", "WPS", "44212", "44205", "44201", "44217", "44299", "44214", "44199", "44209",
+								"44115", "44107", "44203", "SGOVT", "71002", "61012", "PCLBG", "SOCIE", "GEMS", "PROPF",
+								"PBCNL", "REALE", "CC", "SA", "GOVT", "61002", "EDTRU", "GOVCO", "11409", "RFC", "11700",
+								"FGNSO", "NFLLC", "ULTCO", "22302", "BUEBC", "56700", "SHGOT", "33299", "11604", "REAL",
+								"11401", "11601", "11403", "NPO", "44103", "71005", "44207", "44216", "44106", "44208",
+								"44102", ".", "44109", "44113", "NREIN", "44210", "44112", "RESIN", "0", "44202", "33104",
+								"11510", "11506", "33107", "-", "33103", "BR", "44104", "44105", "44110", "44114", "44204",
+								"44206", "44211", "44213", "44215", "HUFJT", "INDL ", "INDVM");
+						model.addAttribute("constCodeOptions", constCodeOptions);
+
+						List<String> legalEntityOptions = Arrays.asList("SAL", "WT", "HOSP", "PRTNR", "MXC", "FORSV",
+								"PFINS", "GT", "NPO", "EDINS", "FI", "FGNBK", "GOVTE", "ASSN", "RT", "OFC", "JJWEL", "NBFC",
+								"RWTO", "MILLS", "EMBSY", "COFTZ", "TRAVL", "PARTY", "THEAT", "EXSTF", "PSE", "BUSIN",
+								"SSI", "PVTCO", "GOVT", "HOTEL", "COMBK", "PROPR", "RECLB", "CGOVB", "INDVL", "IMEX",
+								"PBLCO", "PROF", "SERV", "FGBBK", "STAFF", "GOVTL", "PSEC", "INSP", "STBRK", "CB", "MNC",
+								"MLI", "OTH", "EMBAS", "SHOPS", "HUWIF", "INSG", "AGRI", "GOVTF", "PSENO", "PSEN", "PSECO",
+								"MXC  ", "NBFC ");
+						model.addAttribute("legalEntityOptions", legalEntityOptions);
+
+						List<String> schemeTypeOptions = Arrays.asList("SBA", "CLA", "CAA", "LAA", "ODA", "DDA", "OAB",
+								"FBA", "PCA", "OAP", "TDA", "OSP");
+						model.addAttribute("schemeTypeOptions", schemeTypeOptions);
+
+			        } else if ("TREASURY".equalsIgnoreCase(type)) {
+
+		                String treasurySql = "SELECT t1.ACCT_NO, "
+		                        + "t1.ACCT_NAME, "
+		                        + "t1.CURRENCY, "
+		                        + "t1.AMOUNT_LC "
+		                        + "FROM BRF_TREASURY_MASTER_TB t1 "
+		                        + "WHERE TO_CHAR(t1.REPORT_DATE,'DD-MM-YYYY') = ? "
+		                        + "AND NVL(t1.AMOUNT_LC,0) <> 0 "
+		                        + "AND (t1.ACCT_NO, t1.CURRENCY) NOT IN ( "
+		                        + "SELECT m1.FORACID, m1.ACCT_CRNCY_CODE "
+		                        + "FROM BRF1_MAPPING_TABLE m1 "
+		                        + "WHERE TO_CHAR(m1.REPORT_DATE,'DD-MM-YYYY') = ?) "
+		                        + "AND (t1.ACCT_NO, t1.CURRENCY) NOT IN ( "
+		                        + "SELECT m2.FORACID, m2.ACCT_CRNCY_CODE "
+		                        + "FROM BRF2_MAPPING_TABLE m2 "
+		                        + "WHERE TO_CHAR(m2.REPORT_DATE,'DD-MM-YYYY') = ?) "
+		                        + "AND (t1.ACCT_NO, t1.CURRENCY) NOT IN ( "
+		                        + "SELECT m3.FORACID, m3.ACCT_CRNCY_CODE "
+		                        + "FROM BRF4_MAPPING_TABLE m3 "
+		                        + "WHERE TO_CHAR(m3.REPORT_DATE,'DD-MM-YYYY') = ?)";
+
+						/*
+						 * List<Object> paramList = new ArrayList<>(); paramList.add(date);
+						 */
 		                
-		                String searchPattern = "%" + keyword.trim().toUpperCase() + "%";
-		                
-		                paramList.add(searchPattern);
-		                paramList.add(searchPattern);
-		                paramList.add(searchPattern);
-		                paramList.add(searchPattern);
+		                List<Object> paramList = new ArrayList<>();
+		                paramList.add(date); // Treasury report date
+		                paramList.add(date); // BRF1 report date
+		                paramList.add(date); // BRF2 report date
+		                paramList.add(date); // BRF4 report date
+
+		                if (keyword != null && !keyword.trim().isEmpty()) {
+
+		                    treasurySql += " AND ("
+		                            + "UPPER(t1.ACCT_NO) LIKE ? "
+		                            + "OR UPPER(t1.ACCT_NAME) LIKE ? "
+		                            + "OR UPPER(t1.CURRENCY) LIKE ?)";
+
+		                    String searchPattern = "%" + keyword.trim().toUpperCase() + "%";
+
+		                    paramList.add(searchPattern);
+		                    paramList.add(searchPattern);
+		                    paramList.add(searchPattern);
+		                }
+
+		                String countSql = "SELECT COUNT(1) FROM (" + treasurySql + ")";
+
+		                Integer totalRecords = jdbcTemplate.queryForObject(
+		                        countSql,
+		                        Integer.class,
+		                        paramList.toArray());
+
+		                if (totalRecords == null) {
+		                    totalRecords = 0;
+		                }
+
+		                int offset = page * size;
+
+		                String paginatedSql = treasurySql
+		                        + " ORDER BY t1.ACCT_NO OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+
+		                List<Object> paginationParams = new ArrayList<>(paramList);
+		                paginationParams.add(offset);
+		                paginationParams.add(size);
+
+						/*
+						 * List<Map<String, Object>> treasuryData =
+						 * jdbcTemplate.queryForList(paginatedSql, paginationParams.toArray());
+						 * 
+						 * Pageable pageable = PageRequest.of(page, size);
+						 */
+		                List<Map<String, Object>> treasuryData =
+		                        jdbcTemplate.queryForList(paginatedSql, paginationParams.toArray());
+
+		                System.out.println("Treasury Data:");
+		                for (Map<String, Object> row : treasuryData) {
+		                    System.out.println(row);
+		                }
+
+		                Pageable pageable = PageRequest.of(page, size);
+		                PageImpl<Map<String, Object>> pageData =
+		                        new PageImpl<>(treasuryData, pageable, totalRecords);
+
+		                model.addAttribute("selectedDate", date);
+		                model.addAttribute("keyword", keyword);
+		                model.addAttribute("dynamicData", treasuryData);
+		                model.addAttribute("page", pageData);
 		            }
-
-		            String countSql = "SELECT COUNT(1) FROM (" + baseSql + ") count_table";
-		            Integer totalRecords = jdbcTemplate.queryForObject(countSql, Integer.class, paramList.toArray());
-		            if (totalRecords == null) totalRecords = 0;
-
-		            int offset = page * size;
-		            String paginatedSql = baseSql + " ORDER BY \"is_match\" DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-		            
-		            List<Object> paginationParams = new ArrayList<>(paramList);
-		            paginationParams.add(offset);
-		            paginationParams.add(size);
-
-		            List<Map<String, Object>> detailedData = jdbcTemplate.queryForList(paginatedSql, paginationParams.toArray());
-
-		            Pageable pageable = PageRequest.of(page, size);
-		            PageImpl<Map<String, Object>> pageData = new PageImpl<>(detailedData, pageable, totalRecords);
-
-		            model.addAttribute("selectedDate", date);
-		            model.addAttribute("keyword", keyword);
-		            model.addAttribute("dynamicData", detailedData);
-		            model.addAttribute("page", pageData);
-					List<String> constCodeOptions = Arrays.asList("LLTCO", "DMCC", "FZC", "FZE", "FZCLL", "OFC",
-							"FZELL", "OPLLC", "PROPR", "SPLLC", "PROPM", "11512", "PVTCO", "PRTNR", "ESTB", "11505",
-							"33201", "FGNCO", "FZLLC", "PBPVT", "PJSC", "PRTNF", "61003", "ASSOC", "71001", "CGPSU",
-							"INSTU", "SGPSU", "PBCLI", "33199", "BUC", "11599", "11501", "11699", "33101", "FI", "BFC",
-							"MXC", "11507", "NBFC", "GOENT", "44111", "44116", "INDL", "44101", "INDVM", "INDVF",
-							"44108", "WPS", "44212", "44205", "44201", "44217", "44299", "44214", "44199", "44209",
-							"44115", "44107", "44203", "SGOVT", "71002", "61012", "PCLBG", "SOCIE", "GEMS", "PROPF",
-							"PBCNL", "REALE", "CC", "SA", "GOVT", "61002", "EDTRU", "GOVCO", "11409", "RFC", "11700",
-							"FGNSO", "NFLLC", "ULTCO", "22302", "BUEBC", "56700", "SHGOT", "33299", "11604", "REAL",
-							"11401", "11601", "11403", "NPO", "44103", "71005", "44207", "44216", "44106", "44208",
-							"44102", ".", "44109", "44113", "NREIN", "44210", "44112", "RESIN", "0", "44202", "33104",
-							"11510", "11506", "33107", "-", "33103", "BR", "44104", "44105", "44110", "44114", "44204",
-							"44206", "44211", "44213", "44215", "HUFJT", "INDL ", "INDVM");
-					model.addAttribute("constCodeOptions", constCodeOptions);
-
-					List<String> legalEntityOptions = Arrays.asList("SAL", "WT", "HOSP", "PRTNR", "MXC", "FORSV",
-							"PFINS", "GT", "NPO", "EDINS", "FI", "FGNBK", "GOVTE", "ASSN", "RT", "OFC", "JJWEL", "NBFC",
-							"RWTO", "MILLS", "EMBSY", "COFTZ", "TRAVL", "PARTY", "THEAT", "EXSTF", "PSE", "BUSIN",
-							"SSI", "PVTCO", "GOVT", "HOTEL", "COMBK", "PROPR", "RECLB", "CGOVB", "INDVL", "IMEX",
-							"PBLCO", "PROF", "SERV", "FGBBK", "STAFF", "GOVTL", "PSEC", "INSP", "STBRK", "CB", "MNC",
-							"MLI", "OTH", "EMBAS", "SHOPS", "HUWIF", "INSG", "AGRI", "GOVTF", "PSENO", "PSEN", "PSECO",
-							"MXC  ", "NBFC ");
-					model.addAttribute("legalEntityOptions", legalEntityOptions);
-
-					List<String> schemeTypeOptions = Arrays.asList("SBA", "CLA", "CAA", "LAA", "ODA", "DDA", "OAB",
-							"FBA", "PCA", "OAP", "TDA", "OSP");
-					model.addAttribute("schemeTypeOptions", schemeTypeOptions);
 
 		        } catch (DataAccessException dbEx) {
 		            System.err.println("Database query failed!");
@@ -2287,6 +2384,7 @@ html.append("</tbody></table></div>");
 		    }
 		    return "BRFALAccounts";
 		}
+		
 		@GetMapping("/checkAccountExists")
 		@ResponseBody
 		public boolean checkAccountExists(@RequestParam String accountId) {

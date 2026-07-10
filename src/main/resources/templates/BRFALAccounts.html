@@ -219,6 +219,8 @@ body.modal-open {
 						<tr>
 							<th style="text-align: center; width: 50px;">S.no</th>
 							<th>Available Report Dates</th>
+							<th>CBS Data</th>
+							<th>Tressury Data</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -229,7 +231,22 @@ body.modal-open {
 								th:text="${row.get('Report Date')}"
 								style="font-weight: bold; color: #376275; text-decoration: underline;">
 							</a></td>
-						</tr>
+									 <!-- CBS Date -->
+									       <td style="text-align:center;">
+									           <a th:href="@{/ALAccounts(date=${row.get('Report Date')},type='CBS')}"
+									              th:text="${row.get('Report Date')}"
+									              style="font-weight:bold;color:#376275;text-decoration:underline;">
+									           </a>
+									       </td>
+
+									       <!-- Treasury Date -->
+									       <td style="text-align:center;">
+									           <a th:href="@{/ALAccounts(date=${row.get('Report Date')},type='TREASURY')}"
+									              th:text="${row.get('Report Date')}"
+									              style="font-weight:bold;color:#376275;text-decoration:underline;">
+									           </a>
+									       </td>
+							     </tr>
 						<tr th:if="${#lists.isEmpty(dateList)}">
 							<td colspan="2" class="text-center text-danger">No dates
 								available.</td>
