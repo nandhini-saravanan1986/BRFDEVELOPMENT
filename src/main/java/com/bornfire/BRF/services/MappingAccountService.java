@@ -33,12 +33,14 @@ public class MappingAccountService {
     // Columns: GL_HEAD, GL_SUBHEAD_CODE, ACCOUNT_ID_BACID,
     //          REPORT_CODE, ROW_ID, COLUMN_ID, SOL_ID
     // ─────────────────────────────────────────────────────────────────────────
+
     public List<Map<String, String>> getMappedAccounts(String reportCode) {
         if (reportCode == null || reportCode.trim().isEmpty()) {
             return Collections.emptyList();
         }
 
-        List<BrfCommonMapping> rows = commonMappingRepo.findByReportCode(reportCode);
+        List<BrfCommonMapping> rows = commonMappingRepo.findByReportCodeAndAccountIdBacidNotLike(reportCode);
+//        System.out.println("MAPPED ACCOUNTS QUERY -> reportCode=[" + reportCode + "] rowsReturned=" + rows.size());
 
         List<Map<String, String>> result = new ArrayList<>();
 
@@ -73,6 +75,7 @@ public class MappingAccountService {
 
             result.add(view);
         }
+//        System.out.println("MAPPED ACCOUNTS RESULT -> resultSize=" + result.size());
 
         return result;
     }

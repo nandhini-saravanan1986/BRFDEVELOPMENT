@@ -15,6 +15,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -148,7 +149,13 @@ public class BRFReportsController {
 	    public List<Map<String, String>> getMappedAccounts(
 	            @RequestParam String reportCode) {
 	 
-	        return mappingAccountService.getMappedAccounts(reportCode);
+		 try {
+		        return mappingAccountService.getMappedAccounts(reportCode);
+		    } catch (Exception e) {
+		        System.err.println("ERROR fetching mapped accounts: " + e.getMessage());
+		        e.printStackTrace();
+		        return Collections.emptyList();
+		    }
 	    }
 	 
 	    /**

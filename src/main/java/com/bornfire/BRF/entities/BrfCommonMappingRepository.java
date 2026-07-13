@@ -15,10 +15,16 @@ public interface BrfCommonMappingRepository
         extends JpaRepository<BrfCommonMapping, BrfCommonMappingId> {
 
     /**
-     * Returns all rows for a specific report code.
+     * Returns all rows for a specific report code and AccountIdBacid NotLike "OTHMAPP"
      * Used to populate the "Mapped Accounts" tab.
      */
-    List<BrfCommonMapping> findByReportCode(@Param("reportCode") String reportCode);
+	@Query(
+		    value = "SELECT * FROM BRF_COMMON_MAPPING_TABLE " +
+		            "WHERE REPORT_CODE = :reportCode " +
+		            "AND ACCOUNT_ID_BACID NOT LIKE 'OTHMAPP%'",
+		    nativeQuery = true
+		)
+		List<BrfCommonMapping> findByReportCodeAndAccountIdBacidNotLike(@Param("reportCode") String reportCode);
 
     /**
      * Returns only the distinct ACCOUNT_ID_BACID values already mapped
@@ -141,7 +147,8 @@ public interface BrfCommonMappingRepository
 	
 	@Query(
 		    value = "SELECT * FROM BRF_COMMON_MAPPING_TABLE c " +
-		            "WHERE c.REPORT_CODE = :reportCode",
+		            "WHERE c.REPORT_CODE = :reportCode " +
+		            "AND c.ACCOUNT_ID_BACID LIKE 'OTHMAPP%'",
 		    nativeQuery = true
 		)
 		List<BrfCommonMapping> findOtherMappings(@Param("reportCode") String reportCode);

@@ -206,7 +206,7 @@
     max-height: calc(100vh - 200px);
 }
 #otherMappingsTableWrap .responsive-table-wrap {
-    max-height: calc(100vh - 200px);
+    max-height: calc(100vh - 500px);
 }
 	.nav-tabs {
 		margin-top: -5px;
@@ -696,9 +696,10 @@
 						<li class="nav-item"><a class="nav-link"
 							id="tab-other-mappings-link" data-toggle="tab"
 							href="#pane-other-mappings" role="tab"
-							onclick="onOtherMappingsTabClick()"> Other Mappings <span
+							onclick="onOtherMappingsTabClick()"> Other Mappings 
+							<!-- <span
 								class="badge-count" id="otherMappingsBadge"
-								style="display: none;">0</span>
+								style="display: none;">0</span> -->
 						</a></li>
 					</ul>
 
@@ -1381,6 +1382,13 @@
 						
 	<div class="tab-pane fade" id="pane-other-mappings" role="tabpanel">
     <div class="p-3">
+        <ul class="nav nav-tabs" id="otherMappingSubTabs" role="tablist">
+            <li class="nav-item"><a class="nav-link active" id="sub-tab-custom-mapping" data-toggle="tab" href="#pane-custom-mapping" role="tab">Custom Mapping</a></li>
+            <li class="nav-item"><a class="nav-link" id="sub-tab-demo1" data-toggle="tab" href="#pane-demo1" role="tab">Demo1</a></li>
+            <li class="nav-item"><a class="nav-link" id="sub-tab-demo2" data-toggle="tab" href="#pane-demo2" role="tab">Demo2</a></li>
+        </ul>
+        <div class="tab-content" style="margin-top: 15px;">
+        <div class="tab-pane fade show active" id="pane-custom-mapping" role="tabpanel">
         <div id="otherMappingsSpinner" class="tab-spinner">
             <i class="fas fa-spinner fa-spin"></i>&nbsp; Loading other mappings…
         </div>
@@ -1516,12 +1524,29 @@
                     </table>
                 </div>
             </div>
+            
 
         </div>
+        
     </div>
+
+				    <div class="tab-pane fade" id="pane-demo1" role="tabpanel">
+				        <div class="p-5 text-center text-muted" style="font-family: verdana;">
+				            <i class="fas fa-tools fa-2x mb-2"></i><br>
+				            Under development.
+				        </div>
+				    </div>
+				    <div class="tab-pane fade" id="pane-demo2" role="tabpanel">
+				        <div class="p-5 text-center text-muted" style="font-family: verdana;">
+				            <i class="fas fa-tools fa-2x mb-2"></i><br>
+				            Under development.
+				        </div>
+    
 </div>
-				
-				
+</div>
+</div>
+        
+				   					
 					</div>
 					<!-- /tab-content -->
 				</div>
@@ -2625,7 +2650,7 @@
 	   		$('#otherMappingsContent').hide();
             $('#otherMappingsTableWrap').hide();
             $('#otherMappingsPlaceholder').html('<i class="fas fa-exclamation-triangle fa-2x mb-2" style="color:#dc3545;"></i><br>Please select a Report Code above to view Other Mappings.').css('color','#dc3545').show();
-            $('#otherMappingsBadge').hide();
+//             $('#otherMappingsBadge').hide();
             _otherMappingsLoadedFor = null;
             
 	        // Reset state variables
@@ -3357,6 +3382,7 @@ var colMaxWidth = {
 	    var reportCode  = $('#reportCodeSelect').val().trim();
 	    var rowIdxVal   = $('#rowLabelSelect').val();
 	    var rowId       = (rowIdxVal !== '' && currentRows[parseInt(rowIdxVal)]) ? currentRows[parseInt(rowIdxVal)].label : '';
+	    if (!rowId) { alert('Please select a Row Label.'); return; }
 	    var columnId    = $('#colLabelSelect').val().trim();
 	    if (columnId === '') columnId = 'none';
 	    var solIdValue  = getMenuValues('solIdMenu');
@@ -3375,7 +3401,7 @@ var colMaxWidth = {
 	        var row       = window.currentData[idx];
 	        var filterVals= getFilterValues('n_' + idx);
 	        if (!balanceLc) { alert('Please select Account Balance (LC) for row ' + (idx + 1)); selectedRows = null; return false; }
-	        selectedRows.push({ accountId: nvl(row['ACCOUNT_ID_BACID'] || row['account_id_bacid']), balanceLc: balanceLc, reportCode: reportCode, rowId: rowId, columnId: columnId, solId: solIdValue, constitutionCode: constCode, legalEntityType: legalEntity, hniNetworth: hniNetworth, turnover: turnover, filterColumns: filterVals, schemeType: schemeType, assetClass: asstCls, purposeOfAdvn: purposeOfAdvn });
+	        selectedRows.push({ accountId: nvl(row['ACCOUNT_ID_BACID'] || row['account_id_bacid']), currency: nvl(row['CURRENCY'] || row['currency']),  balanceLc: balanceLc, reportCode: reportCode, rowId: rowId, columnId: columnId, solId: solIdValue, constitutionCode: constCode, legalEntityType: legalEntity, hniNetworth: hniNetworth, turnover: turnover, filterColumns: filterVals, schemeType: schemeType, assetClass: asstCls, purposeOfAdvn: purposeOfAdvn });
 	    });
 	
 	    if (selectedRows === null) return;
@@ -4587,7 +4613,7 @@ var colMaxWidth = {
 	                $('#mappedBadge').html('<i class="fas fa-spinner fa-spin"></i>').show();
 	                $('#unmappedBadge').html('<i class="fas fa-spinner fa-spin"></i>').show();
 	                if ($('#otherMappingsTableWrap').is(':visible')) {  
-	                    $('#otherMappingsBadge').html('<i class="fas fa-spinner fa-spin"></i>').show();
+// 	                    $('#otherMappingsBadge').html('<i class="fas fa-spinner fa-spin"></i>').show();
 	                    loadOtherMappings(rc);
 	                }
 	                loadMappedAccounts(rc);
@@ -4948,7 +4974,7 @@ var colMaxWidth = {
 	            if (!data || data.length === 0) {
 	            	tbody.append('<tr><td colspan="9" class="text-center text-muted">No other mappings found for <strong>' + reportCode + '</strong>.</td></tr>');
 	                $('#otherMappingsInfo').text('No records found.');
-	                $('#otherMappingsBadge').text('0').show();
+	                /* $('#otherMappingsBadge').text('0').show(); */
 	            } else {
 	                $.each(data, function(i, row) {
 	                    var $tr = $('<tr></tr>');
@@ -4973,7 +4999,7 @@ var colMaxWidth = {
 	                    tbody.append($tr);
 	                });
 	                $('#otherMappingsInfo').text('Showing ' + data.length + ' record(s) for ' + reportCode + '.');
-	                $('#otherMappingsBadge').text(data.length).show();
+// 	                $('#otherMappingsBadge').text(data.length).show();
 	            }
 	            $('#otherMappingsTableWrap').show();
 	            $('#otherMappingsSearch').val('');
@@ -5110,7 +5136,8 @@ var colMaxWidth = {
 	    $('#otherRowLabelSelect').val('');
 	    $('#otherColLabelSelect').html('<option value="">-- Select Column --</option>');
 	    $('#otherSourceSelect').val('');
-	    $('#otherGlCodeSelect').html('<option value="">-- Select GL Code --</option>').prop('disabled', true);
+// 	    $('#otherGlCodeSelect').html('<option value="">-- Select GL Code --</option>').prop('disabled', true);
+		$('#otherGlCodeSelect').html('<option value="">-- Select GL Code --</option>');
 	    $('#otherGlSubCodeMenu').hide().html(''); 
 	    $('#otherGlSubCodeBtn').prop('disabled', true).text('-- Select GL Sub Code --');
 	    
@@ -5185,8 +5212,31 @@ var colMaxWidth = {
 
 		    var columnId = nvl($('#otherColLabelSelect').val()).trim();
 
-		    if (!reportCode || !rowId) {
-		        alert('Please select Report Code and Row Label before saving.');
+		    if (!reportCode) {
+		        alert('Please select Report Code before saving.');
+		        return;
+		    }
+		    if (!rowId) {
+		        alert('Please select Row Label before saving.');
+		        return;
+		    }
+		    
+		    var solId            = getMenuValues('otherSolIdMenu');
+		    var constitutionCode = getMenuValues('otherConstCodeMenu');
+		    var legalEntityType  = getMenuValues('otherLegalEntityMenu');
+		    var hniNetworth      = nvl($('#otherHniNetworth').val()).trim();
+		    var turnover         = nvl($('#otherTurnover').val()).trim();
+		    var schemeType       = getMenuValues('otherSchemeTypeMenu');
+		    var assetClass       = getMenuValues('otherAsstClsMenu');
+		    var purposeOfAdvn    = getMenuValues('otherPurposeOfAdvnMenu');
+
+		    var allOtherFieldsEmpty =
+		        !glHead && !glSubheadCode && !columnId &&
+		        !solId && !constitutionCode && !legalEntityType &&
+		        !hniNetworth && !turnover && !schemeType && !assetClass && !purposeOfAdvn;
+
+		    if (allOtherFieldsEmpty) {
+		        alert('Please fill at least one of the mapping fields.');
 		        return;
 		    }
 
