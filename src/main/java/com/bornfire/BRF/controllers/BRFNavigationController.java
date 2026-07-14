@@ -177,7 +177,39 @@ public class BRFNavigationController {
 
     @Autowired
     private ObjectMapper objectMapper;
+	
+	@Autowired
+    ReportTemplateConfigRepository configRepo;
 
+	@Autowired
+	private BRF1_Summary_Repo brf1_Summary_Repo;
+	
+	@Autowired
+	private BRF2_Summary_Repo brf2_Summary_Repo;
+	
+	@Autowired
+	private BRF3_Summary_Repo br3_Summary_Repo;
+	
+	@Autowired
+	private BRF4_Summary_Repo brf4_Summary_Repo;
+	
+	@Autowired
+	CalculationService CalculationService;
+	
+	@Autowired
+	JdbcTemplate jdbcTemplate;
+
+	@Autowired
+	ReportGenerationService ReportGenerationService;
+	
+	@Autowired
+	BrfCommonMappingRepository BrfCommonMappingRepository;
+	
+	@Autowired
+	CashFlow_Config_Repo CashFlow_Config_Repo;
+	
+	@Autowired	
+	BRF_PLACID_FWDR_Mapping_Repo brf_PLACID_FWDR_Mapping_Repo;
 	
 	private String auditRefNo;
 	
@@ -249,8 +281,7 @@ public class BRFNavigationController {
 	    }
 	
 
-	@Autowired
-    ReportTemplateConfigRepository configRepo;
+	
 	
 	@GetMapping("/systemotp")
 	public String showOtpForm() {
@@ -590,18 +621,6 @@ public class BRFNavigationController {
 		return "Basemappingparameter";
 	}
 	
-	@Autowired
-	private BRF1_Summary_Repo brf1_Summary_Repo;
-	
-	@Autowired
-	private BRF2_Summary_Repo brf2_Summary_Repo;
-	
-	@Autowired
-	private BRF3_Summary_Repo br3_Summary_Repo;
-	
-	@Autowired
-	private BRF4_Summary_Repo brf4_Summary_Repo;
-	
 	    
 	@GetMapping("/Archival")
 	public String archival(Model model) {
@@ -709,9 +728,7 @@ public class BRFNavigationController {
 	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NOT_FOUND");
 	    }
 	}
-	@Autowired
-	CalculationService CalculationService;
-
+	
 
 	@RequestMapping(value = "BRFValidations", method = { RequestMethod.GET, RequestMethod.POST })
 	public String BRFValidations(Model md,
@@ -1579,8 +1596,7 @@ html.append("</tbody></table></div>");
 		}
 		return ResponseEntity.ok("DISABLED");
 	}
-	 @Autowired
-	 JdbcTemplate jdbcTemplate;
+	 
 	 
 
 		@GetMapping("/datavalidationdetails")
@@ -1664,8 +1680,6 @@ html.append("</tbody></table></div>");
 		//@Autowired
 		//Procedure_Common_Service Procedure_Common_Service;
 		
-		@Autowired
-		ReportGenerationService ReportGenerationService;
 		
 		@PostMapping("/executeProcedure")
 		public ResponseEntity<String> executeProcedure(@RequestParam(value = "reportDate", required = false) String reportDate,
@@ -1797,8 +1811,7 @@ html.append("</tbody></table></div>");
 						.body("{\"error\": \"Failed to execute procedure: " + e.getMessage() + "\"}");
 			}
 		}
-		@Autowired
-		BrfCommonMappingRepository BrfCommonMappingRepository;
+		
 		
 		@GetMapping("/getMappingDetails")
 		@ResponseBody
@@ -2487,8 +2500,7 @@ html.append("</tbody></table></div>");
 		    return result;
 		}
 
-		@Autowired
-		CashFlow_Config_Repo CashFlow_Config_Repo;
+		
 
 		@GetMapping("/cashflow")
 		public String cashflow(Model model) {
@@ -2554,9 +2566,7 @@ html.append("</tbody></table></div>");
 						.body("Error saving configurations: " + e.getMessage());
 			}
 		}
-		@Autowired
-		BRF_PLACID_FWDR_Mapping_Repo brf_PLACID_FWDR_Mapping_Repo;
-		
+
 		@PostMapping("/save_placid_fwdr")
 		public ResponseEntity<?> saveDemoMapping(@RequestBody BRF_PLACID_FWDR_Mapping payload) {
 			try {
