@@ -586,6 +586,48 @@
 	#rowLabelSelect {
     cursor: pointer;
 	}
+	.flag-toggle-btn.flag-active {
+    background-color: #dc3545 !important;
+    color: #fff !important;
+    border-color: #dc3545 !important;
+}
+
+/* Attached select + flag button: renders as one seamless control */
+.attached-select-group {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #fff;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.attached-select-group:focus-within {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+.attached-select-group .form-control {
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    flex: 1;
+}
+.attached-select-group .flag-toggle-btn {
+    border: none !important;
+    border-left: 1px solid #ced4da !important;
+    border-radius: 0 !important;
+    background: #f8f9fa;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.attached-select-group .flag-toggle-btn:hover {
+    background: #e9ecef;
+}
+.attached-select-group .flag-toggle-btn.flag-active {
+    border-left-color: #dc3545 !important;
+}
 	
 	</style>
 	</head>
@@ -1452,15 +1494,21 @@
                     <div id="otherSolIdMenu" class="multi-select-menu" style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
                 </div>
                 <div class="col-auto" style="flex: 1 1 160px; min-width: 0; position: relative;">
-                    <label style="font-family: verdana; font-size: 13px; font-weight: bold;">Constitution Code</label><br>
-                    <button type="button" id="otherConstCodeBtn" class="form-control form-control-sm" onclick="toggleMenuById(event,'otherConstCodeMenu')" style="width: 100%; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-- Select --</button>
-                    <div id="otherConstCodeMenu" class="multi-select-menu" style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
-                </div>
-                <div class="col-auto" style="flex: 1 1 160px; min-width: 0; position: relative;">
-                    <label style="font-family: verdana; font-size: 13px; font-weight: bold;">Legal Entity Type</label><br>
-                    <button type="button" id="otherLegalEntityBtn" class="form-control form-control-sm" onclick="toggleMenuById(event,'otherLegalEntityMenu')" style="width: 100%; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-- Select --</button>
-                    <div id="otherLegalEntityMenu" class="multi-select-menu" style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
-                </div>
+				    <label style="font-family: verdana; font-size: 13px; font-weight: bold;">Constitution Code</label><br>
+				    <div class="attached-select-group">
+				        <button type="button" id="otherConstCodeBtn" class="form-control form-control-sm" onclick="toggleMenuById(event,'otherConstCodeMenu')" style="flex:1; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-- Select --</button>
+				        <button type="button" id="otherConstCodeFlagBtn" class="btn btn-sm btn-outline-secondary flag-toggle-btn" onclick="toggleFlagBtn(this)" title="Click to flag"><i class="fas fa-ban"></i></button>
+				    </div>
+				    <div id="otherConstCodeMenu" class="multi-select-menu" style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
+				</div>
+				<div class="col-auto" style="flex: 1 1 160px; min-width: 0; position: relative;">
+				    <label style="font-family: verdana; font-size: 13px; font-weight: bold;">Legal Entity Type</label><br>
+				    <div class="attached-select-group">
+				        <button type="button" id="otherLegalEntityBtn" class="form-control form-control-sm" onclick="toggleMenuById(event,'otherLegalEntityMenu')" style="flex:1; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-- Select --</button>
+				        <button type="button" id="otherLegalEntityFlagBtn" class="btn btn-sm btn-outline-secondary flag-toggle-btn" onclick="toggleFlagBtn(this)" title="Click to flag"><i class="fas fa-ban"></i></button>
+				    </div>
+				    <div id="otherLegalEntityMenu" class="multi-select-menu" style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
+				</div>
                 <div class="col-auto" style="flex: 1 1 160px; min-width: 0;">
                     <label style="font-family: verdana; font-size: 13px; font-weight: bold;">HNI Networth</label>
                     <input type="text" id="otherHniNetworth" class="form-control form-control-sm" style="width: 100%;" placeholder="Enter Amount">
@@ -1470,20 +1518,29 @@
                     <input type="text" id="otherTurnover" class="form-control form-control-sm" style="width: 100%;" placeholder="Enter Amount">
                 </div>
                 <div class="col-auto" style="flex: 1 1 160px; min-width: 0; position: relative;">
-                    <label style="font-family: verdana; font-size: 13px; font-weight: bold;">Scheme Type</label><br>
-                    <button type="button" id="otherSchemeTypeBtn" class="form-control form-control-sm" onclick="toggleMenuById(event,'otherSchemeTypeMenu')" style="width: 100%; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-- Select --</button>
-                    <div id="otherSchemeTypeMenu" class="multi-select-menu" style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
-                </div>
-                <div class="col-auto" style="flex: 1 1 160px; min-width: 0; position: relative;">
-                    <label style="font-family: verdana; font-size: 13px; font-weight: bold;">Asset Class</label><br>
-                    <button type="button" id="otherAsstClsBtn" class="form-control form-control-sm" onclick="toggleMenuById(event,'otherAsstClsMenu')" style="width: 100%; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-- Select --</button>
-                    <div id="otherAsstClsMenu" class="multi-select-menu" style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
-                </div>
-                <div class="col-auto" style="flex: 1 1 160px; min-width: 0; position: relative;">
-                    <label style="font-family: verdana; font-size: 13px; font-weight: bold;">Purpose of Advance</label><br>
-                    <button type="button" id="otherPurposeOfAdvnBtn" class="form-control form-control-sm" onclick="toggleMenuById(event,'otherPurposeOfAdvnMenu')" style="width: 100%; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-- Select --</button>
-                    <div id="otherPurposeOfAdvnMenu" class="multi-select-menu" style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
-                </div>
+				    <label style="font-family: verdana; font-size: 13px; font-weight: bold;">Scheme Type</label><br>
+				    <div class="attached-select-group">
+				        <button type="button" id="otherSchemeTypeBtn" class="form-control form-control-sm" onclick="toggleMenuById(event,'otherSchemeTypeMenu')" style="flex:1; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-- Select --</button>
+				        <button type="button" id="otherSchemeTypeFlagBtn" class="btn btn-sm btn-outline-secondary flag-toggle-btn" onclick="toggleFlagBtn(this)" title="Click to flag"><i class="fas fa-ban"></i></button>
+				    </div>
+				    <div id="otherSchemeTypeMenu" class="multi-select-menu" style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
+				</div>
+				<div class="col-auto" style="flex: 1 1 160px; min-width: 0; position: relative;">
+				    <label style="font-family: verdana; font-size: 13px; font-weight: bold;">Asset Class</label><br>
+				    <div class="attached-select-group">
+				        <button type="button" id="otherAsstClsBtn" class="form-control form-control-sm" onclick="toggleMenuById(event,'otherAsstClsMenu')" style="flex:1; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-- Select --</button>
+				        <button type="button" id="otherAsstClsFlagBtn" class="btn btn-sm btn-outline-secondary flag-toggle-btn" onclick="toggleFlagBtn(this)" title="Click to flag"><i class="fas fa-ban"></i></button>
+				    </div>
+				    <div id="otherAsstClsMenu" class="multi-select-menu" style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
+				</div>
+				<div class="col-auto" style="flex: 1 1 160px; min-width: 0; position: relative;">
+				    <label style="font-family: verdana; font-size: 13px; font-weight: bold;">Purpose of Advance</label><br>
+				    <div class="attached-select-group">
+				        <button type="button" id="otherPurposeOfAdvnBtn" class="form-control form-control-sm" onclick="toggleMenuById(event,'otherPurposeOfAdvnMenu')" style="flex:1; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-- Select --</button>
+				        <button type="button" id="otherPurposeOfAdvnFlagBtn" class="btn btn-sm btn-outline-secondary flag-toggle-btn" onclick="toggleFlagBtn(this)" title="Click to flag"><i class="fas fa-ban"></i></button>
+				    </div>
+				    <div id="otherPurposeOfAdvnMenu" class="multi-select-menu" style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
+				</div>
             </div>
 
             <div class="form-footer mt-4 mb-4">
@@ -2156,48 +2213,62 @@
                             style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
                     </div>
                     <div class="col-auto" style="position: relative;">
-                        <label style="font-family: verdana; font-size: 12px; font-weight: bold;">Constitution Code</label><br>
-                        <button type="button" id="editOMConstCodeBtn" onclick="toggleMenuById(event,'editOMConstCodeMenu')"
-                            class="form-control form-control-sm text-left"
-                            style="min-width: 160px; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            -- Select --</button>
-                        <div id="editOMConstCodeMenu" class="multi-select-menu"
-                            style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
-                    </div>
-                    <div class="col-auto" style="position: relative;">
-                        <label style="font-family: verdana; font-size: 12px; font-weight: bold;">Legal Entity Type</label><br>
-                        <button type="button" id="editOMLegalEntityBtn" onclick="toggleMenuById(event,'editOMLegalEntityMenu')"
-                            class="form-control form-control-sm text-left"
-                            style="min-width: 160px; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            -- Select --</button>
-                        <div id="editOMLegalEntityMenu" class="multi-select-menu"
-                            style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
-                    </div>
-                    <div class="col-auto" style="position: relative;">
-                        <label style="font-family: verdana; font-size: 12px; font-weight: bold;">Scheme Type</label><br>
-                        <button type="button" id="editOMSchemeTypeBtn" onclick="toggleMenuById(event,'editOMSchemeTypeMenu')"
-                            class="form-control form-control-sm text-left"
-                            style="min-width: 160px; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-- Select --</button>
-                        <div id="editOMSchemeTypeMenu" class="multi-select-menu"
-                            style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
-                    </div>
-                    <div class="col-auto" style="position: relative;">
-                        <label style="font-family: verdana; font-size: 12px; font-weight: bold;">Asset Class</label><br>
-                        <button type="button" id="editOMAsstClsBtn" onclick="toggleMenuById(event,'editOMAsstClsMenu')"
-                            class="form-control form-control-sm text-left"
-                            style="min-width: 160px; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-- Select --</button>
-                        <div id="editOMAsstClsMenu" class="multi-select-menu"
-                            style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
-                    </div>
-                    <div class="col-auto" style="position: relative;">
-                        <label style="font-family: verdana; font-size: 12px; font-weight: bold;">Purpose of Advance</label><br>
-                        <button type="button" id="editOMPurposeOfAdvnBtn" onclick="toggleMenuById(event,'editOMPurposeOfAdvnMenu')"
-                            class="form-control form-control-sm text-left"
-                            style="min-width: 160px; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-- Select --</button>
-                        <div id="editOMPurposeOfAdvnMenu" class="multi-select-menu"
-                            style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
-                    </div>
-                </div>
+					    <label style="font-family: verdana; font-size: 12px; font-weight: bold;">Constitution Code</label><br>
+					    <div class="attached-select-group">
+					        <button type="button" id="editOMConstCodeBtn" onclick="toggleMenuById(event,'editOMConstCodeMenu')"
+					            class="form-control form-control-sm text-left"
+					            style="flex:1; min-width: 130px; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+					            -- Select --</button>
+					        <button type="button" id="editOMConstCodeFlagBtn" class="btn btn-sm btn-outline-secondary flag-toggle-btn" onclick="toggleFlagBtn(this)" title="Click to flag"><i class="fas fa-ban"></i></button>
+					    </div>
+					    <div id="editOMConstCodeMenu" class="multi-select-menu"
+					        style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
+					</div>
+					<div class="col-auto" style="position: relative;">
+					    <label style="font-family: verdana; font-size: 12px; font-weight: bold;">Legal Entity Type</label><br>
+					    <div class="attached-select-group">
+					        <button type="button" id="editOMLegalEntityBtn" onclick="toggleMenuById(event,'editOMLegalEntityMenu')"
+					            class="form-control form-control-sm text-left"
+					            style="flex:1; min-width: 130px; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+					            -- Select --</button>
+					        <button type="button" id="editOMLegalEntityFlagBtn" class="btn btn-sm btn-outline-secondary flag-toggle-btn" onclick="toggleFlagBtn(this)" title="Click to flag"><i class="fas fa-ban"></i></button>
+					    </div>
+					    <div id="editOMLegalEntityMenu" class="multi-select-menu"
+					        style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
+					</div>
+					<div class="col-auto" style="position: relative;">
+					    <label style="font-family: verdana; font-size: 12px; font-weight: bold;">Scheme Type</label><br>
+					    <div class="attached-select-group">
+					        <button type="button" id="editOMSchemeTypeBtn" onclick="toggleMenuById(event,'editOMSchemeTypeMenu')"
+					            class="form-control form-control-sm text-left"
+					            style="flex:1; min-width: 130px; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-- Select --</button>
+					        <button type="button" id="editOMSchemeTypeFlagBtn" class="btn btn-sm btn-outline-secondary flag-toggle-btn" onclick="toggleFlagBtn(this)" title="Click to flag"><i class="fas fa-ban"></i></button>
+					    </div>
+					    <div id="editOMSchemeTypeMenu" class="multi-select-menu"
+					        style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
+					</div>
+					<div class="col-auto" style="position: relative;">
+					    <label style="font-family: verdana; font-size: 12px; font-weight: bold;">Asset Class</label><br>
+					    <div class="attached-select-group">
+					        <button type="button" id="editOMAsstClsBtn" onclick="toggleMenuById(event,'editOMAsstClsMenu')"
+					            class="form-control form-control-sm text-left"
+					            style="flex:1; min-width: 130px; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-- Select --</button>
+					        <button type="button" id="editOMAsstClsFlagBtn" class="btn btn-sm btn-outline-secondary flag-toggle-btn" onclick="toggleFlagBtn(this)" title="Click to flag"><i class="fas fa-ban"></i></button>
+					    </div>
+					    <div id="editOMAsstClsMenu" class="multi-select-menu"
+					        style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
+					</div>
+					<div class="col-auto" style="position: relative;">
+					    <label style="font-family: verdana; font-size: 12px; font-weight: bold;">Purpose of Advance</label><br>
+					    <div class="attached-select-group">
+					        <button type="button" id="editOMPurposeOfAdvnBtn" onclick="toggleMenuById(event,'editOMPurposeOfAdvnMenu')"
+					            class="form-control form-control-sm text-left"
+					            style="flex:1; min-width: 130px; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-- Select --</button>
+					        <button type="button" id="editOMPurposeOfAdvnFlagBtn" class="btn btn-sm btn-outline-secondary flag-toggle-btn" onclick="toggleFlagBtn(this)" title="Click to flag"><i class="fas fa-ban"></i></button>
+					    </div>
+					    <div id="editOMPurposeOfAdvnMenu" class="multi-select-menu"
+					        style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
+					</div>
 
                 <div class="form-row mb-2" style="gap: 10px;">
                     <div class="col-auto">
@@ -2253,7 +2324,8 @@
             </div>
         </div>
     </div>
-</div>
+</div> 
+</div> 
 	
 		<!-- ══════════════════════════════════════════
 	     DELETE MAPPED ACCOUNT CONFIRM MODAL
@@ -4571,6 +4643,10 @@ var colMaxWidth = {
 	   DELETE MAPPED ACCOUNT
 	───────────────────────────────────────────────────────────────────────── */
 	function openDeleteMappedModal(rowOrEncoded) {
+		
+		$('.modal-backdrop').remove();
+	    $('body').removeClass('modal-open').css('padding-right', '');
+		
 	    var row = (typeof rowOrEncoded === 'string') ? JSON.parse(decodeURIComponent(rowOrEncoded)) : rowOrEncoded;
 	    window._deleteMappedRow = row;
 	    var fields = [
@@ -5148,6 +5224,8 @@ var colMaxWidth = {
 	    resetMenu('otherAsstClsMenu',     'otherAsstClsBtn');
 	    resetMenu('otherPurposeOfAdvnMenu', 'otherPurposeOfAdvnBtn');
 	    
+	    $('.flag-toggle-btn').removeClass('flag-active').attr('title', 'Click to flag');
+	    
 	    $('#otherHniNetworth').val('');
 	    $('#otherTurnover').val('');
 	    $('.other-currency-chk').prop('checked', false);
@@ -5254,7 +5332,12 @@ var colMaxWidth = {
 		        schemeType:       getMenuValues('otherSchemeTypeMenu'),
 		        assetClass:       getMenuValues('otherAsstClsMenu'),
 		        purposeOfAdvn:    getMenuValues('otherPurposeOfAdvnMenu'),
-		        currencies:       getSelectedOtherCurrencies().join(',')   // never empty — defaults to ALL currencies here if none checked
+		        currencies:       getSelectedOtherCurrencies().join(','),   // never empty — defaults to ALL currencies here if none checked
+		        constCodeFlag:    $('#otherConstCodeFlagBtn').hasClass('flag-active') ? 'Y' : 'N',
+		        lglEntypFlag:     $('#otherLegalEntityFlagBtn').hasClass('flag-active') ? 'Y' : 'N',
+		        schmTypFlag:      $('#otherSchemeTypeFlagBtn').hasClass('flag-active') ? 'Y' : 'N',
+		        asstClsFlag:      $('#otherAsstClsFlagBtn').hasClass('flag-active') ? 'Y' : 'N',
+		        purpOfAdvFlag:    $('#otherPurposeOfAdvnFlagBtn').hasClass('flag-active') ? 'Y' : 'N'
 		    };
 
 		    $.ajax({
@@ -5334,6 +5417,12 @@ var colMaxWidth = {
 		    $('#editOMAccountId').val(nvl(row['ACCOUNT_ID_BACID']));
 
 		    preSelectMenuValues('editOMCurrencyMenu', 'editOMCurrencyBtn', nvl(row['CURRENCY']));
+		    
+		    setFlagBtnState('editOMConstCodeFlagBtn',    nvl(row['CONST_CODE_FLAG']));
+		    setFlagBtnState('editOMLegalEntityFlagBtn',  nvl(row['LGL_ENTYP_FLAG']));
+		    setFlagBtnState('editOMSchemeTypeFlagBtn',   nvl(row['SCHM_TYP_FLAG']));
+		    setFlagBtnState('editOMAsstClsFlagBtn',      nvl(row['ASST_CLS_FLAG']));
+		    setFlagBtnState('editOMPurposeOfAdvnFlagBtn',nvl(row['PURP_OF_ADV_FLAG']));
 
 		    $('#editOMReportCode').val(nvl(row['REPORT_CODE']));
 		    $('#editOMOldRowId').val(nvl(row['ROW_ID']));
@@ -5442,7 +5531,13 @@ var colMaxWidth = {
 		        schemeType       : getMenuValues('editOMSchemeTypeMenu'),
 		        assetClass       : getMenuValues('editOMAsstClsMenu'),
 		        purposeOfAdvn    : getMenuValues('editOMPurposeOfAdvnMenu'),
-		        currency         : getMenuValuesPlain('editOMCurrencyMenu')
+		        currency         : getMenuValuesPlain('editOMCurrencyMenu'),
+		        constCodeFlag    : $('#editOMConstCodeFlagBtn').hasClass('flag-active') ? 'Y' : 'N',
+                lglEntypFlag     : $('#editOMLegalEntityFlagBtn').hasClass('flag-active') ? 'Y' : 'N',
+                schmTypFlag      : $('#editOMSchemeTypeFlagBtn').hasClass('flag-active') ? 'Y' : 'N',
+                asstClsFlag      : $('#editOMAsstClsFlagBtn').hasClass('flag-active') ? 'Y' : 'N',
+                purpOfAdvFlag    : $('#editOMPurposeOfAdvnFlagBtn').hasClass('flag-active') ? 'Y' : 'N'
+		           
 		    };
 
 		    $('#editOtherMappingSaveBtn').prop('disabled', true).text('Saving...');
@@ -5473,6 +5568,19 @@ var colMaxWidth = {
 		            alert('Error saving: ' + (xhr.responseText || error));
 		        }
 		    });
+		}
+		function toggleFlagBtn(btn) {
+		    $(btn).toggleClass('flag-active');
+		    $(btn).attr('title', $(btn).hasClass('flag-active') ? 'Flagged (Click to remove)' : 'Click to flag');
+		}
+
+		function setFlagBtnState(btnId, val) {
+		    var $b = $('#' + btnId);
+		    if (nvl(val).toUpperCase() === 'Y') {
+		        $b.addClass('flag-active').attr('title', 'Flagged (Click to remove)');
+		    } else {
+		        $b.removeClass('flag-active').attr('title', 'Click to flag');
+		    }
 		}
 	</script>
 	

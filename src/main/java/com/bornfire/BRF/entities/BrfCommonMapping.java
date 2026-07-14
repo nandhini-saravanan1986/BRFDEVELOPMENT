@@ -122,6 +122,61 @@ public class BrfCommonMapping {
     
     @Column(name = "SCHEME_TYPE")
     private String schemeType;    
+    
+    @Column(name = "CONST_CODE_FLAG")
+    private String constCodeFlag;
+
+    @Column(name = "LGL_ENTYP_FLAG")
+    private String lglEntypFlag;
+
+    @Column(name = "SCHM_TYP_FLAG")
+    private String schmTypFlag;
+
+    @Column(name = "ASST_CLS_FLAG")
+    private String asstClsFlag;
+
+    @Column(name = "PURP_OF_ADV_FLAG")
+    private String purpOfAdvFlag;
+    
+    public String getConstCodeFlag() {
+        return constCodeFlag;
+    }
+
+    public void setConstCodeFlag(String constCodeFlag) {
+        this.constCodeFlag = constCodeFlag;
+    }
+
+    public String getLglEntypFlag() {
+        return lglEntypFlag;
+    }
+
+    public void setLglEntypFlag(String lglEntypFlag) {
+        this.lglEntypFlag = lglEntypFlag;
+    }
+
+    public String getSchmTypFlag() {
+        return schmTypFlag;
+    }
+
+    public void setSchmTypFlag(String schmTypFlag) {
+        this.schmTypFlag = schmTypFlag;
+    }
+
+    public String getAsstClsFlag() {
+        return asstClsFlag;
+    }
+
+    public void setAsstClsFlag(String asstClsFlag) {
+        this.asstClsFlag = asstClsFlag;
+    }
+
+    public String getPurpOfAdvFlag() {
+        return purpOfAdvFlag;
+    }
+
+    public void setPurpOfAdvFlag(String purpOfAdvFlag) {
+        this.purpOfAdvFlag = purpOfAdvFlag;
+    }
         
     public String getSchemeType() {
 		return schemeType;

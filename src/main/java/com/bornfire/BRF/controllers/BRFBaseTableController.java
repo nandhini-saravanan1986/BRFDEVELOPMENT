@@ -365,6 +365,11 @@ public class BRFBaseTableController {
             String asstCls      = nvl(row.get("assetClass")).trim();  
             String purposeOfAdvn = nvl(row.get("purposeOfAdvn")).trim();
             String currency = nvl(row.get("currency")).trim();
+            String constCodeFlag = nvl(row.get("constCodeFlag")).trim();
+            String lglEntypFlag  = nvl(row.get("lglEntypFlag")).trim();
+            String schmTypFlag   = nvl(row.get("schmTypFlag")).trim();
+            String asstClsFlag   = nvl(row.get("asstClsFlag")).trim();
+            String purpOfAdvFlag = nvl(row.get("purpOfAdvFlag")).trim();
 
             if (accountId.isEmpty() || reportCode.isEmpty() || oldRowId.isEmpty()) {
                 response.put("status",  "ERROR");
@@ -442,6 +447,12 @@ public class BRFBaseTableController {
                 newRecord.setSchemeType(schemeType);
                 newRecord.setAsstCls(asstCls);         
                 newRecord.setPurposeOfAdvn(purposeOfAdvn);
+                
+                newRecord.setConstCodeFlag(constCodeFlag);
+                newRecord.setLglEntypFlag(lglEntypFlag);
+                newRecord.setSchmTypFlag(schmTypFlag);
+                newRecord.setAsstClsFlag(asstClsFlag);
+                newRecord.setPurpOfAdvFlag(purpOfAdvFlag);
 
                 commonMappingRepo.save(newRecord);
 
@@ -461,6 +472,11 @@ public class BRFBaseTableController {
                 existing.setSchemeType(schemeType);
                 existing.setAsstCls(asstCls);          
                 existing.setPurposeOfAdvn(purposeOfAdvn); 
+                existing.setConstCodeFlag(constCodeFlag);
+                existing.setLglEntypFlag(lglEntypFlag);
+                existing.setSchmTypFlag(schmTypFlag);
+                existing.setAsstClsFlag(asstClsFlag);
+                existing.setPurpOfAdvFlag(purpOfAdvFlag);
                 
                 commonMappingRepo.save(existing);
 
@@ -510,6 +526,12 @@ public class BRFBaseTableController {
             String schemeType    = nvl((String) payload.get("schemeType")).trim();
             String asstCls       = nvl((String) payload.get("assetClass")).trim();
             String purposeOfAdvn = nvl((String) payload.get("purposeOfAdvn")).trim();
+            
+            String constCodeFlag = nvl((String) payload.get("constCodeFlag")).trim();
+            String lglEntypFlag  = nvl((String) payload.get("lglEntypFlag")).trim();
+            String schmTypFlag   = nvl((String) payload.get("schmTypFlag")).trim();
+            String asstClsFlag   = nvl((String) payload.get("asstClsFlag")).trim();
+            String purpOfAdvFlag = nvl((String) payload.get("purpOfAdvFlag")).trim();
 
             if (reportCode.isEmpty() || rowId.isEmpty()) {
                 response.put("status", "ERROR");
@@ -569,6 +591,11 @@ public class BRFBaseTableController {
                     record.setSchemeType(schemeType);
                     record.setAsstCls(asstCls);
                     record.setPurposeOfAdvn(purposeOfAdvn);
+                    record.setConstCodeFlag(constCodeFlag);
+                    record.setLglEntypFlag(lglEntypFlag);
+                    record.setSchmTypFlag(schmTypFlag);
+                    record.setAsstClsFlag(asstClsFlag);
+                    record.setPurpOfAdvFlag(purpOfAdvFlag);
 
                 commonMappingRepo.save(record);
                 commonMappingRepo.flush();   // next loop iteration's existsById/generate must see this insert

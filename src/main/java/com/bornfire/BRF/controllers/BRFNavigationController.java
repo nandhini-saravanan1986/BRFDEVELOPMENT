@@ -2433,10 +2433,27 @@ html.append("</tbody></table></div>");
 		            row.put("REPORT_CODE", r.getReportCode());
 		            row.put("ROW_ID", r.getRowId());
 		            row.put("COLUMN_ID", r.getColumnId());
+		            row.put("CURRENCY", r.getCurrency());
 		            
 		            row.put("REPORT_ADDL_CRITERIA_1", r.getReportAddlCriteria1());
 		            row.put("REPORT_ADDL_CRITERIA_2", r.getReportAddlCriteria2());
 		            row.put("REPORT_ADDL_CRITERIA_3", r.getReportAddlCriteria3());
+		            
+		            /* needed by the Edit Other Mapping modal to autofill */
+		            row.put("SOL_ID", r.getSolId());
+		            row.put("CONSTITUTION_CODE", r.getConstitutionCode());
+		            row.put("LEGAL_ENTITY_TYPE", r.getLegalEntityType());
+		            row.put("SCHEME_TYPE", r.getSchemeType());
+		            row.put("ASST_CLS", r.getAsstCls());
+		            row.put("PURPOSE_OF_ADVN", r.getPurposeOfAdvn());
+		            row.put("HNI_NETWORTH", r.getHniNetworth());
+		            row.put("TURNOVER", r.getTurnover());
+		            row.put("ACCOUNT_BALANCE_LC", r.getAccountBalanceLc());
+		            row.put("CONST_CODE_FLAG", r.getConstCodeFlag());
+		            row.put("LGL_ENTYP_FLAG", r.getLglEntypFlag());
+		            row.put("SCHM_TYP_FLAG", r.getSchmTypFlag());
+		            row.put("ASST_CLS_FLAG", r.getAsstClsFlag());
+		            row.put("PURP_OF_ADV_FLAG", r.getPurpOfAdvFlag());
 		            
 		            result.add(row);
 		        }
