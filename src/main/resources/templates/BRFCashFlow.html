@@ -1,0 +1,577 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" type="text/css"
+	href="/webjars/bootstrap/4.3.1/css/bootstrap.min.css"
+	th:href="@{/webjars/bootstrap/4.3.1/css/bootstrap.min.css}">
+<link rel="stylesheet" type="text/css"
+	href="/webjars/font-awesome/5.9.0/css/all.min.css"
+	th:href="@{/webjars/font-awesome/5.9.0/css/all.min.css}">
+<link rel="shortcut icon" th:href="@{/favicon.ico}" type="image/x-icon">
+
+<script src="/webjars/jquery/3.4.1/jquery.min.js"
+	th:src="@{/webjars/jquery/3.4.1/jquery.min.js}"></script>
+<script src="/webjars/popper.js/1.14.7/umd/popper.min.js"
+	th:src="@{/webjars/popper.js/1.14.7/umd/popper.min.js}"></script>
+<script src="/webjars/bootstrap/4.3.1/js/bootstrap.min.js"
+	th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+
+<title>Cash Flow  Configuration</title>
+
+<style>
+	body {
+		background-color: #f4f7f6;
+	}
+
+	.config-header {
+		background-color: #376275;
+		color: white;
+		font-weight: bold;
+		padding: 12px 20px;
+		border-radius: 4px 4px 0 0;
+	}
+
+	.section-title {
+		font-family: verdana;
+		font-size: 14px;
+		font-weight: bold;
+		color: #376275;
+		border-bottom: 2px solid #cbd5e1;
+		padding-bottom: 5px;
+		margin-bottom: 15px;
+	}
+
+	.view-text {
+		font-family: verdana;
+		font-size: 13px;
+		color: #2b506f;
+		font-weight: bold;
+	}
+	
+	.sentence-view {
+		font-family: verdana;
+		font-size: 14px;
+		color: #2b506f;
+		line-height: 1.6;
+		background-color: #ffffff;
+		padding: 15px;
+		border-radius: 4px;
+		border-left: 4px solid #E77400;
+		box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+	}
+
+	#conditionTable thead th {
+		background-color: #e9ecf0;
+		color: #376275;
+		font-weight: bold;
+		font-size: 13px;
+		border: 1px solid #dee2e6;
+		text-align: center;
+	}
+
+	#conditionTable tbody td {
+		border: 1px solid #dee2e6;
+		font-size: 13px;
+		vertical-align: middle;
+	}
+
+	.row-label {
+		font-weight: bold;
+		color: #2b506f;
+		background-color: #fdfdfd;
+		text-align: left;
+		padding-left: 15px !important;
+	}
+
+	.custom-select-btn {
+		background: #fff;
+		border: 1px solid #ced4da;
+		border-radius: 4px;
+		font-family: verdana;
+		font-size: 12px;
+		cursor: pointer;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		width: 100%;
+		text-align: left;
+	}
+
+	.custom-select-btn:focus {
+		border-color: #376275;
+		box-shadow: 0 0 0 2px rgba(55, 98, 117, 0.1);
+		outline: none;
+	}
+
+	.multi-select-menu {
+		display: none;
+		position: absolute;
+		z-index: 9999;
+		background: #fff;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		box-shadow: 0 4px 10px rgba(0, 0, 0, .15);
+		width: 100%;
+		min-width: 200px;
+		margin-top: 2px;
+	}
+
+	.multi-select-search {
+		padding: 8px;
+		position: sticky;
+		top: 0;
+		background: #fdfdfd;
+		z-index: 2;
+		border-bottom: 1px solid #eee;
+	}
+	
+	.multi-select-search input {
+		font-size: 12px;
+	}
+
+	.multi-select-options {
+		max-height: 200px;
+		overflow-y: auto;
+		padding: 4px 0;
+	}
+
+	.cb-item {
+		padding: 4px 12px;
+		display: flex;
+		align-items: center;
+	}
+
+	.cb-item:hover {
+		background-color: #f4f7f6;
+	}
+
+	.cb-item input[type="checkbox"] {
+		margin-right: 8px;
+		cursor: pointer;
+	}
+
+	.cb-item label {
+		font-family: verdana;
+		font-size: 12px;
+		margin: 0;
+		cursor: pointer;
+		width: 100%;
+	}
+</style>
+</head>
+
+<body>
+	<div th:insert="BRFHeaderMenu :: header"></div>
+
+	<div class="container content mb-5">
+		<div class="card shadow-sm" style="max-width: 1300px; margin: 0 auto;">
+			
+			<div class="config-header d-flex justify-content-between align-items-center">
+				<h5 class="mb-0">
+					Cash Flow Configuration 
+				</h5>
+				<div id="actionButtonsView">
+					<button type="button" class="btn btn-sm btn-light font-weight-bold" onclick="toggleEditMode(true);" style="color: #376275;">
+						<i class="fas fa-edit"></i> Modify
+					</button>
+				</div>
+				<div id="actionButtonsEdit" style="display: none;">
+					<button type="button" class="btn btn-sm btn-outline-light mr-2" onclick="toggleEditMode(false);">Cancel</button>
+					<button type="button" id="btnSave" class="btn btn-sm btn-warning font-weight-bold" onclick="saveConfigurations();">
+						<i class="fas fa-save"></i> Save Changes
+					</button>
+				</div>
+			</div>
+
+			<div class="card-body">
+				<div class="global-section mb-4 p-3" style="background-color: #fdf3e8; border: 1px solid #f0e0d0; border-radius: 5px;">
+					<h6 style="font-family: verdana; font-size: 13px; font-weight: bold; color: #E77400; border-bottom: 1px solid #f0e0d0; padding-bottom: 6px; margin-bottom: 12px;">
+						Common Parameters
+					</h6>
+					
+					<div class="view-mode sentence-view">
+						The Cash Flow Procedure runs for the common GL Sub Head Codes 
+						<strong class="text-danger" id="lblGlobalGshc" th:text="${savedGshc != null ? savedGshc : 'N/A'}">1234, 5478</strong> 
+						and is structured to specifically exclude BACID 
+						<strong class="text-danger" id="lblGlobalBacid" th:text="${savedBacid != null ? savedBacid : 'N/A'}">2421222</strong> 
+						across all insert statements.
+					</div>
+
+					<div class="edit-mode form-row" style="display: none;">
+						<div class="col-md-6" style="position: relative;">
+							<label style="font-family: verdana; font-size: 12px; font-weight: bold;">Select Common GSHC (IN)</label>
+							<button type="button" id="btnGlobalGshc" class="form-control form-control-sm custom-select-btn" onclick="toggleDropdown(event, 'menuGlobalGshc')">-- Select --</button>
+							
+							<div id="menuGlobalGshc" class="multi-select-menu custom-dropdown">
+								<div class="multi-select-search">
+									<input type="text" class="form-control form-control-sm mb-2" placeholder="Search GSHC..." onkeyup="filterOptions(this)">
+									<label style="font-size: 11px; font-weight: bold; cursor: pointer; margin:0;">
+										<input type="checkbox" onclick="toggleAll(this, 'chkGlobalGshc', 'btnGlobalGshc')"> Select All
+									</label>
+								</div>
+								<div class="multi-select-options">
+									<div class="cb-item" th:each="opt : ${gshcOptions}">
+										<input type="checkbox" th:id="'gshc_'+${opt}" th:value="${opt}" class="chkGlobalGshc" onchange="syncBtnText('chkGlobalGshc', 'btnGlobalGshc')">
+										<label th:for="'gshc_'+${opt}" th:text="${opt}"></label>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<div class="col-md-6" style="position: relative;">
+							<label style="font-family: verdana; font-size: 12px; font-weight: bold;">Select Common BACID (NOT IN)</label>
+							<button type="button" id="btnGlobalBacid" class="form-control form-control-sm custom-select-btn" onclick="toggleDropdown(event, 'menuGlobalBacid')">-- Select --</button>
+							
+							<div id="menuGlobalBacid" class="multi-select-menu custom-dropdown">
+								<div class="multi-select-search">
+									<input type="text" class="form-control form-control-sm mb-2" placeholder="Search BACID..." onkeyup="filterOptions(this)">
+									<label style="font-size: 11px; font-weight: bold; cursor: pointer; margin:0;">
+										<input type="checkbox" onclick="toggleAll(this, 'chkGlobalBacid', 'btnGlobalBacid')"> Select All
+									</label>
+								</div>
+								<div class="multi-select-options">
+									<div class="cb-item" th:each="opt : ${bacidOptions}">
+										<input type="checkbox" th:id="'bacid_'+${opt}" th:value="${opt}" class="chkGlobalBacid" onchange="syncBtnText('chkGlobalBacid', 'btnGlobalBacid')">
+										<label th:for="'bacid_'+${opt}" th:text="${opt}"></label>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<h6 class="section-title">
+					<i class="fas fa-list"></i> Specific Insert Conditions
+				</h6>
+				
+				<table id="conditionTable" class="table table-bordered table-sm" style="width: 100%;">
+					<thead>
+						<tr>
+							<th style="width: 25%;">Name</th>
+							<th style="width: 25%;">ASSET CLASS</th>
+							<!-- <th style="width: 25%;"></th> -->
+							<th style="width: 25%;">SCHEME TYPE</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="rowDef, stat : ${rowDefinitions}" class="config-row">
+							
+							<input type="hidden" class="row-db-name" th:value="${rowDef.dbName}">
+							
+							<td class="row-label" th:text="${rowDef.displayName}">Display Name</td>
+							
+							<td style="position: relative;">
+								<div class="view-mode view-text cls-view text-center"></div>
+								<div class="edit-mode" style="display: none;">
+									<button type="button" th:id="'btnCls_' + ${stat.index}" class="form-control form-control-sm custom-select-btn" th:onclick="'toggleDropdown(event, \'menuCls_' + ${stat.index} + '\')'">-- Select --</button>
+									<div th:id="'menuCls_' + ${stat.index}" class="multi-select-menu custom-dropdown">
+										<div class="multi-select-search">
+											<input type="text" class="form-control form-control-sm" placeholder="Search CLS..." onkeyup="filterOptions(this)">
+										</div>
+										<div class="multi-select-options">
+											<div class="cb-item" th:each="opt : ${clsOptions}">
+												<input type="checkbox" th:id="'cls_'+${stat.index}+'_'+${opt}" th:value="${opt}" th:class="'chkCls_' + ${stat.index}" th:onchange="'syncBtnText(\'chkCls_' + ${stat.index} + '\', \'btnCls_' + ${stat.index} + '\')'">
+												<label th:for="'cls_'+${stat.index}+'_'+${opt}" th:text="${opt}"></label>
+											</div>
+										</div>
+									</div>
+								</div>
+							</td>
+							
+<!-- 							<td style="position: relative;">
+								<div class="view-mode view-text si-view text-center"></div>
+								<div class="edit-mode" style="display: none;">
+									<button type="button" th:id="'btnSi_' + ${stat.index}" class="form-control form-control-sm custom-select-btn" th:onclick="'toggleDropdown(event, \'menuSi_' + ${stat.index} + '\')'">-- Select --</button>
+									<div th:id="'menuSi_' + ${stat.index}" class="multi-select-menu custom-dropdown">
+										<div class="multi-select-search">
+											<input type="text" class="form-control form-control-sm" placeholder="Search SI..." onkeyup="filterOptions(this)">
+										</div>
+										<div class="multi-select-options">
+											<div class="cb-item" th:each="opt : ${siOptions}">
+												<input type="checkbox" th:id="'si_'+${stat.index}+'_'+${opt}" th:value="${opt}" th:class="'chkSi_' + ${stat.index}" th:onchange="'syncBtnText(\'chkSi_' + ${stat.index} + '\', \'btnSi_' + ${stat.index} + '\')'">
+												<label th:for="'si_'+${stat.index}+'_'+${opt}" th:text="${opt}"></label>
+											</div>
+										</div>
+									</div>
+								</div>
+							</td> -->
+							
+							<td style="position: relative;">
+								<div class="view-mode view-text type-view text-center"></div>
+								<div class="edit-mode" style="display: none;">
+									<button type="button" th:id="'btnType_' + ${stat.index}" class="form-control form-control-sm custom-select-btn" th:onclick="'toggleDropdown(event, \'menuType_' + ${stat.index} + '\')'">-- Select --</button>
+									<div th:id="'menuType_' + ${stat.index}" class="multi-select-menu custom-dropdown">
+										<div class="multi-select-search">
+											<input type="text" class="form-control form-control-sm" placeholder="Search TYPE..." onkeyup="filterOptions(this)">
+										</div>
+										<div class="multi-select-options">
+											<div class="cb-item" th:each="opt : ${typeOptions}">
+												<input type="checkbox" th:id="'type_'+${stat.index}+'_'+${opt}" th:value="${opt}" th:class="'chkType_' + ${stat.index}" th:onchange="'syncBtnText(\'chkType_' + ${stat.index} + '\', \'btnType_' + ${stat.index} + '\')'">
+												<label th:for="'type_'+${stat.index}+'_'+${opt}" th:text="${opt}"></label>
+											</div>
+										</div>
+									</div>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+			</div>
+			
+			<div class="card-footer text-center" style="background-color: #376275;">
+				<button type="button" class="btn btn-xs btn-primary" onclick="goHome();">Home</button>
+			</div>
+
+		</div>
+	</div>
+
+	<script th:inline="javascript">
+	$(document).ready(function() {
+		/*<![CDATA[*/
+		var savedConfigs = /*[[${savedConfigs}]]*/ [];
+		/*]]>*/
+
+		prefillSavedData(savedConfigs);
+
+		initializeViewState();
+	});
+
+	function prefillSavedData(savedData) {
+		if (!savedData || savedData.length === 0) return;
+
+		const firstRow = savedData[0];
+		if (firstRow.globalGshc) {
+			firstRow.globalGshc.split(',').forEach(function(val) {
+				$('.chkGlobalGshc[value="' + val.trim() + '"]').prop('checked', true);
+			});
+		}
+		if (firstRow.globalBacid) {
+			firstRow.globalBacid.split(',').forEach(function(val) {
+				$('.chkGlobalBacid[value="' + val.trim() + '"]').prop('checked', true);
+			});
+		}
+
+		savedData.forEach(function(config) {
+			const match = config.conditionName.match(/\d+/);
+			if (match) {
+				const rowIndex = match[0];
+
+				if (config.clsList) {
+					config.clsList.split(',').forEach(function(val) {
+						$('.chkCls_' + rowIndex + '[value="' + val.trim() + '"]').prop('checked', true);
+					});
+				}
+				if (config.siList) {
+					config.siList.split(',').forEach(function(val) {
+						$('.chkSi_' + rowIndex + '[value="' + val.trim() + '"]').prop('checked', true);
+					});
+				}
+				if (config.typeList) {
+					config.typeList.split(',').forEach(function(val) {
+						$('.chkType_' + rowIndex + '[value="' + val.trim() + '"]').prop('checked', true);
+					});
+				}
+			}
+		});
+	}
+
+		function goHome() {
+			window.location.href = '/BRF/BRFDashboard';
+		}
+
+		function toggleEditMode(isEditing) {
+			if (isEditing) {
+				$('.view-mode').hide();
+				$('.edit-mode').fadeIn(200);
+				$('#actionButtonsView').hide();
+				$('#actionButtonsEdit').show();
+			} else {
+				$('.edit-mode').hide();
+				$('.view-mode').fadeIn(200);
+				$('#actionButtonsEdit').hide();
+				$('#actionButtonsView').show();
+				$('.custom-dropdown').hide();
+			}
+		}
+
+		
+		function toggleDropdown(event, menuId) {
+			event.stopPropagation();
+			$('.custom-dropdown').not('#' + menuId).hide();
+			$('#' + menuId).toggle();
+		}
+
+		$(document).on('click', function(e) {
+			if (!$(e.target).closest('.custom-dropdown').length && !$(e.target).hasClass('custom-select-btn')) {
+				$('.custom-dropdown').hide();
+			}
+		});
+
+		function filterOptions(inputElement) {
+			const filter = $(inputElement).val().toLowerCase();
+			$(inputElement).closest('.custom-dropdown').find('.cb-item').each(function() {
+				const text = $(this).text().toLowerCase();
+				$(this).toggle(text.indexOf(filter) > -1);
+			});
+		}
+
+		function syncBtnText(checkboxClass, btnId) {
+			const checkedItems = $('.' + checkboxClass + ':checked');
+			const btn = $('#' + btnId);
+			
+			if (checkedItems.length === 0) {
+				btn.text('-- Select --');
+			} else if (checkedItems.length === 1) {
+				btn.text(checkedItems.first().val());
+			} else {
+				btn.text(checkedItems.length + ' selected');
+			}
+		}
+
+		function toggleAll(masterCheckbox, checkboxClass, btnId) {
+			$('.' + checkboxClass).prop('checked', masterCheckbox.checked);
+			syncBtnText(checkboxClass, btnId);
+		}
+
+		function getCheckedValues(checkboxClass) {
+			return $('.' + checkboxClass + ':checked').map(function() {
+				return this.value;
+			}).get();
+		}
+
+		
+		function saveConfigurations() {
+			const globalGshc = getCheckedValues('chkGlobalGshc').join(',');
+			const globalBacid = getCheckedValues('chkGlobalBacid').join(',');
+
+			if (!globalGshc) {
+				alert("Please select at least one GSHC code.");
+				return;
+			}
+
+			let payload = [];
+
+			$('.config-row').each(function(index) {
+				const dbName = $(this).find('.row-db-name').val();
+				
+				const clsArr = getCheckedValues('chkCls_' + index);
+				//const siArr = getCheckedValues('chkSi_' + index);
+				const typeArr = getCheckedValues('chkType_' + index);
+
+				//if (clsArr.length > 0 || siArr.length > 0 || typeArr.length > 0) {
+				if (clsArr.length > 0 || typeArr.length > 0) {
+					payload.push({
+						conditionName : dbName, 
+						globalGshc : globalGshc,
+						globalBacid : globalBacid,
+						clsList : clsArr.join(','),
+						//siList : siArr.join(','),
+						typeList : typeArr.join(',')
+					});
+				}
+			});
+
+			if (payload.length === 0) {
+				alert("Please configure at least one condition row.");
+				return;
+			}
+
+			const $btnSave = $('#btnSave');
+			$btnSave.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Saving...');
+
+			$.ajax({
+				url : '/BRF/SaveDynamicInserts',
+				type : 'POST',
+				contentType : 'application/json',
+				data : JSON.stringify(payload), 
+				success : function(res) {
+					updateViewLabels(getCheckedValues('chkGlobalGshc'), getCheckedValues('chkGlobalBacid'));
+					toggleEditMode(false);
+					
+					$btnSave.prop('disabled', false).html('<i class="fas fa-save"></i> Save Changes');
+					alert(res); 
+				},
+				error : function(xhr) {
+					$btnSave.prop('disabled', false).html('<i class="fas fa-save"></i> Save Changes');
+					alert("Failed to save: " + xhr.responseText);
+				}
+			});
+		}
+
+		function updateViewLabels(gshcArr, bacidArr) {
+			$('#lblGlobalGshc').text(gshcArr.length > 0 ? gshcArr.join(', ') : 'N/A');
+			$('#lblGlobalBacid').text(bacidArr.length > 0 ? bacidArr.join(', ') : 'N/A');
+
+			$('.config-row').each(function(index) {
+				const clsArr = getCheckedValues('chkCls_' + index);
+				//const siArr = getCheckedValues('chkSi_' + index);
+				const typeArr = getCheckedValues('chkType_' + index);
+
+				$(this).find('.cls-view').text(clsArr.length > 0 ? clsArr.join(', ') : '-');
+				//$(this).find('.si-view').text(siArr.length > 0 ? siArr.join(', ') : '-');
+				$(this).find('.type-view').text(typeArr.length > 0 ? typeArr.join(', ') : '-');
+			});
+		}
+
+		function initializeViewState() {
+			const gshcArr = getCheckedValues('chkGlobalGshc');
+			const bacidArr = getCheckedValues('chkGlobalBacid');
+			updateViewLabels(gshcArr, bacidArr);
+
+			syncBtnText('chkGlobalGshc', 'btnGlobalGshc');
+			syncBtnText('chkGlobalBacid', 'btnGlobalBacid');
+
+			$('.config-row').each(function(index) {
+				syncBtnText('chkCls_' + index, 'btnCls_' + index);
+				//syncBtnText('chkSi_' + index, 'btnSi_' + index);
+				syncBtnText('chkType_' + index, 'btnType_' + index);
+			});
+		}
+
+		function prefillSavedData(savedData) {
+			if (!savedData || savedData.length === 0) return;
+
+			const firstRow = savedData[0];
+			if (firstRow.globalGshc) {
+				firstRow.globalGshc.split(',').forEach(function(val) {
+					$('.chkGlobalGshc[value="' + val.trim() + '"]').prop('checked', true);
+				});
+			}
+			if (firstRow.globalBacid) {
+				firstRow.globalBacid.split(',').forEach(function(val) {
+					$('.chkGlobalBacid[value="' + val.trim() + '"]').prop('checked', true);
+				});
+			}
+
+			$('.config-row').each(function(index) {
+				const rowDbName = $(this).find('.row-db-name').val();
+				
+				const config = savedData.find(c => c.conditionName === rowDbName);
+
+				if (config) {
+					if (config.clsList) {
+						config.clsList.split(',').forEach(function(val) {
+							$('.chkCls_' + index + '[value="' + val.trim() + '"]').prop('checked', true);
+						});
+					}
+					/* if (config.siList) {
+						config.siList.split(',').forEach(function(val) {
+							$('.chkSi_' + index + '[value="' + val.trim() + '"]').prop('checked', true);
+						});
+					} */
+					if (config.typeList) {
+						config.typeList.split(',').forEach(function(val) {
+							$('.chkType_' + index + '[value="' + val.trim() + '"]').prop('checked', true);
+						});
+					}
+				}
+			});
+		}
+	</script>
+</body>
+</html>

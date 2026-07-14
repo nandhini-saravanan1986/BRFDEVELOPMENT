@@ -98,12 +98,16 @@ import net.bytebuddy.asm.Advice.Return;
 
 import com.bornfire.BRF.entities.BRFValidations;
 import com.bornfire.BRF.entities.BRFValidationsRepo;
+import com.bornfire.BRF.entities.BRF_PLACID_FWDR_Mapping;
+import com.bornfire.BRF.entities.BRF_PLACID_FWDR_Mapping_Repo;
 import com.bornfire.BRF.entities.BrfCommonMapping;
 import com.bornfire.BRF.entities.RRReport;
 import com.bornfire.BRF.services.CalculationService;
 import com.bornfire.BRF.services.DataComparisonService;
 import com.bornfire.BRF.services.ReportGenerationService;
 import com.bornfire.BRF.entities.BrfCommonMappingRepository;
+import com.bornfire.BRF.entities.CashFlow_Config;
+import com.bornfire.BRF.entities.CashFlow_Config_Repo;
 import com.bornfire.BRF.entities.DataMapping_Entity;
 import com.bornfire.BRF.entities.DataMapping_Repo;
 import com.bornfire.BRF.entities.ETL_MONITORING_DETAILS_ENTITY;
@@ -542,7 +546,9 @@ public class BRFNavigationController {
 	        "NREIN","44210","44112","RESIN","0","44202","33104","11510","11506","33107","-","33103","BR",
 	        "44104","44105","44110","44114","44204","44206","44211","44213","44215","HUFJT","INDL ","INDVM"
 	    );
-	    model.addAttribute("constCodeOptions", constCodeOptions);
+		List<String> constCodeOptionsFromDB = jdbcTemplate
+				.queryForList("SELECT DISTINCT CONSTITUTION_CODE FROM GENERAL_MASTER_TABLE", String.class);
+	    model.addAttribute("constCodeOptions", mergeAndRemoveDuplicates(constCodeOptions, constCodeOptionsFromDB));
 
 	    // Legal Entity options
 	    List<String> legalEntityOptions = Arrays.asList(
@@ -552,13 +558,29 @@ public class BRFNavigationController {
 	        "PBLCO","PROF","SERV","FGBBK","STAFF","GOVTL","PSEC","INSP","STBRK","CB","MNC","MLI","OTH",
 	        "EMBAS","SHOPS","HUWIF","INSG","AGRI","GOVTF","PSENO","PSEN","PSECO","MXC  ","NBFC "
 	    );
-	    model.addAttribute("legalEntityOptions", legalEntityOptions);
+		List<String> legalEntityOptionsFromDB = jdbcTemplate
+				.queryForList("SELECT DISTINCT LEGAL_ENTITY_TYPE FROM GENERAL_MASTER_TABLE", String.class);
+	    model.addAttribute("legalEntityOptions", mergeAndRemoveDuplicates(legalEntityOptions, legalEntityOptionsFromDB));
 
 	    // Scheme Type options
 	    List<String> schemeTypeOptions = Arrays.asList(
 	        "SBA","CLA","CAA","LAA","ODA","DDA","OAB","FBA","PCA","OAP","TDA","OSP"
 	    );
-	    model.addAttribute("schemeTypeOptions", schemeTypeOptions);
+		List<String> schemeTypeOptionsFromDB = jdbcTemplate
+				.queryForList("SELECT DISTINCT SCHM_TYPE FROM GENERAL_MASTER_TABLE", String.class);
+	    model.addAttribute("schemeTypeOptions", mergeAndRemoveDuplicates(schemeTypeOptions, schemeTypeOptionsFromDB));
+	    
+	    List<String> listOne = jdbcTemplate
+				.queryForList("SELECT DISTINCT PORTEFEUILLE FROM BRF_TREASURY_PLACEMENT_ID", String.class);
+	    List<String> listTwo = jdbcTemplate
+				.queryForList("SELECT DISTINCT TITRE FROM BRF_TREASURY_PLACEMENT_ID", String.class);
+	    List<String> listThree = jdbcTemplate
+				.queryForList("SELECT DISTINCT CONTREPARTIE FROM BRF_FORWARD_REVEAL_MANUAL_TABLE", String.class);
+
+	    model.addAttribute("demo1ListA", listOne);
+	    model.addAttribute("demo1ListB", listTwo);
+	    model.addAttribute("demo2ListA", listThree);
+	    
 		
         return "ReportCodeMapping";
     }
@@ -2464,5 +2486,135 @@ html.append("</tbody></table></div>");
 
 		    return result;
 		}
+
+		@Autowired
+		CashFlow_Config_Repo CashFlow_Config_Repo;
+
+		@GetMapping("/cashflow")
+		public String cashflow(Model model) {
+			List<String> gshcList = Arrays.asList("13206","13217","24370","13215","13222","13421","24101", "24102", "24116",
+					"24117", "24122", "24146", "24171", "24176", "24181", "24301", "24311", "24312", "24313", "24319", "24336", "24337",
+					"24338", "24358", "24359", "24361", "24362","24386", "24387", "24406", "24411", "24501", "24502", "24503", "24504",
+					"24505", "24507", "24532", "24626", "26552");
+			List<String> bacidList = Arrays.asList("24626002");
+			List<String> clsList = Arrays.asList("STD","NPA");
+			//List<String> siList = Arrays.asList();
+			List<String> typeList = Arrays.asList("CLA", "LAA", "ODA","CAA","SBA");
+
+			model.addAttribute("gshcOptions", gshcList);
+			model.addAttribute("bacidOptions", bacidList);
+			model.addAttribute("clsOptions", clsList);
+			//model.addAttribute("siOptions", siList);
+			model.addAttribute("typeOptions", typeList);
+			List<Map<String, String>> rowDefinitions = Arrays.asList(
+					createRowDef("ZERO_7_DAYS", "0 - 7 days"),
+					createRowDef("EIGHT_14_DAYS", "8-14 days"),
+					createRowDef("FIFTEEN_DAYS_1_MON", "15 days - 1 month"),
+					createRowDef("ONE_MON_3_MON", "1 - 3 months"),
+					createRowDef("THREE_MON_6_MON", "3 -  6 months"),
+					createRowDef("SIX_MON_12_MON", "6 -12 months"),
+					createRowDef("ONE_YR_3_YR", "1 - 3 years"),
+					createRowDef("OVER_3YR", "More than 3 years"),
+					createRowDef("OVERDUE", "Overdue"),
+					createRowDef("OVERDUE_WO_REMAIN_EMI", "Overdue with no remaining EMI"),
+					createRowDef("OVERDRAFT", "Overdraft"),
+					createRowDef("NPA", "NPA"),
+					createRowDef("BANKING_BOOK", "Banking Book"));
+			model.addAttribute("rowDefinitions", rowDefinitions);
+
+			List<CashFlow_Config> existingConfigs = CashFlow_Config_Repo.findAll();
+			model.addAttribute("savedConfigs", existingConfigs);
+			if (!existingConfigs.isEmpty()) {
+				model.addAttribute("savedGshc", existingConfigs.get(0).getGlobalGshc());
+				model.addAttribute("savedBacid", existingConfigs.get(0).getGlobalBacid());
+			}
+
+			return "BRFCashFlow";
+		}
+		private Map<String, String> createRowDef(String dbName, String displayName) {
+	        Map<String, String> map = new HashMap<>();
+	        map.put("dbName", dbName);
+	        map.put("displayName", displayName);
+	        return map;
+	    }
+		@PostMapping("/SaveDynamicInserts")
+		@ResponseBody
+		public ResponseEntity<String> saveConfigurations(@RequestBody List<CashFlow_Config> newConfigs) {
+			try {
+				CashFlow_Config_Repo.deleteAll();
+				long currentId = 1L;
+	            for (CashFlow_Config config : newConfigs) {
+	                config.setConfigId(currentId++);
+	            }
+				CashFlow_Config_Repo.saveAll(newConfigs);
+
+				return ResponseEntity.ok("Configurations saved successfully!");
+			} catch (Exception e) {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+						.body("Error saving configurations: " + e.getMessage());
+			}
+		}
+		@Autowired
+		BRF_PLACID_FWDR_Mapping_Repo brf_PLACID_FWDR_Mapping_Repo;
 		
-}
+		@PostMapping("/save_placid_fwdr")
+		public ResponseEntity<?> saveDemoMapping(@RequestBody BRF_PLACID_FWDR_Mapping payload) {
+			try {
+				if(payload.getId() == null || payload.getId().equals(null)) {
+				payload.setId(System.currentTimeMillis());
+				}
+
+				brf_PLACID_FWDR_Mapping_Repo.save(payload);
+
+				Map<String, String> response = new HashMap<>();
+				response.put("status", "SUCCESS");
+				return ResponseEntity.ok(response);
+
+			} catch (Exception e) {
+				Map<String, String> errorResponse = new HashMap<>();
+				errorResponse.put("status", "ERROR");
+				errorResponse.put("message", e.getMessage());
+				return ResponseEntity.badRequest().body(errorResponse);
+			}
+		}
+
+		@GetMapping("/list_placid_fwdr")
+		public ResponseEntity<List<BRF_PLACID_FWDR_Mapping>> getDemoMappings(@RequestParam String reportCode,
+				@RequestParam String screenName) {
+			List<BRF_PLACID_FWDR_Mapping> list = brf_PLACID_FWDR_Mapping_Repo
+					.findByReportCodeAndScreenName(reportCode, screenName);
+			return ResponseEntity.ok(list);
+		}
+
+		@DeleteMapping("/delete_placid_fwdr/{id}")
+		public ResponseEntity<?> deleteDemoMapping(@PathVariable Long id) {
+			try {
+				brf_PLACID_FWDR_Mapping_Repo.deleteByMappingId(id);
+
+				Map<String, String> response = new HashMap<>();
+				response.put("status", "SUCCESS");
+				return ResponseEntity.ok(response);
+
+			} catch (Exception e) {
+				Map<String, String> errorResponse = new HashMap<>();
+				errorResponse.put("status", "ERROR");
+				errorResponse.put("message", e.getMessage());
+				return ResponseEntity.badRequest().body(errorResponse);
+			}
+		}
+
+		public static List<String> mergeAndRemoveDuplicates(List<String> list1, List<String> list2) {
+			Map<String, String> uniqueMap = new LinkedHashMap<>();
+			for (String s : list1) {
+				if (s != null) {
+					uniqueMap.putIfAbsent(s.toLowerCase(), s);
+				}
+			}
+			for (String s : list2) {
+				if (s != null) {
+					uniqueMap.putIfAbsent(s.toLowerCase(), s);
+				}
+			}
+			return new ArrayList<>(uniqueMap.values());
+		}
+	}
