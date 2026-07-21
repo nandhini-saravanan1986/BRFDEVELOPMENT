@@ -770,8 +770,12 @@
 						</a></li>
 					</ul>
 
-					<button type="button" class="btn btn-primary"
-						style="font-family: verdana; font-size: 13px;" onclick="alaccounts()" >A/L Mappings</button>
+					<div>
+						<button type="button" class="btn btn-primary"
+							style="font-family: verdana; font-size: 13px;" onclick="cashflow()">Cash Flow</button>
+						<button type="button" class="btn btn-primary"
+							style="font-family: verdana; font-size: 13px;" onclick="alaccounts()" >A/L Mappings</button>
+					</div>
 				</div>
 
 				<!-- Tab Panes -->
@@ -5701,7 +5705,7 @@ var colMaxWidth = {
      filterOtherMappingsTable(); 
  }
 	function alaccounts() { location.href = '/BRF/ALAccounts'; }
-	
+	function cashflow() { location.href = '/BRF/cashflow'; }
 	function onOtherSourceChange() {
 	    refreshOtherGLCodeList();
 	    refreshOtherGLSubCodeList();

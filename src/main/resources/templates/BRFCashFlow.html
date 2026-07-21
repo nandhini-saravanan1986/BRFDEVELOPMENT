@@ -325,6 +325,7 @@
 			
 			<div class="card-footer text-center" style="background-color: #376275;">
 				<button type="button" class="btn btn-xs btn-primary" onclick="goHome();">Home</button>
+				<button type="button" class="btn btn-xs btn-primary" onclick="back();">Back</button>
 			</div>
 
 		</div>
@@ -382,6 +383,9 @@
 
 		function goHome() {
 			window.location.href = '/BRF/BRFDashboard';
+		}
+		function back() {
+			window.location.href = '/BRF/ReportCodeMapping';
 		}
 
 		function toggleEditMode(isEditing) {
