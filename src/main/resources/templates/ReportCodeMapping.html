@@ -1168,82 +1168,134 @@
 											            style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);">
 											        </div>
 											    </div>
-											
-											    <div class="col-auto" style="flex: 1 1 160px; min-width: 0; position: relative;">
-											        <label style="font-family: verdana; font-size: 13px; font-weight: bold;">Constitution Code</label><br>
-											        <button type="button" id="constCodeBtn"
-											            class="form-control form-control-sm"
-											            onclick="toggleMenuById(event,'constCodeMenu')"
-											            style="width: 100%; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-											            -- Select --</button>
-											        <div id="constCodeMenu" class="multi-select-menu"
-											            style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);">
-											        </div>
-											    </div>
-											
-											    <div class="col-auto" style="flex: 1 1 160px; min-width: 0; position: relative;">
-											        <label style="font-family: verdana; font-size: 13px; font-weight: bold;">Legal Entity Type</label><br>
-											        <button type="button" id="legalEntityBtn"
-											            class="form-control form-control-sm"
-											            onclick="toggleMenuById(event,'legalEntityMenu')"
-											            style="width: 100%; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-											            -- Select --</button>
-											        <div id="legalEntityMenu" class="multi-select-menu"
-											            style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);">
-											        </div>
-											    </div>
-											
-											    <div class="col-auto" style="flex: 1 1 160px; min-width: 0;">
-											        <label style="font-family: verdana; font-size: 13px; font-weight: bold;">HNI Networth</label>
-											        <input type="text" id="hniNetworth"
-											            class="form-control form-control-sm"
-											            style="width: 100%;" placeholder="Enter Amount">
-											    </div>
-											
-											    <div class="col-auto" style="flex: 1 1 160px; min-width: 0;">
-											        <label style="font-family: verdana; font-size: 13px; font-weight: bold;">Turnover</label>
-											        <input type="text" id="turnover"
-											            class="form-control form-control-sm"
-											            style="width: 100%;" placeholder="Enter Amount">
-											    </div>
-											
-											    <div class="col-auto" style="flex: 1 1 160px; min-width: 0; position: relative;">
-											        <label style="font-family: verdana; font-size: 13px; font-weight: bold;">Scheme Type</label><br>
-											        <button type="button" id="schemeTypeBtn"
-											            class="form-control form-control-sm"
-											            onclick="toggleMenuById(event,'schemeTypeMenu')"
-											            style="width: 100%; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-											            -- Select --</button>
-											        <div id="schemeTypeMenu" class="multi-select-menu"
-											            style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);">
-											        </div>
-											    </div>
-											
-											    <div class="col-auto" style="flex: 1 1 160px; min-width: 0; position: relative;">
-											        <label style="font-family: verdana; font-size: 13px; font-weight: bold;">Asset Class</label><br>
-											        <button type="button" id="asstClsBtn"
-											            class="form-control form-control-sm"
-											            onclick="toggleMenuById(event,'asstClsMenu')"
-											            style="width: 100%; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-											            -- Select --</button>
-											        <div id="asstClsMenu" class="multi-select-menu"
-											            style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);">
-											        </div>
-											    </div>
-											
-											    <div class="col-auto" style="flex: 1 1 160px; min-width: 0; position: relative;">
-											        <label style="font-family: verdana; font-size: 13px; font-weight: bold;">Purpose of Advance</label><br>
-											        <button type="button" id="purposeOfAdvnBtn"
-											            class="form-control form-control-sm"
-											            onclick="toggleMenuById(event,'purposeOfAdvnMenu')"
-											            style="width: 100%; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-											            -- Select --</button>
-											        <div id="purposeOfAdvnMenu" class="multi-select-menu"
-											            style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);">
-											        </div>
-											    </div>
-											
+
+											<div class="col-auto"
+												style="flex: 1 1 160px; min-width: 0; position: relative;">
+												<label
+													style="font-family: verdana; font-size: 13px; font-weight: bold;">Constitution
+													Code</label><br>
+												<div class="attached-select-group">
+													<button type="button" id="constCodeBtn"
+														class="form-control form-control-sm"
+														onclick="toggleMenuById(event,'constCodeMenu')"
+														style="flex: 1; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">--
+														Select --</button>
+													<button type="button" id="constCodeFlagBtn"
+														class="btn btn-sm btn-outline-secondary flag-toggle-btn"
+														onclick="toggleFlagBtn(this)" title="Click to flag">
+														<i class="fas fa-ban"></i>
+													</button>
+												</div>
+												<div id="constCodeMenu" class="multi-select-menu"
+													style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);">
+												</div>
 											</div>
+
+											<div class="col-auto"
+												style="flex: 1 1 160px; min-width: 0; position: relative;">
+												<label
+													style="font-family: verdana; font-size: 13px; font-weight: bold;">Legal
+													Entity Type</label><br>
+												<div class="attached-select-group">
+													<button type="button" id="legalEntityBtn"
+														class="form-control form-control-sm"
+														onclick="toggleMenuById(event,'legalEntityMenu')"
+														style="flex: 1; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">--
+														Select --</button>
+													<button type="button" id="legalEntityFlagBtn"
+														class="btn btn-sm btn-outline-secondary flag-toggle-btn"
+														onclick="toggleFlagBtn(this)" title="Click to flag">
+														<i class="fas fa-ban"></i>
+													</button>
+												</div>
+												<div id="legalEntityMenu" class="multi-select-menu"
+													style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);">
+												</div>
+											</div>
+
+											<div class="col-auto" style="flex: 1 1 160px; min-width: 0;">
+												<label
+													style="font-family: verdana; font-size: 13px; font-weight: bold;">HNI
+													Networth</label> <input type="text" id="hniNetworth"
+													class="form-control form-control-sm" style="width: 100%;"
+													placeholder="Enter Amount">
+											</div>
+
+											<div class="col-auto" style="flex: 1 1 160px; min-width: 0;">
+												<label
+													style="font-family: verdana; font-size: 13px; font-weight: bold;">Turnover</label>
+												<input type="text" id="turnover"
+													class="form-control form-control-sm" style="width: 100%;"
+													placeholder="Enter Amount">
+											</div>
+
+											<div class="col-auto"
+												style="flex: 1 1 160px; min-width: 0; position: relative;">
+												<label
+													style="font-family: verdana; font-size: 13px; font-weight: bold;">Scheme
+													Type</label><br>
+												<div class="attached-select-group">
+													<button type="button" id="schemeTypeBtn"
+														class="form-control form-control-sm"
+														onclick="toggleMenuById(event,'schemeTypeMenu')"
+														style="flex: 1; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">--
+														Select --</button>
+													<button type="button" id="schemeTypeFlagBtn"
+														class="btn btn-sm btn-outline-secondary flag-toggle-btn"
+														onclick="toggleFlagBtn(this)" title="Click to flag">
+														<i class="fas fa-ban"></i>
+													</button>
+												</div>
+												<div id="schemeTypeMenu" class="multi-select-menu"
+													style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);">
+												</div>
+											</div>
+
+											<div class="col-auto"
+												style="flex: 1 1 160px; min-width: 0; position: relative;">
+												<label
+													style="font-family: verdana; font-size: 13px; font-weight: bold;">Asset
+													Class</label><br>
+												<div class="attached-select-group">
+													<button type="button" id="asstClsBtn"
+														class="form-control form-control-sm"
+														onclick="toggleMenuById(event,'asstClsMenu')"
+														style="flex: 1; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">--
+														Select --</button>
+													<button type="button" id="asstClsFlagBtn"
+														class="btn btn-sm btn-outline-secondary flag-toggle-btn"
+														onclick="toggleFlagBtn(this)" title="Click to flag">
+														<i class="fas fa-ban"></i>
+													</button>
+												</div>
+												<div id="asstClsMenu" class="multi-select-menu"
+													style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);">
+												</div>
+											</div>
+
+											<div class="col-auto"
+												style="flex: 1 1 160px; min-width: 0; position: relative;">
+												<label
+													style="font-family: verdana; font-size: 13px; font-weight: bold;">Purpose
+													of Advance</label><br>
+												<div class="attached-select-group">
+													<button type="button" id="purposeOfAdvnBtn"
+														class="form-control form-control-sm"
+														onclick="toggleMenuById(event,'purposeOfAdvnMenu')"
+														style="flex: 1; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">--
+														Select --</button>
+													<button type="button" id="purposeOfAdvnFlagBtn"
+														class="btn btn-sm btn-outline-secondary flag-toggle-btn"
+														onclick="toggleFlagBtn(this)" title="Click to flag">
+														<i class="fas fa-ban"></i>
+													</button>
+												</div>
+												<div id="purposeOfAdvnMenu" class="multi-select-menu"
+													style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);">
+												</div>
+											</div>
+
+										</div>
 	
 											<!-- Show Accounts -->
 											<div style="margin-top: 14px; display: none;">
@@ -1513,6 +1565,15 @@
             </div>
 
             <div class="form-row align-items-end mb-3" style="gap: 10px; flex-wrap: wrap; margin-top: 10px;">
+            <div class="col-auto" style="flex: 1 1 160px; min-width: 0;">
+       		 <label style="font-family: verdana; font-size: 13px; font-weight: bold;">Account Balance (LC)</label>
+       		 <select id="otherBalanceLc" class="form-control form-control-sm" style="width: 100%;">
+         		<option value="">-- Select --</option>
+           		<option value="&lt;0">Debit</option>
+            	<option value="&gt;0">Credit</option>
+            	<option value="&lt;&gt;0">Net Off</option>
+        	</select>
+    		</div>
                 <div class="col-auto" style="flex: 1 1 160px; min-width: 0; position: relative;">
                     <label style="font-family: verdana; font-size: 13px; font-weight: bold;">SOL ID</label><br>
                     <button type="button" id="otherSolIdBtn" class="form-control form-control-sm" onclick="toggleMenuById(event,'otherSolIdMenu')" style="width: 100%; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-- Select SOL ID --</button>
@@ -1937,13 +1998,19 @@
 						    </div>
 						    <div class="col-auto" style="position: relative;">
 						        <label style="font-family: verdana; font-size: 13px; font-weight: bold;">Constitution Code</label><br>
-						        <button type="button" id="modalConstCodeBtn" class="form-control form-control-sm"
-						            onclick="toggleMenuById(event,'modalConstCodeMenu')"
-						            style="min-width: 160px; text-align: left; background: #fff; border: 1px solid #ced4da;
-						                   border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer;
-						                   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-						            -- Select --</button>
-						        <div id="modalConstCodeMenu" class="multi-select-menu"
+							<div class="attached-select-group">
+								<button type="button" id="modalConstCodeBtn"
+									class="form-control form-control-sm"
+									onclick="toggleMenuById(event,'modalConstCodeMenu')"
+									style="flex: 1; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">--
+									Select --</button>
+								<button type="button" id="modalConstCodeFlagBtn"
+									class="btn btn-sm btn-outline-secondary flag-toggle-btn"
+									onclick="toggleFlagBtn(this)" title="Click to flag">
+									<i class="fas fa-ban"></i>
+								</button>
+							</div>
+							<div id="modalConstCodeMenu" class="multi-select-menu"
 						            style="display: none; position: absolute; z-index: 9999; background: #fff;
 						                   border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto;
 						                   min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0,0,0,.15);">
@@ -1951,13 +2018,19 @@
 						    </div>
 						    <div class="col-auto" style="position: relative;">
 						        <label style="font-family: verdana; font-size: 13px; font-weight: bold;">Legal Entity Type</label><br>
-						        <button type="button" id="modalLegalEntityBtn" class="form-control form-control-sm"
-						            onclick="toggleMenuById(event,'modalLegalEntityMenu')"
-						            style="min-width: 160px; text-align: left; background: #fff; border: 1px solid #ced4da;
-						                   border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer;
-						                   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-						            -- Select --</button>
-						        <div id="modalLegalEntityMenu" class="multi-select-menu"
+							<div class="attached-select-group">
+								<button type="button" id="modalLegalEntityBtn"
+									class="form-control form-control-sm"
+									onclick="toggleMenuById(event,'modalLegalEntityMenu')"
+									style="flex: 1; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">--
+									Select --</button>
+								<button type="button" id="modalLegalEntityFlagBtn"
+									class="btn btn-sm btn-outline-secondary flag-toggle-btn"
+									onclick="toggleFlagBtn(this)" title="Click to flag">
+									<i class="fas fa-ban"></i>
+								</button>
+							</div>
+							<div id="modalLegalEntityMenu" class="multi-select-menu"
 						            style="display: none; position: absolute; z-index: 9999; background: #fff;
 						                   border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto;
 						                   min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0,0,0,.15);">
@@ -1975,13 +2048,19 @@
 						    </div>
 						    <div class="col-auto" style="position: relative;">
 						        <label style="font-family: verdana; font-size: 13px; font-weight: bold;">Scheme Type</label><br>
-						        <button type="button" id="modalSchemeTypeBtn" class="form-control form-control-sm"
-						            onclick="toggleMenuById(event,'modalSchemeTypeMenu')"
-						            style="min-width: 160px; text-align: left; background: #fff; border: 1px solid #ced4da;
-						                   border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer;
-						                   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-						            -- Select --</button>
-						        <div id="modalSchemeTypeMenu" class="multi-select-menu"
+							<div class="attached-select-group">
+								<button type="button" id="modalSchemeTypeBtn"
+									class="form-control form-control-sm"
+									onclick="toggleMenuById(event,'modalSchemeTypeMenu')"
+									style="flex: 1; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">--
+									Select --</button>
+								<button type="button" id="modalSchemeTypeFlagBtn"
+									class="btn btn-sm btn-outline-secondary flag-toggle-btn"
+									onclick="toggleFlagBtn(this)" title="Click to flag">
+									<i class="fas fa-ban"></i>
+								</button>
+							</div>
+							<div id="modalSchemeTypeMenu" class="multi-select-menu"
 						            style="display: none; position: absolute; z-index: 9999; background: #fff;
 						                   border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto;
 						                   min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0,0,0,.15);">
@@ -1990,13 +2069,19 @@
 						    
 						    <div class="col-auto" style="position: relative;">
 						        <label style="font-family: verdana; font-size: 13px; font-weight: bold;">Asset Class</label><br>
-						        <button type="button" id="modalAsstClsBtn" class="form-control form-control-sm"
-						            onclick="toggleMenuById(event,'modalAsstClsMenu')"
-						            style="min-width: 160px; text-align: left; background: #fff; border: 1px solid #ced4da;
-						                   border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer;
-						                   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-						            -- Select --</button>
-						        <div id="modalAsstClsMenu" class="multi-select-menu"
+							<div class="attached-select-group">
+								<button type="button" id="modalAsstClsBtn"
+									class="form-control form-control-sm"
+									onclick="toggleMenuById(event,'modalAsstClsMenu')"
+									style="flex: 1; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">--
+									Select --</button>
+								<button type="button" id="modalAsstClsFlagBtn"
+									class="btn btn-sm btn-outline-secondary flag-toggle-btn"
+									onclick="toggleFlagBtn(this)" title="Click to flag">
+									<i class="fas fa-ban"></i>
+								</button>
+							</div>
+							<div id="modalAsstClsMenu" class="multi-select-menu"
 						            style="display: none; position: absolute; z-index: 9999; background: #fff;
 						                   border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto;
 						                   min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0,0,0,.15);">
@@ -2005,13 +2090,19 @@
 						    
 						    <div class="col-auto" style="position: relative;">
 						        <label style="font-family: verdana; font-size: 13px; font-weight: bold;">Purpose of Advance</label><br>
-						        <button type="button" id="modalPurposeOfAdvnBtn" class="form-control form-control-sm"
-						            onclick="toggleMenuById(event,'modalPurposeOfAdvnMenu')"
-						            style="min-width: 160px; text-align: left; background: #fff; border: 1px solid #ced4da;
-						                   border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer;
-						                   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-						            -- Select --</button>
-						        <div id="modalPurposeOfAdvnMenu" class="multi-select-menu"
+							<div class="attached-select-group">
+								<button type="button" id="modalPurposeOfAdvnBtn"
+									class="form-control form-control-sm"
+									onclick="toggleMenuById(event,'modalPurposeOfAdvnMenu')"
+									style="flex: 1; text-align: left; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">--
+									Select --</button>
+								<button type="button" id="modalPurposeOfAdvnFlagBtn"
+									class="btn btn-sm btn-outline-secondary flag-toggle-btn"
+									onclick="toggleFlagBtn(this)" title="Click to flag">
+									<i class="fas fa-ban"></i>
+								</button>
+							</div>
+							<div id="modalPurposeOfAdvnMenu" class="multi-select-menu"
 						            style="display: none; position: absolute; z-index: 9999; background: #fff;
 						                   border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto;
 						                   min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0,0,0,.15);">
@@ -2181,12 +2272,19 @@
 								<label
 									style="font-family: verdana; font-size: 12px; font-weight: bold;">Constitution
 									Code</label><br>
+							<div class="attached-select-group">
 								<button type="button" id="editConstCodeBtn"
-									onclick="toggleMenuById(event,'editConstCodeMenu')"
 									class="form-control form-control-sm text-left"
-									style="min-width: 160px; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-									-- Select --</button>
-								<div id="editConstCodeMenu" class="multi-select-menu"
+									onclick="toggleMenuById(event,'editConstCodeMenu')"
+									style="flex: 1; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">--
+									Select --</button>
+								<button type="button" id="editConstCodeFlagBtn"
+									class="btn btn-sm btn-outline-secondary flag-toggle-btn"
+									onclick="toggleFlagBtn(this)" title="Click to flag">
+									<i class="fas fa-ban"></i>
+								</button>
+							</div>
+							<div id="editConstCodeMenu" class="multi-select-menu"
 									style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);">
 								</div>
 							</div>
@@ -2195,12 +2293,19 @@
 								<label
 									style="font-family: verdana; font-size: 12px; font-weight: bold;">Legal
 									Entity Type</label><br>
+							<div class="attached-select-group">
 								<button type="button" id="editLegalEntityBtn"
-									onclick="toggleMenuById(event,'editLegalEntityMenu')"
 									class="form-control form-control-sm text-left"
-									style="min-width: 160px; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-									-- Select --</button>
-								<div id="editLegalEntityMenu" class="multi-select-menu"
+									onclick="toggleMenuById(event,'editLegalEntityMenu')"
+									style="flex: 1; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">--
+									Select --</button>
+								<button type="button" id="editLegalEntityFlagBtn"
+									class="btn btn-sm btn-outline-secondary flag-toggle-btn"
+									onclick="toggleFlagBtn(this)" title="Click to flag">
+									<i class="fas fa-ban"></i>
+								</button>
+							</div>
+							<div id="editLegalEntityMenu" class="multi-select-menu"
 									style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);">
 								</div>
 							</div>
@@ -2208,12 +2313,19 @@
 								<label
 									style="font-family: verdana; font-size: 12px; font-weight: bold;">Scheme
 									Type</label><br>
+							<div class="attached-select-group">
 								<button type="button" id="editSchemeTypeBtn"
-									onclick="toggleMenuById(event,'editSchemeTypeMenu')"
 									class="form-control form-control-sm text-left"
-									style="min-width: 160px; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">--
+									onclick="toggleMenuById(event,'editSchemeTypeMenu')"
+									style="flex: 1; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">--
 									Select --</button>
-								<div id="editSchemeTypeMenu" class="multi-select-menu"
+								<button type="button" id="editSchemeTypeFlagBtn"
+									class="btn btn-sm btn-outline-secondary flag-toggle-btn"
+									onclick="toggleFlagBtn(this)" title="Click to flag">
+									<i class="fas fa-ban"></i>
+								</button>
+							</div>
+							<div id="editSchemeTypeMenu" class="multi-select-menu"
 									style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
 							</div>
 							
@@ -2221,12 +2333,19 @@
 								<label
 									style="font-family: verdana; font-size: 12px; font-weight: bold;">Asset
 									Class</label><br>
+							<div class="attached-select-group">
 								<button type="button" id="editAsstClsBtn"
-									onclick="toggleMenuById(event,'editAsstClsMenu')"
 									class="form-control form-control-sm text-left"
-									style="min-width: 160px; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">--
+									onclick="toggleMenuById(event,'editAsstClsMenu')"
+									style="flex: 1; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">--
 									Select --</button>
-								<div id="editAsstClsMenu" class="multi-select-menu"
+								<button type="button" id="editAsstClsFlagBtn"
+									class="btn btn-sm btn-outline-secondary flag-toggle-btn"
+									onclick="toggleFlagBtn(this)" title="Click to flag">
+									<i class="fas fa-ban"></i>
+								</button>
+							</div>
+							<div id="editAsstClsMenu" class="multi-select-menu"
 									style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
 							</div>
 							
@@ -2234,12 +2353,19 @@
 								<label
 									style="font-family: verdana; font-size: 12px; font-weight: bold;">Purpose
 									of Advance</label><br>
+							<div class="attached-select-group">
 								<button type="button" id="editPurposeOfAdvnBtn"
-									onclick="toggleMenuById(event,'editPurposeOfAdvnMenu')"
 									class="form-control form-control-sm text-left"
-									style="min-width: 160px; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">--
+									onclick="toggleMenuById(event,'editPurposeOfAdvnMenu')"
+									style="flex: 1; background: #fff; border: 1px solid #ced4da; border-radius: 4px; font-family: verdana; font-size: 13px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">--
 									Select --</button>
-								<div id="editPurposeOfAdvnMenu" class="multi-select-menu"
+								<button type="button" id="editPurposeOfAdvnFlagBtn"
+									class="btn btn-sm btn-outline-secondary flag-toggle-btn"
+									onclick="toggleFlagBtn(this)" title="Click to flag">
+									<i class="fas fa-ban"></i>
+								</button>
+							</div>
+							<div id="editPurposeOfAdvnMenu" class="multi-select-menu"
 									style="display: none; position: absolute; z-index: 9999; background: #fff; border: 1px solid #ccc; border-radius: 4px; max-height: 250px; overflow-y: auto; min-width: 200px; padding: 6px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, .15);"></div>
 							</div>
 							
@@ -2346,6 +2472,10 @@
             </div>
             <div class="modal-body" style="padding: 16px; max-height: 78vh; overflow-y: auto;">
                 <div class="form-row mb-2">
+                	<div class="col">
+            			<label style="font-family: verdana; font-size: 12px; font-weight: bold;">SOURCE</label>
+           				 <input type="text" id="editOMSource" class="form-control form-control-sm" readonly style="background: #f5f5f5;">
+       				</div>
                     <div class="col">
                         <label style="font-family: verdana; font-size: 12px; font-weight: bold;">GL HEAD</label>
                         <input type="text" id="editOMGlHead" class="form-control form-control-sm" readonly style="background: #f5f5f5;">
@@ -2765,7 +2895,7 @@
 
 	var PURPOSE_OF_ADVN_OPTIONS = /*[[${purposeOfAdvn}]]*/ [];
 	
-	var OTHER_CURRENCY_OPTIONS = ['AED', 'USD', 'EUR', 'CHF', 'JPY'];
+	var OTHER_CURRENCY_OPTIONS = ['ALL_CURR', 'AED', 'USD', 'EUR', 'CHF', 'JPY'];
 	
 	var DEMO1_LIST_A = /*[[${demo1ListA}]]*/ [];
 	var DEMO1_LIST_B = /*[[${demo1ListB}]]*/ [];
@@ -2801,34 +2931,60 @@
 	    );
 	    options.forEach(function(val) {
 	        var safeId = prefix + '_' + val.replace(/[^a-zA-Z0-9]/g, '_');
-	        var displayLabel = (val === 'ALLOW_NULL') ? 'ALLOW NULL' : val;
+	        var displayLabel = val;
+	        if (val === 'ALLOW_NULL') displayLabel = 'ALLOW NULL';
+	        if (val === 'ALL_CURR') displayLabel = 'All Currency';
+
 	        $menu.append(
 	            '<div class="cb-item" style="padding:4px 14px;">' +
 	            '<input type="checkbox" id="' + safeId + '" value="' + val +
-	            '" class="cb-' + menuId + '" onchange="multiMenuOnCheck(\'' + menuId + '\',\'' + btnId + '\')">' +
+	            '" class="cb-' + menuId + '" onchange="multiMenuOnCheck(\'' + menuId + '\',\'' + btnId + '\', this)">' +
 	            ' <label for="' + safeId + '" style="font-family:verdana;font-size:12px;cursor:pointer;margin:0;">' + displayLabel + '</label>' +
 	            '</div>'
 	        );
 	    });
 	}
-	
+
 	function multiMenuToggleAll(masterChk, menuId, btnId) {
-	    $('.cb-' + menuId).prop('checked', masterChk.checked);
+	    if (masterChk.checked) {
+	        $('#' + menuId + ' .cb-' + menuId).not('[value="ALL_CURR"]').prop('checked', true);
+	        $('#' + menuId + ' .cb-' + menuId + '[value="ALL_CURR"]').prop('checked', false);
+	    } else {
+	        $('#' + menuId + ' .cb-' + menuId).prop('checked', false);
+	    }
 	    multiMenuSyncBtn(menuId, btnId);
 	}
-	function multiMenuOnCheck(menuId, btnId) {
-	    var total   = $('.cb-' + menuId).length;
-	    var checked = $('.cb-' + menuId + ':checked').length;
+
+	function multiMenuOnCheck(menuId, btnId, checkbox) {
+	    if (checkbox) {
+	        var val = $(checkbox).val();
+	        if (val === 'ALL_CURR' && $(checkbox).is(':checked')) {
+	            $('#' + menuId + ' .cb-' + menuId).not(checkbox).prop('checked', false);
+	        } else if (val !== 'ALL_CURR' && $(checkbox).is(':checked')) {
+	            $('#' + menuId + ' .cb-' + menuId + '[value="ALL_CURR"]').prop('checked', false);
+	        }
+	    }
+
+	    var total   = $('#' + menuId + ' .cb-' + menuId).not('[value="ALL_CURR"]').length;
+	    var checked = $('#' + menuId + ' .cb-' + menuId + ':not([value="ALL_CURR"]):checked').length;
 	    $('#' + menuId + ' input[type=checkbox][id$="_All"]').prop('checked', total > 0 && total === checked);
 	    multiMenuSyncBtn(menuId, btnId);
 	}
+
 	function multiMenuSyncBtn(menuId, btnId) {
 	    var $checked = $('.cb-' + menuId + ':checked');
 	    var $btn = $('#' + btnId);
 	    var def  = $btn.data('default') || '-- Select --';
-	    if ($checked.length === 0)      $btn.text(def);
-	    else if ($checked.length === 1) $btn.text($checked.first().val());
-	    else                            $btn.text($checked.length + ' selected');
+	    if ($checked.length === 0) {
+	        $btn.text(def);
+	    } else if ($checked.length === 1) {
+	        var val = $checked.first().val();
+	        if (val === 'ALL_CURR') val = 'All Currency';
+	        if (val === 'ALLOW_NULL') val = 'ALLOW NULL';
+	        $btn.text(val);
+	    } else {
+	        $btn.text($checked.length + ' selected');
+	    }
 	}
 	
 	/* Extract  'v1','v2'  string for submit payload */
@@ -2843,14 +2999,14 @@
 	
 	/* Pre-select values from a stored string like  'v1','v2'  or  v1,v2 */
 	function preSelectMenuValues(menuId, btnId, storedStr) {
-	    $('.cb-' + menuId).prop('checked', false);
-	    if (storedStr) {
-	        storedStr.replace(/'/g, '').split(',').forEach(function(v) {
-	            var t = v.trim();
-	            if (t) $('.cb-' + menuId + '[value="' + t + '"]').prop('checked', true);
-	        });
-	    }
-	    multiMenuOnCheck(menuId, btnId);
+    	$('.cb-' + menuId).prop('checked', false);
+    	if (storedStr) {
+    	    storedStr.replace(/'/g, '').split(',').forEach(function(v) {
+    	        var t = v.trim();
+     	       if (t) $('.cb-' + menuId + '[value="' + t + '"]').prop('checked', true);
+     	   });
+    	}
+    	multiMenuOnCheck(menuId, btnId, null);
 	}
 	
 	/* Reset a menu back to all-unchecked */
@@ -3416,34 +3572,26 @@
 	    $('#demo1RowSelect').next('.searchable-select-wrapper').find('button').attr('title', $('#demo1RowSelect').find('option:selected').text() || '-- Select Row --');
 	    $('#demo2RowSelect').next('.searchable-select-wrapper').find('button').attr('title', $('#demo2RowSelect').find('option:selected').text() || '-- Select Row --');
 	}
-
 	function onDemoRowChange(demoPrefix) {
 	    var idx = $('#' + demoPrefix + 'RowSelect').val();
 	    var colSel = $('#' + demoPrefix + 'ColSelect').html('<option value="">-- Select Column --</option>');
 	    
-	    if (idx === '') {
-	        makeSearchableSelect('#' + demoPrefix + 'ColSelect');
-	        return;
-	    }
+	    if (idx === '') return;
 	    
 	    var row = currentRows[parseInt(idx)];
-	    var availableCols = row.availableCols || [];
+	    
 	    currentColumns.forEach(function(col) {
-	        if (availableCols.indexOf(col.colCode) === -1) return;
 	        colSel.append('<option value="' + row.label + col.colCode + '">' + row.label + col.colCode + '  -  ' + col.colName + '</option>');
 	    });
-	    
-	    makeSearchableSelect('#' + demoPrefix + 'ColSelect');
 	}
 
 	function onOtherRowLabelChange() {
 	    var idx    = $('#otherRowLabelSelect').val();
 	    var colSel = $('#otherColLabelSelect').html('<option value="">-- Select Column --</option>');
 	    if (idx === '') return;
-	    var row           = currentRows[parseInt(idx)];
-	    var availableCols = row.availableCols || [];
+	    var row    = currentRows[parseInt(idx)];
+	    
 	    currentColumns.forEach(function(col) {
-	        if (availableCols.indexOf(col.colCode) === -1) return;
 	        colSel.append('<option value="' + row.label + col.colCode + '">' + row.label + col.colCode + '  -  ' + col.colName + '</option>');
 	    });
 	    makeSearchableSelect('#otherColLabelSelect');
@@ -3453,10 +3601,9 @@
 	    var idx    = $('#rowLabelSelect').val();
 	    var colSel = $('#colLabelSelect').html('<option value="">-- Select Column --</option>');
 	    if (idx === '') return;
-	    var row           = currentRows[parseInt(idx)];
-	    var availableCols = row.availableCols || [];
+	    var row    = currentRows[parseInt(idx)];
+	    
 	    currentColumns.forEach(function(col) {
-	        if (availableCols.indexOf(col.colCode) === -1) return;
 	        colSel.append('<option value="' + row.label + col.colCode + '">' + row.label + col.colCode + '  -  ' + col.colName + '</option>');
 	    });
 	    makeSearchableSelect('#colLabelSelect');
@@ -3859,13 +4006,40 @@ var colMaxWidth = {
 	    var purposeOfAdvn = getMenuValues('purposeOfAdvnMenu');
 	
 	    var selectedRows = [];
+	    var constCodeFlag = $('#constCodeFlagBtn').hasClass('flag-active') ? 'Y' : 'N';
+	    var lglEntypFlag = $('#legalEntityFlagBtn').hasClass('flag-active') ? 'Y' : 'N';
+	    var schmTypFlag = $('#schemeTypeFlagBtn').hasClass('flag-active') ? 'Y' : 'N';
+	    var asstClsFlag = $('#asstClsFlagBtn').hasClass('flag-active') ? 'Y' : 'N';
+	    var purpOfAdvFlag = $('#purposeOfAdvnFlagBtn').hasClass('flag-active') ? 'Y' : 'N';
 	    $('.row-select:checked').each(function() {
 	        var idx       = $(this).data('idx');
 	        var balanceLc = $('.balance-select[data-idx="' + idx + '"]').val();
 	        var row       = window.currentData[idx];
 	        var filterVals= getFilterValues('n_' + idx);
 	        if (!balanceLc) { alert('Please select Account Balance (LC) for row ' + (idx + 1)); selectedRows = null; return false; }
-	        selectedRows.push({ accountId: nvl(row['ACCOUNT_ID_BACID'] || row['account_id_bacid']), currency: nvl(row['CURRENCY'] || row['currency']),  balanceLc: balanceLc, reportCode: reportCode, rowId: rowId, columnId: columnId, solId: solIdValue, constitutionCode: constCode, legalEntityType: legalEntity, hniNetworth: hniNetworth, turnover: turnover, filterColumns: filterVals, schemeType: schemeType, assetClass: asstCls, purposeOfAdvn: purposeOfAdvn });
+	        
+	        selectedRows.push({ 
+	            accountId: nvl(row['ACCOUNT_ID_BACID'] || row['account_id_bacid']), 
+	            currency: nvl(row['CURRENCY'] || row['currency']),  
+	            balanceLc: balanceLc, 
+	            reportCode: reportCode, 
+	            rowId: rowId, 
+	            columnId: columnId, 
+	            solId: solIdValue, 
+	            constitutionCode: constCode, 
+	            legalEntityType: legalEntity, 
+	            hniNetworth: hniNetworth, 
+	            turnover: turnover, 
+	            filterColumns: filterVals, 
+	            schemeType: schemeType, 
+	            assetClass: asstCls, 
+	            purposeOfAdvn: purposeOfAdvn,
+	            constCodeFlag: constCodeFlag,
+	            lglEntypFlag: lglEntypFlag,
+	            schmTypFlag: schmTypFlag,
+	            asstClsFlag: asstClsFlag,
+	            purpOfAdvFlag: purpOfAdvFlag
+	        });
 	    });
 	
 	    if (selectedRows === null) return;
@@ -3925,6 +4099,7 @@ var colMaxWidth = {
 	    makeSearchableSelect('#rowLabelSelect');
 	    makeSearchableSelect('#colLabelSelect');
 	    makeSearchableSelect('#glCodeSelect');
+	    $('.flag-toggle-btn').removeClass('flag-active').attr('title', 'Click to flag');
 	    window.currentData = [];
 	}
 	
@@ -4630,13 +4805,23 @@ var colMaxWidth = {
 	    var purposeOfAdvn = getMenuValues('modalPurposeOfAdvnMenu');
 	
 	    var selectedRows = [];
+	    var constCodeFlag = $('#modalConstCodeFlagBtn').hasClass('flag-active') ? 'Y' : 'N';
+	    var lglEntypFlag = $('#modalLegalEntityFlagBtn').hasClass('flag-active') ? 'Y' : 'N';
+	    var schmTypFlag = $('#modalSchemeTypeFlagBtn').hasClass('flag-active') ? 'Y' : 'N';
+	    var asstClsFlag = $('#modalAsstClsFlagBtn').hasClass('flag-active') ? 'Y' : 'N';
+	    var purpOfAdvFlag = $('#modalPurposeOfAdvnFlagBtn').hasClass('flag-active') ? 'Y' : 'N';
 	    $('.modal-row-select:checked').each(function() {
 	        var idx       = $(this).data('idx');
 	        var balanceLc = $('.modal-balance-select[data-idx="' + idx + '"]').val();
 	        var row       = window.modalCurrentData[idx];
 	        var filterVals= getFilterValues('m_' + idx);
 	        if (!balanceLc) { alert('Please select Account Balance (LC) for row ' + (idx + 1)); selectedRows = null; return false; }
-	        selectedRows.push({ accountId: nvl(row['ACCOUNT_ID_BACID'] || row['account_id_bacid']), bacid: nvl(row['BACID']), balanceLc: balanceLc, reportCode: reportCode, rowId: rowId, columnId: columnId, solId: solIdValue, constitutionCode: constCode, legalEntityType: legalEntity, hniNetworth: hniNetworth, turnover: turnover, schemeType: schemeType, assetClass: asstCls, purposeOfAdvn: purposeOfAdvn });
+	        selectedRows.push({ accountId: nvl(row['ACCOUNT_ID_BACID'] || row['account_id_bacid']), bacid: nvl(row['BACID']), balanceLc: balanceLc, reportCode: reportCode, rowId: rowId, columnId: columnId, solId: solIdValue, constitutionCode: constCode, legalEntityType: legalEntity, hniNetworth: hniNetworth, turnover: turnover, schemeType: schemeType, assetClass: asstCls, purposeOfAdvn: purposeOfAdvn,
+	            constCodeFlag: constCodeFlag,
+	            lglEntypFlag: lglEntypFlag,
+	            schmTypFlag: schmTypFlag,
+	            asstClsFlag: asstClsFlag,
+	            purpOfAdvFlag: purpOfAdvFlag });
 	    });
 	
 	    if (selectedRows === null) return;
@@ -4707,6 +4892,7 @@ var colMaxWidth = {
 	    $('#modalBtnSubmit').hide();
 	    makeSearchableSelect('#modalColLabel');
 	    makeSearchableSelect('#modalGlCodeSelect');
+	    $('.flag-toggle-btn').removeClass('flag-active').attr('title', 'Click to flag');
 	    window.modalCurrentData = [];
 	}
 	
@@ -4744,6 +4930,12 @@ var colMaxWidth = {
 	    $('#editAccountDesc').val(nvl(row['ACCOUNT_DESCRIPTION'] || ''));
 	    $('#editCurrency').val(nvl(row['CURRENCY']));
 
+	    setFlagBtnState('editConstCodeFlagBtn',    nvl(row['CONST_CODE_FLAG']));
+	    setFlagBtnState('editLegalEntityFlagBtn',  nvl(row['LGL_ENTYP_FLAG']));
+	    setFlagBtnState('editSchemeTypeFlagBtn',   nvl(row['SCHM_TYP_FLAG']));
+	    setFlagBtnState('editAsstClsFlagBtn',      nvl(row['ASST_CLS_FLAG']));
+	    setFlagBtnState('editPurposeOfAdvnFlagBtn',nvl(row['PURP_OF_ADV_FLAG']));
+	    
 	    /* Keys */
 	    $('#editReportCode').val($('#reportCodeSelect').val());
 	    $('#editOldRowId').val('');
@@ -4825,6 +5017,12 @@ var colMaxWidth = {
 	    $('#editAccountDesc').val(nvl(row['ACCOUNT_DESCRIPTION']));
 	    $('#editCurrency').val(nvl(row['CURRENCY']));
 
+	    setFlagBtnState('editConstCodeFlagBtn',    nvl(row['CONST_CODE_FLAG']));
+	    setFlagBtnState('editLegalEntityFlagBtn',  nvl(row['LGL_ENTYP_FLAG']));
+	    setFlagBtnState('editSchemeTypeFlagBtn',   nvl(row['SCHM_TYP_FLAG']));
+	    setFlagBtnState('editAsstClsFlagBtn',      nvl(row['ASST_CLS_FLAG']));
+	    setFlagBtnState('editPurposeOfAdvnFlagBtn',nvl(row['PURP_OF_ADV_FLAG']));
+	    
 	    /* Hidden keys */
 	    $('#editReportCode').val(nvl(row['REPORT_CODE']));
 	    $('#editOldRowId').val(nvl(row['ROW_ID']));
@@ -4840,22 +5038,19 @@ var colMaxWidth = {
 	    var savedRowId = nvl(row['ROW_ID']);
 	    rowSel.val(savedRowId);
 
-	    /* Populate COLUMN ID dropdown based on selected row */
-	    var colSel = $('#editColumnId').html('<option value="">-- Select Column --</option>');
-	    if (savedRowId) {
-	        var matchedRow = null;
-	        currentRows.forEach(function(r) { if (r.label === savedRowId) matchedRow = r; });
-	        if (matchedRow) {
-	            var availableCols = matchedRow.availableCols || [];
-	            currentColumns.forEach(function(col) {
-	                if (availableCols.indexOf(col.colCode) === -1) return;
-	                colSel.append('<option value="' + matchedRow.label + col.colCode + '">' + matchedRow.label + col.colCode + '  -  ' + col.colName + '</option>');
-	            });
-	        }
-	    }
-	    colSel.val(nvl(row['COLUMN_ID']));
-	    makeSearchableSelect('#editRowId');
-	    makeSearchableSelect('#editColumnId');
+    var colSel = $('#editColumnId').html('<option value="">-- Select Column --</option>');
+    if (savedRowId) {
+        var matchedRow = null;
+        currentRows.forEach(function(r) { if (r.label === savedRowId) matchedRow = r; });
+        if (matchedRow) {
+            currentColumns.forEach(function(col) {
+                colSel.append('<option value="' + matchedRow.label + col.colCode + '">' + matchedRow.label + col.colCode + '  -  ' + col.colName + '</option>');
+            });
+        }
+    }
+    colSel.val(nvl(row['COLUMN_ID']));
+    makeSearchableSelect('#editRowId');
+    makeSearchableSelect('#editColumnId');
 
 	    /* Editable fields */
 	    $('#editBalanceLc').val(nvl(row['ACCOUNT_BALANCE_LC']));
@@ -4944,7 +5139,12 @@ var colMaxWidth = {
 	        schemeType       : getMenuValues('editSchemeTypeMenu'),
 	        assetClass       : getMenuValues('editAsstClsMenu'),
 	        purposeOfAdvn : getMenuValues('editPurposeOfAdvnMenu'),
-	        currency         : $('#editCurrency').val().trim()
+	        currency         : $('#editCurrency').val().trim(),
+	        constCodeFlag    : $('#editConstCodeFlagBtn').hasClass('flag-active') ? 'Y' : 'N',
+	        lglEntypFlag     : $('#editLegalEntityFlagBtn').hasClass('flag-active') ? 'Y' : 'N',
+	        schmTypFlag      : $('#editSchemeTypeFlagBtn').hasClass('flag-active') ? 'Y' : 'N',
+	        asstClsFlag      : $('#editAsstClsFlagBtn').hasClass('flag-active') ? 'Y' : 'N',
+	        purpOfAdvFlag    : $('#editPurposeOfAdvnFlagBtn').hasClass('flag-active') ? 'Y' : 'N'
 	    };
 	
 	    $('#editMappedSaveBtn').prop('disabled', true).text('Saving...');
@@ -4966,7 +5166,12 @@ var colMaxWidth = {
 	            schemeType      : payload.schemeType,       
 	            assetClass      : payload.assetClass,      
 	            purposeOfAdvn   : payload.purposeOfAdvn,
-	            currency        : payload.currency
+	            currency        : payload.currency,
+	            constCodeFlag   : payload.constCodeFlag,
+	            lglEntypFlag    : payload.lglEntypFlag,
+	            schmTypFlag     : payload.schmTypFlag,
+	            asstClsFlag     : payload.asstClsFlag,
+	            purpOfAdvFlag   : payload.purpOfAdvFlag
 	        }];
 	        $.ajax({
 	            url: '/BRF/BRFCommonTable/submit', type: 'POST', contentType: 'application/json',
@@ -5608,6 +5813,7 @@ var colMaxWidth = {
 		$('#otherGlCodeSelect').html('<option value="">-- Select GL Code --</option>');
 	    $('#otherGlSubCodeMenu').hide().html(''); 
 	    $('#otherGlSubCodeBtn').prop('disabled', true).text('-- Select GL Sub Code --');
+	    $('#otherBalanceLc').val('');
 	    
 	    resetMenu('otherSolIdMenu',       'otherSolIdBtn');
 	    resetMenu('otherConstCodeMenu',   'otherConstCodeBtn');
@@ -5630,13 +5836,27 @@ var colMaxWidth = {
 	}
 	
 	function toggleAllOtherCurrencies(masterChk) {
-	    $('.other-currency-chk').prop('checked', masterChk.checked);
+	    if (masterChk.checked) {
+	        $('.other-currency-chk').not('[value="ALL_CURR"]').prop('checked', true);
+	        $('.other-currency-chk[value="ALL_CURR"]').prop('checked', false);
+	    } else {
+	        $('.other-currency-chk').prop('checked', false);
+	    }
 	    refreshOtherCurrencyBtnLabel();
 	}
 
-	function onOtherCurrencyCheck() {
-	    var all = $('.other-currency-chk').length;
-	    var chk = $('.other-currency-chk:checked').length;
+	function onOtherCurrencyCheck(checkbox) {
+	    if (checkbox) {
+	        var val = $(checkbox).val();
+	        if (val === 'ALL_CURR' && $(checkbox).is(':checked')) {
+	            $('.other-currency-chk').not(checkbox).prop('checked', false);
+	        } else if (val !== 'ALL_CURR' && $(checkbox).is(':checked')) {
+	            $('.other-currency-chk[value="ALL_CURR"]').prop('checked', false);
+	        }
+	    }
+
+	    var all = $('.other-currency-chk').not('[value="ALL_CURR"]').length;
+	    var chk = $('.other-currency-chk:not([value="ALL_CURR"]):checked').length;
 	    $('#chk_otherCurrencyAll').prop('checked', all === chk && all > 0);
 	    refreshOtherCurrencyBtnLabel();
 	}
@@ -5644,38 +5864,48 @@ var colMaxWidth = {
 	function refreshOtherCurrencyBtnLabel() {
 	    var checked = $('.other-currency-chk:checked');
 	    var btn = $('#otherCurrencyBtn');
-	    if (checked.length === 0)      btn.text('-- Select Currency --');
-	    else if (checked.length === 1) btn.text(checked.first().val());
-	    else                           btn.text(checked.length + ' selected');
+	    if (checked.length === 0) {
+	        btn.text('-- Select Currency --');
+	    } else if (checked.length === 1) {
+	        var val = checked.first().val();
+	        btn.text(val === 'ALL_CURR' ? 'All Currency' : val);
+	    } else {
+	        btn.text(checked.length + ' selected');
+	    }
 	}
 
 		/* Returns whatever is currently checked. If nothing is checked,
 		   defaults to ALL currency options */
-		function getSelectedOtherCurrencies() {
-		    var selected = $('.other-currency-chk:checked').map(function() { return this.value; }).get();
-		    if (!selected.length) selected = OTHER_CURRENCY_OPTIONS.slice();
-		    return selected;
-		} 
-	   function buildOtherCurrencyCheckboxes() {
-		    var $list = $('#otherCurrencyCheckboxList').empty();
-		    OTHER_CURRENCY_OPTIONS.forEach(function (ccy) {
-		        var id = 'chk_curr_' + ccy;
-		        var $item = $(
-		            '<div class="cb-item" style="padding:4px 14px;cursor:pointer;">' +
-		                '<input type="checkbox" class="other-currency-chk" id="' + id + '" value="' + ccy + '" onchange="onOtherCurrencyCheck()"> ' +
-		                '<label for="' + id + '" style="font-family:verdana;font-size:12px;cursor:pointer;margin:0;">' + ccy + '</label>' +
-		            '</div>'
-		        );
-		        $list.append($item);
-		    });
-		}
+		   function getSelectedOtherCurrencies() {
+			    var selected = $('.other-currency-chk:checked').map(function() { return this.value; }).get();
+			    if (!selected.length) {
+			        return ['ALL_CURR'];
+			    }
+			    return selected;
+			} 
+
+			function buildOtherCurrencyCheckboxes() {
+			    var $list = $('#otherCurrencyCheckboxList').empty();
+			    OTHER_CURRENCY_OPTIONS.forEach(function (ccy) {
+			        var id = 'chk_curr_' + ccy;
+			        var displayLabel = (ccy === 'ALL_CURR') ? 'All Currency' : ccy;
+			        var $item = $(
+			            '<div class="cb-item" style="padding:4px 14px;cursor:pointer;">' +
+			                '<input type="checkbox" class="other-currency-chk" id="' + id + '" value="' + ccy + '" onchange="onOtherCurrencyCheck(this)"> ' +
+			                '<label for="' + id + '" style="font-family:verdana;font-size:12px;cursor:pointer;margin:0;">' + displayLabel + '</label>' +
+			            '</div>'
+			        );
+			        $list.append($item);
+			    });
+			}
 	
 	   function submitOtherMappings() {
 
 		    var reportCode = nvl($('#reportCodeSelect').val()).trim();
 		    var rowIdxVal = $('#otherRowLabelSelect').val();
 		    var rowId     = (rowIdxVal !== '' && currentRows[parseInt(rowIdxVal)]) ? currentRows[parseInt(rowIdxVal)].label : '';
-		    
+		    var source     = nvl($('#otherSourceSelect').val()).trim();
+		    var balanceLc = $('#otherBalanceLc').val();
 		    var glHead     = nvl($('#otherGlCodeSelect').val()).trim();
 		    var glSubheadCode = $('#otherGlSubCodeMenu input[type=checkbox]:not(#chk_otherSubAll):checked')
 		        .map(function() { return this.value; }).get().join(',');
@@ -5690,7 +5920,10 @@ var colMaxWidth = {
 		        alert('Please select Row Label before saving.');
 		        return;
 		    }
-		    
+		    if (!balanceLc) { 
+		    	alert('Please select Account Balance (LC) before saving.'); 
+		    	return; 
+		    }
 		    var solId            = getMenuValues('otherSolIdMenu');
 		    var constitutionCode = getMenuValues('otherConstCodeMenu');
 		    var legalEntityType  = getMenuValues('otherLegalEntityMenu');
@@ -5711,26 +5944,28 @@ var colMaxWidth = {
 		    }
 
 		    var payload = {
-		        reportCode:       reportCode,
-		        rowId:            rowId,
-		        columnId:         columnId,
-		        glHead:           glHead,
-		        glSubheadCode:    glSubheadCode,
-		        solId:            getMenuValues('otherSolIdMenu'),
-		        constitutionCode: getMenuValues('otherConstCodeMenu'),
-		        legalEntityType:  getMenuValues('otherLegalEntityMenu'),
-		        hniNetworth:      nvl($('#otherHniNetworth').val()).trim(),
-		        turnover:         nvl($('#otherTurnover').val()).trim(),
-		        schemeType:       getMenuValues('otherSchemeTypeMenu'),
-		        assetClass:       getMenuValues('otherAsstClsMenu'),
-		        purposeOfAdvn:    getMenuValues('otherPurposeOfAdvnMenu'),
-		        currencies:       getSelectedOtherCurrencies().join(','),   // never empty — defaults to ALL currencies here if none checked
-		        constCodeFlag:    $('#otherConstCodeFlagBtn').hasClass('flag-active') ? 'Y' : 'N',
-		        lglEntypFlag:     $('#otherLegalEntityFlagBtn').hasClass('flag-active') ? 'Y' : 'N',
-		        schmTypFlag:      $('#otherSchemeTypeFlagBtn').hasClass('flag-active') ? 'Y' : 'N',
-		        asstClsFlag:      $('#otherAsstClsFlagBtn').hasClass('flag-active') ? 'Y' : 'N',
-		        purpOfAdvFlag:    $('#otherPurposeOfAdvnFlagBtn').hasClass('flag-active') ? 'Y' : 'N'
-		    };
+		            reportCode:       reportCode,
+		            rowId:            rowId,
+		            columnId:         columnId,
+		            dataType:         source,
+		            balanceLc:        balanceLc,
+		            glHead:           glHead,
+		            glSubheadCode:    glSubheadCode,
+		            solId:            solId,
+		            constitutionCode: constitutionCode,
+		            legalEntityType:  legalEntityType,
+		            hniNetworth:      hniNetworth,
+		            turnover:         turnover,
+		            schemeType:       schemeType,
+		            assetClass:       assetClass,
+		            purposeOfAdvn:    purposeOfAdvn,
+		            currencies:       getSelectedOtherCurrencies().join(','), 
+		            constCodeFlag:    $('#otherConstCodeFlagBtn').hasClass('flag-active') ? 'Y' : 'N',
+		            lglEntypFlag:     $('#otherLegalEntityFlagBtn').hasClass('flag-active') ? 'Y' : 'N',
+		            schmTypFlag:      $('#otherSchemeTypeFlagBtn').hasClass('flag-active') ? 'Y' : 'N',
+		            asstClsFlag:      $('#otherAsstClsFlagBtn').hasClass('flag-active') ? 'Y' : 'N',
+		            purpOfAdvFlag:    $('#otherPurposeOfAdvnFlagBtn').hasClass('flag-active') ? 'Y' : 'N'
+		        };
 
 		    $.ajax({
 		        url: '/BRF/BRFCommonTable/submitOtherMapping', type: 'POST', contentType: 'application/json',
@@ -5761,15 +5996,14 @@ var colMaxWidth = {
 	   function onEditOMRowIdChange() {
 		    var selectedLabel = $('#editOMRowId').val();
 		    var colSel = $('#editOMColumnId').html('<option value="">-- Select Column --</option>');
-		    if (!selectedLabel) { makeSearchableSelect('#editOMColumnId'); return; }
-		    var matchedRow = null;
-		    currentRows.forEach(function(r) { if (r.label === selectedLabel) matchedRow = r; });
-		    if (matchedRow) {
-		        var availableCols = matchedRow.availableCols || [];
-		        currentColumns.forEach(function(col) {
-		            if (availableCols.indexOf(col.colCode) === -1) return;
-		            colSel.append('<option value="' + matchedRow.label + col.colCode + '">' + matchedRow.label + col.colCode + '  -  ' + col.colName + '</option>');
-		        });
+		    if (selectedLabel) {
+		        var matchedRow = null;
+		        currentRows.forEach(function(r) { if (r.label === selectedLabel) matchedRow = r; });
+		        if (matchedRow) {
+		            currentColumns.forEach(function(col) {
+		                colSel.append('<option value="' + matchedRow.label + col.colCode + '">' + matchedRow.label + col.colCode + '  -  ' + col.colName + '</option>');
+		            });
+		        }
 		    }
 		    makeSearchableSelect('#editOMColumnId');
 		}
@@ -5801,7 +6035,7 @@ var colMaxWidth = {
 		function openEditOtherMappingModal(rowOrEncoded) {
 		    var row = (typeof rowOrEncoded === 'string') ? JSON.parse(decodeURIComponent(rowOrEncoded)) : rowOrEncoded;
 		    window._editOtherMappingRow = row;
-
+		    $('#editOMSource').val(nvl(row['DATA_TYPE'] || row['data_type'] || row['source']));
 		    /* Read-only fields */
 		    $('#editOMGlHead').val(nvl(row['GL_HEAD']));
 		    $('#editOMGlSubHead').val(nvl(row['GL_SUBHEAD_CODE']));
@@ -5914,6 +6148,7 @@ var colMaxWidth = {
 		        reportCode       : $('#editOMReportCode').val().trim(),
 		        rowId            : rowId,
 		        columnId         : columnId,
+		        dataType         : $('#editOMSource').val().trim(),
 		        solId            : getMenuValues('editOMSolIdMenu'),
 		        constitutionCode : getMenuValues('editOMConstCodeMenu'),
 		        legalEntityType  : getMenuValues('editOMLegalEntityMenu'),
@@ -5923,7 +6158,7 @@ var colMaxWidth = {
 		        schemeType       : getMenuValues('editOMSchemeTypeMenu'),
 		        assetClass       : getMenuValues('editOMAsstClsMenu'),
 		        purposeOfAdvn    : getMenuValues('editOMPurposeOfAdvnMenu'),
-		        currency         : getMenuValuesPlain('editOMCurrencyMenu'),
+		        currency         : getMenuValuesPlain('editOMCurrencyMenu') || 'ALL_CURR',
 		        constCodeFlag    : $('#editOMConstCodeFlagBtn').hasClass('flag-active') ? 'Y' : 'N',
                 lglEntypFlag     : $('#editOMLegalEntityFlagBtn').hasClass('flag-active') ? 'Y' : 'N',
                 schmTypFlag      : $('#editOMSchemeTypeFlagBtn').hasClass('flag-active') ? 'Y' : 'N',
@@ -5992,19 +6227,15 @@ var colMaxWidth = {
 		    }
 		});
 		function resetDemoForm(prefix, demoType) {
+		    $('#' + prefix + 'Id').val('');
+		    
 		    $('#' + prefix + 'RowSelect').val('');
 		    $('#' + prefix + 'ColSelect').html('<option value="">-- Select Column --</option>');
 		    
-		    makeSearchableSelect('#' + prefix + 'RowSelect');
-		    makeSearchableSelect('#' + prefix + 'ColSelect');
-		    
 		    resetMenu(prefix + 'Fld1Menu', prefix + 'Fld1Btn');
-		    if (demoType === 'DEMO1') {
-		        resetMenu(prefix + 'Fld2Menu', prefix + 'Fld2Btn');
-		    }
-		    
 		    setExcludeButtonState(prefix + 'Fld1Exclude', 'N');
 		    if (demoType === 'DEMO1') {
+		        resetMenu(prefix + 'Fld2Menu', prefix + 'Fld2Btn');
 		        setExcludeButtonState(prefix + 'Fld2Exclude', 'N');
 		    }
 		}
@@ -6078,10 +6309,10 @@ var colMaxWidth = {
 		            if(demoType === 'DEMO1') setExcludeButtonState(prefix + 'Fld2Exclude', 'N');
 		            resetDemoForm(prefix, demoType);
 		            loadDemoMappings(reportCode, demoType);
-		            $('#btnSubmit' + demoType).prop('disabled', false).text('Save ' + demoType);
+		            $('#btnSubmit' + demoType).prop('disabled', false).text('Save');
 		        },
 		        error: function(err) {
-		            $('#btnSubmit' + demoType).prop('disabled', false).text('Save ' + demoType);
+		            $('#btnSubmit' + demoType).prop('disabled', false).text('Save');
 		            alert('Error saving mapping: ' + (err.responseText || 'Server Error'));
 		        }
 		    });
@@ -6159,14 +6390,10 @@ var colMaxWidth = {
 		    });
 		    if (matchedOpt.length > 0) {
 		        rowSelect.val(matchedOpt.val());
-		        rowSelect.next('.searchable-select-wrapper').find('button').text(matchedOpt.text());
+		        
 		        onDemoRowChange(prefix);
-		        setTimeout(function() {
-		            var colSelect = $('#' + prefix + 'ColSelect');
-		            colSelect.val(row.columnLabel);
-		            var colText = colSelect.find('option:selected').text();
-		            if (colText) colSelect.next('.searchable-select-wrapper').find('button').text(colText);
-		        }, 100);
+		        
+		        $('#' + prefix + 'ColSelect').val(row.columnLabel);
 		    }
 
 		    preSelectMenuValues(prefix + 'Fld1Menu', prefix + 'Fld1Btn', row.portefeuille_contrepartie);

@@ -608,9 +608,11 @@ public class BRFNavigationController {
 	    List<String> listThree = jdbcTemplate
 				.queryForList("SELECT DISTINCT CONTREPARTIE FROM BRF_FORWARD_REVEAL_MANUAL_TABLE", String.class);
 
+		List<String> listThreemanual = Arrays.asList("RASALK");
+	    
 	    model.addAttribute("demo1ListA", listOne);
 	    model.addAttribute("demo1ListB", listTwo);
-	    model.addAttribute("demo2ListA", listThree);
+	    model.addAttribute("demo2ListA", mergeAndRemoveDuplicates(listThree, listThreemanual));
 	    
 		
         return "ReportCodeMapping";
@@ -2617,12 +2619,12 @@ html.append("</tbody></table></div>");
 			Map<String, String> uniqueMap = new LinkedHashMap<>();
 			for (String s : list1) {
 				if (s != null) {
-					uniqueMap.putIfAbsent(s.toLowerCase(), s);
+					uniqueMap.putIfAbsent(s.trim().toLowerCase(), s);
 				}
 			}
 			for (String s : list2) {
 				if (s != null) {
-					uniqueMap.putIfAbsent(s.toLowerCase(), s);
+					uniqueMap.putIfAbsent(s.trim().toLowerCase(), s);
 				}
 			}
 			return new ArrayList<>(uniqueMap.values());

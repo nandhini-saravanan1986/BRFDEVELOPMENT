@@ -621,12 +621,12 @@ public class ReportServices {
 		    }
 
 		    for (int i = 0; i < colNames.length; i++) {
-		        if (!colNames[i].isEmpty()) {
+		       // if (!colNames[i].isEmpty()) {
 		            Map<String, String> cm = new HashMap<>();
 		            cm.put("colCode", getColumnLetter(i));
 		            cm.put("colName", colNames[i]);
 		            columns.add(cm);
-		        }
+		       // }
 		    }
 		}
 		result.put("columns", columns);

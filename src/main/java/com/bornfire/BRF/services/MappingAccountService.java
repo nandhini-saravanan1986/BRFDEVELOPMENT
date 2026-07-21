@@ -72,6 +72,12 @@ public class MappingAccountService {
             view.put("SCHEME_TYPE",      nvl(row.getSchemeType()));
             view.put("ASST_CLS",         nvl(row.getAsstCls()));    
             view.put("PURPOSE_OF_ADVN",  nvl(row.getPurposeOfAdvn())); 
+            
+            view.put("CONST_CODE_FLAG", nvl(row.getConstCodeFlag()));
+            view.put("LGL_ENTYP_FLAG", nvl(row.getLglEntypFlag()));
+            view.put("SCHM_TYP_FLAG", nvl(row.getSchmTypFlag()));    
+            view.put("ASST_CLS_FLAG", nvl(row.getAsstClsFlag()));
+            view.put("PURP_OF_ADV_FLAG", nvl(row.getPurpOfAdvFlag())); 
 
             result.add(view);
         }

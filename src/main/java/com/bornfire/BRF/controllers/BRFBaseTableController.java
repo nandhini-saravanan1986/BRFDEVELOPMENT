@@ -149,6 +149,12 @@ public class BRFBaseTableController {
                 String currency      = row.get("currency");
                 
                 if (accountId == null || accountId.trim().isEmpty()) continue;
+                
+                String constCodeFlag = row.get("constCodeFlag");
+                String lglEntypFlag  = row.get("lglEntypFlag");
+                String schmTypFlag   = row.get("schmTypFlag");
+                String asstClsFlag   = row.get("asstClsFlag");
+                String purpOfAdvFlag = row.get("purpOfAdvFlag");
 
                 // 2. Handle nulls
                 if (reportCode   == null) reportCode   = "";
@@ -164,7 +170,11 @@ public class BRFBaseTableController {
                 if (asstCls       == null) asstCls       = ""; 
                 if (purposeOfAdvn == null) purposeOfAdvn = ""; 
                 if (currency == null) currency = "";
-                
+                if (constCodeFlag == null) constCodeFlag = "N";
+                if (lglEntypFlag  == null) lglEntypFlag  = "N";
+                if (schmTypFlag   == null) schmTypFlag   = "N";
+                if (asstClsFlag   == null) asstClsFlag   = "N";
+                if (purpOfAdvFlag == null) purpOfAdvFlag = "N";
                 // 3. Trim and finalize
                 final String fAccountId    = accountId.trim();
                 final String fReportCode   = reportCode.trim();
@@ -181,12 +191,14 @@ public class BRFBaseTableController {
                 final String fAsstCls       = asstCls.trim();  
                 final String fPurposeOfAdvn = purposeOfAdvn.trim(); 
                 final String fCurrency      = currency.trim();
-                
+                final String fConstCodeFlag = constCodeFlag.trim();
+                final String fLglEntypFlag  = lglEntypFlag.trim();
+                final String fSchmTypFlag   = schmTypFlag.trim();
+                final String fAsstClsFlag   = asstClsFlag.trim();
+                final String fPurpOfAdvFlag = purpOfAdvFlag.trim();
                 // 4. Block cross-report duplicates
-                Optional<BrfCommonMapping> conflicting =
-                    commonMappingRepo.findConflictingMapping(
-                        fAccountId, fRowId, fColumnId, fReportCode);
-
+				//Optional<BrfCommonMapping> conflicting = commonMappingRepo.findConflictingMapping(fAccountId, fRowId, fColumnId, fReportCode);
+/*
                 if (conflicting.isPresent()) {
                     Map<String, String> blocked = new LinkedHashMap<>();
                     blocked.put("accountId", fAccountId);
@@ -195,7 +207,7 @@ public class BRFBaseTableController {
                     System.out.println("BLOCKED: accountId=" + fAccountId
                         + " already in " + conflicting.get().getReportCode());
                     continue;
-                }
+                }*/
 
                 // 5. Find existing record by composite key (ACCOUNT_ID_BACID + ROW_ID + REPORT_CODE)
                 //    If not found, build a fresh record from BRF_BASE_MAPPING_TABLE
@@ -266,6 +278,12 @@ public class BRFBaseTableController {
                 record.setSchemeType(fSchemeType);
                 record.setAsstCls(fAsstCls);      
                 record.setPurposeOfAdvn(fPurposeOfAdvn);
+                
+                record.setConstCodeFlag(fConstCodeFlag);
+                record.setLglEntypFlag(fLglEntypFlag);
+                record.setSchmTypFlag(fSchmTypFlag);
+                record.setAsstClsFlag(fAsstClsFlag);
+                record.setPurpOfAdvFlag(fPurpOfAdvFlag);
                 
                 // 8. Single save — JPA decides INSERT or UPDATE via composite key
                 commonMappingRepo.save(record);
@@ -515,7 +533,8 @@ public class BRFBaseTableController {
             String rowId         = nvl((String) payload.get("rowId")).trim();
             String columnId      = nvl((String) payload.get("columnId")).trim();
             if (columnId.isEmpty()) columnId = "None";              // ← no Column ID selected => "None", not null
-
+            String dataType      = nvl((String) payload.get("dataType")).trim();
+            String balanceLc     = nvl((String) payload.get("balanceLc")).trim();
             String glHead        = nvl((String) payload.get("glHead")).trim();
             String glSubheadCode = nvl((String) payload.get("glSubheadCode")).trim();
             String solId         = nvl((String) payload.get("solId")).trim();
@@ -596,7 +615,8 @@ public class BRFBaseTableController {
                     record.setSchmTypFlag(schmTypFlag);
                     record.setAsstClsFlag(asstClsFlag);
                     record.setPurpOfAdvFlag(purpOfAdvFlag);
-
+                    record.setDataType(dataType);         
+                    record.setAccountBalanceLc(balanceLc);
                 commonMappingRepo.save(record);
                 commonMappingRepo.flush();   // next loop iteration's existsById/generate must see this insert
 
