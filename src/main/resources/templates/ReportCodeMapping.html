@@ -3951,7 +3951,14 @@ var colMaxWidth = {
 	     var wStyle = colMaxWidth[key.toUpperCase()] ? ' style="max-width:' + colMaxWidth[key.toUpperCase()] + ';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"' : '';
 	     hdr += '<th' + wStyle + '>' + label + '</th>';
 	 });
-	 hdr += '<th style="width:130px;">Acct Balance (LC)</th><th style="width:95px;">Filter</th><th style="width:50px;text-align:center;">Action</th></tr>';
+	 var masterBalSelect = '<select class="form-control form-control-sm" onchange="applyMasterBalance(this.value, \'main\', this)" style="display:inline-block; width:auto; padding:0 4px; height:22px; margin-left:6px; font-size:10px; cursor:pointer;" title="Apply to all visible rows">' +
+	                       '<option value="">All ▼</option>' +
+	                       '<option value="<0">Debit</option>' +
+	                       '<option value=">0">Credit</option>' +
+	                       '<option value="<>0">Net Off</option>' +
+	                       '</select>';
+
+	 hdr += '<th style="width:160px; white-space:nowrap;">Acct Balance (LC)' + masterBalSelect + '</th><th style="width:95px;">Filter</th><th style="width:50px;text-align:center;">Action</th></tr>';
 	 $('#accountsHead').html(hdr);
 	 $('#selectAll').off('change').on('change', function() { $('.row-select').prop('checked', this.checked); });
 	 
@@ -4666,9 +4673,16 @@ var colMaxWidth = {
 	    	    hdr += '<th' + wStyle + '>' + label + '</th>';
 	    	});
 	    	/* hdr += '<th>Account Balance (LC)</th><th>Filter</th><th style="width:50px;text-align:center;">Action</th></tr>'; */
-	    	hdr += '<th style="max-width:' + colMaxWidthModal['ACCOUNT_BALANCE_LC'] + ';">Account Balance (LC)</th>' +
-	       '<th style="max-width:' + colMaxWidthModal['FILTER'] + ';">Filter</th>' +
-	       '<th style="width:50px;text-align:center;">Action</th></tr>';
+	    	
+			var modalMasterBalSelect = '<select class="form-control form-control-sm" onchange="applyMasterBalance(this.value, \'modal\', this)" style="display:inline-block; width:auto; padding:0 4px; height:22px; margin-left:6px; font-size:10px; cursor:pointer;" title="Apply to all visible rows">' +
+                           '<option value="">All ▼</option>' +
+                           '<option value="<0">Debit</option>' +
+                           '<option value=">0">Credit</option>' +
+                           '<option value="<>0">Net Off</option>' +
+                           '</select>';
+			hdr += '<th style="white-space:nowrap; min-width:160px;">Account Balance (LC)' + modalMasterBalSelect + '</th>' +
+       		'<th style="max-width:' + colMaxWidthModal['FILTER'] + ';">Filter</th>' +
+       		'<th style="width:50px;text-align:center;">Action</th></tr>';
 	    	$('#modalAccountsHead').html(hdr);
 
 	    	$('#modalSelectAll').off('change').on('change', function() {
@@ -6593,6 +6607,22 @@ var colMaxWidth = {
 		        return row; 
 		    }
 		    return null;
+		}
+
+		function applyMasterBalance(val, tableType, selectElement) {
+		    if (!val) return;
+
+		    if (tableType === 'main') {
+		        $('#accountsBody tr:visible').each(function() {
+		            $(this).find('.balance-select').val(val);
+		        });
+		    } else if (tableType === 'modal') {
+		        $('#modalAccountsBody tr:visible').each(function() {
+		            $(this).find('.modal-balance-select').val(val);
+		        });
+		    }
+
+		    $(selectElement).val('');
 		}
 	</script>
 	
