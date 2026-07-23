@@ -587,7 +587,7 @@ public class BRFNavigationController {
 	        "ASSN","RT","OFC","JJWEL","NBFC","RWTO","MILLS","EMBSY","COFTZ","TRAVL","PARTY","THEAT","EXSTF",
 	        "PSE","BUSIN","SSI","PVTCO","GOVT","HOTEL","COMBK","PROPR","RECLB","CGOVB","INDVL","IMEX",
 	        "PBLCO","PROF","SERV","FGBBK","STAFF","GOVTL","PSEC","INSP","STBRK","CB","MNC","MLI","OTH",
-	        "EMBAS","SHOPS","HUWIF","INSG","AGRI","GOVTF","PSENO","PSEN","PSECO","MXC  ","NBFC "
+	        "EMBAS","SHOPS","HUWIF","INSG","AGRI","GOVTF","PSENO","PSEN","PSECO","MXC  ","NBFC ","-"
 	    );
 		List<String> legalEntityOptionsFromDB = jdbcTemplate
 				.queryForList("SELECT DISTINCT LEGAL_ENTITY_TYPE FROM GENERAL_MASTER_TABLE", String.class);
