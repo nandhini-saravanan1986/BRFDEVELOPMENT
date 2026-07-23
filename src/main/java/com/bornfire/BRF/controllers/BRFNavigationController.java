@@ -608,10 +608,11 @@ public class BRFNavigationController {
 	    List<String> listThree = jdbcTemplate
 				.queryForList("SELECT DISTINCT CONTREPARTIE FROM BRF_FORWARD_REVEAL_MANUAL_TABLE", String.class);
 
+		List<String> listTwomanual = Arrays.asList("PLLOCBKS");
 		List<String> listThreemanual = Arrays.asList("RASALK");
 	    
 	    model.addAttribute("demo1ListA", listOne);
-	    model.addAttribute("demo1ListB", listTwo);
+	    model.addAttribute("demo1ListB", mergeAndRemoveDuplicates(listTwo, listTwomanual));
 	    model.addAttribute("demo2ListA", mergeAndRemoveDuplicates(listThree, listThreemanual));
 	    
 		
