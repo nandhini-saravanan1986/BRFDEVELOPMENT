@@ -32,7 +32,6 @@
 
 <title>BCDRS</title>
 
-
 <style>
 table.dataTable thead th, table.dataTable tfoot th {
 	font-weight: normal;
@@ -43,10 +42,6 @@ table.table .thead-light th {
 	border-color: #d4d7da;
 }
 
-.dataTables_scrollBody {
-	overflow: unset !important;
-}
-
 #dynamicDataTb thead th, #dateListTb thead th {
 	background-color: #376275;
 	color: white;
@@ -54,6 +49,8 @@ table.table .thead-light th {
 	font-size: 13px;
 	text-align: left;
 	border: 1px solid #dee2e6;
+	position: relative;
+	white-space: nowrap;
 }
 
 #dynamicDataTb tbody td, #dateListTb tbody td {
@@ -73,29 +70,7 @@ table.table .thead-light th {
 }
 
 .table-container {
-	max-height: 650px;
-	overflow-y: auto;
 	margin-top: 10px;
-}
-
-.dataTables_length {
-	float: left !important;
-	margin-bottom: 10px;
-}
-
-.dataTables_filter {
-	float: right !important;
-	margin-bottom: 10px;
-}
-
-.dataTables_info {
-	float: left !important;
-	padding-top: 12px !important;
-}
-
-.dataTables_paginate {
-	float: right !important;
-	padding-top: 8px !important;
 }
 
 .dataTables_wrapper::after {
@@ -127,67 +102,162 @@ body.modal-open {
 	box-shadow: 0 0 0 2px rgba(55, 98, 117, 0.1);
 }
 
-.audit-pagination {
-	display: flex;
-	gap: 5px;
-	margin: 15px 0 5px 0;
-	justify-content: flex-end;
-}
-
-.page-btn {
-	border: 1px solid #dee2e6;
-	background: #fff;
-	color: #376275;
-	padding: 6px 12px;
-	border-radius: 4px;
-	text-decoration: none;
-	font-weight: bold;
-	font-size: 12px;
-}
-
-.page-btn:hover {
-	background: #e9ecef;
-	text-decoration: none;
-	color: #2b506f;
-}
-
-.page-btn.active {
-	background: #376275;
-	color: #fff;
-	border-color: #376275;
-}
-
-.page-btn.disabled {
-	opacity: 0.5;
-	pointer-events: none;
-}
 .audit-loader-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(1px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 999;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgba(255, 255, 255, 0.6);
+	backdrop-filter: blur(1px);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 999;
 }
+
 .audit-spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid #cbd5e1;
-    border-top: 4px solid #376275;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+	width: 40px;
+	height: 40px;
+	border: 4px solid #cbd5e1;
+	border-top: 4px solid #376275;
+	border-radius: 50%;
+	animation: spin 1s linear infinite;
 }
-@keyframes spin { 
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); } 
+
+@keyframes spin { 0% {
+	transform: rotate(0deg);
+}
+
+100%
+{
+transform
+:
+rotate(
+360deg
+);
+}
 }
 .hidden {
-    display: none !important;
+	display: none !important;
+}
+
+.dataTables_scrollHeadInner, .dataTables_scrollHeadInner table {
+	width: 100% !important;
+}
+
+.dt-custom-filter {
+	display: none;
+	position: absolute;
+	background: #ffffff;
+	border: 1px solid #dee2e6;
+	border-radius: 4px;
+	padding: 0;
+	z-index: 10000;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+	min-width: 230px;
+	font-family: verdana, sans-serif;
+	font-weight: normal;
+}
+
+.dt-filter-list {
+	max-height: 180px;
+	overflow-y: auto;
+	padding: 10px;
+}
+
+.dt-filter-checkbox-item {
+	margin-bottom: 6px;
+	font-size: 13px;
+	color: #333;
+	display: flex;
+	align-items: center;
+}
+
+.dt-filter-checkbox-item input[type="checkbox"] {
+	margin-right: 8px;
+	cursor: pointer;
+}
+
+.dt-filter-actions {
+	padding: 10px;
+	background: #f8f9fa;
+	border-top: 1px solid #dee2e6;
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+}
+
+.dt-filter-input {
+	width: 100%;
+	padding: 6px;
+	border: 1px solid #cbd5e1;
+	border-radius: 4px;
+	font-size: 12px;
+	margin-bottom: 10px;
+	outline: none;
+}
+
+.dt-filter-input:focus {
+	border-color: #ff8c00;
+}
+
+.dt-filter-btn-apply {
+	background-color: #007bff;
+	border: none;
+	color: white;
+	border-radius: 4px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.dt-filter-btn-apply:hover {
+	background-color: #007bff;
+}
+
+.dt-filter-btn-clear {
+	background-color: #e2e8f0;
+	border: none;
+	color: #475569;
+	padding: 6px 0;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.dt-filter-btn-clear:hover {
+	background-color: #cbd5e1;
+}
+
+#dynamicDataTb th, #dynamicDataTb td {
+	white-space: nowrap !important;
+}
+
+table.dataTable {
+	width: 100% !important;
+	border-collapse: collapse !important;
+}
+
+.table-responsive-custom {
+	max-height: 550px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	width: 100%;
+	border-bottom: 1px solid #dee2e6;
+}
+
+#dynamicDataTb thead th {
+	position: sticky;
+	top: 0;
+	z-index: 10;
+	background-color: #376275;
+	border-top: none;
+}
+
+#dynamicDataTb th, #dynamicDataTb td {
+	white-space: nowrap !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	padding: 0px 0px;
 }
 </style>
 </head>
@@ -202,154 +272,130 @@ body.modal-open {
 				class="card-header d-flex justify-content-between align-items-center"
 				style="background-color: #376275;">
 				<h4 class="mb-0" style="color: white">
-					Asset and Liability Unmapped Check <span
+					Asset and Liability Unmapped Accounts <span
 						th:if="${selectedDate != null}" th:text="' - ' + ${selectedDate}"></span>
 				</h4>
 			</div>
-<div style="position: relative; min-height: 200px;">
-    
-    <div id="tableLoader" class="audit-loader-overlay hidden">
-        <div class="audit-spinner"></div>
-    </div>
-			<div class="table-container p-3">
 
-				<table id="dateListTb" class="table table-bordered table-hover"
-					style="width: 100%" th:if="${dateList != null}">
-					<thead>
-						<tr>
-							<th style="text-align: center; width: 50px;">S.no</th>
-							<th>Available Report Dates</th>
-							<th>CBS Data</th>
-							<th>Tressury Data</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr th:each="row, stat : ${dateList}">
-							<td style="text-align: center;" th:text="${stat.count}"></td>
-							<td><a
-								th:href="@{/ALAccounts(date=${row.get('Report Date')})}"
-								th:text="${row.get('Report Date')}"
-								style="font-weight: bold; color: #376275; text-decoration: underline;">
-							</a></td>
-									 <!-- CBS Date -->
-									       <td style="text-align:center;">
-									           <a th:href="@{/ALAccounts(date=${row.get('Report Date')},type='CBS')}"
-									              th:text="${row.get('Report Date')}"
-									              style="font-weight:bold;color:#376275;text-decoration:underline;">
-									           </a>
-									       </td>
-
-									       <!-- Treasury Date -->
-									       <td style="text-align:center;">
-									           <a th:href="@{/ALAccounts(date=${row.get('Report Date')},type='TREASURY')}"
-									              th:text="${row.get('Report Date')}"
-									              style="font-weight:bold;color:#376275;text-decoration:underline;">
-									           </a>
-									       </td>
-							     </tr>
-						<tr th:if="${#lists.isEmpty(dateList)}">
-							<td colspan="2" class="text-center text-danger">No dates
-								available.</td>
-						</tr>
-					</tbody>
-				</table>
-
-				<div class="d-flex justify-content-between align-items-center mb-2"
-					th:if="${dynamicData != null}">
-					<div>
-						<form id="searchForm" th:action="@{/ALAccounts}" method="get"
-							style="margin: 0;">
-							<input type="hidden" name="date" th:value="${selectedDate}"
-								th:if="${selectedDate != null}"> <input type="text"
-								id="searchInput" name="keyword" th:value="${keyword}"
-								class="audit-search-input" placeholder="Search accounts...">
-						</form>
-					</div>
+			<div style="position: relative; min-height: 200px;">
+				<div id="tableLoader" class="audit-loader-overlay hidden">
+					<div class="audit-spinner"></div>
 				</div>
+				<div class="p-3">
 
-				<table id="dynamicDataTb" class="table table-bordered table-hover"
-					style="width: 100%" th:if="${dynamicData != null}">
-					<thead>
-						<tr th:if="${not #lists.isEmpty(dynamicData)}">
-							<th style="width: 60px; text-align: center;">Action</th>
-							<th th:each="header : ${dynamicData[0].keySet()}"
-								th:if="${header != 'is_match'}" th:text="${header}"></th>
-						</tr>
-					</thead>
-						<tbody>
-							<tr th:each="row : ${dynamicData}"
-								th:classappend="${row.get('is_match') == 1 ? 'table-success' : ''}">
-								<td style="text-align: center;">
-									<button type="button" class="btn btn-sm btn-primary"
-										th:onclick="openMappingFlow([[${row.get('GL_SUB_HEAD_CODE')}]], [[${row.get('GL_CODE')}]], 
-                [[${row.get('ACCT_NUMBER')}]], [[${row.get('ACCT_CRNCY_CODE')}]], [[${row.get('SOL_ID')}]], 
-                [[${row.get('CONSTITUTION_CODE')}]], [[${row.get('LEGAL_ENTITY_TYPE')}]], [[${row.get('SCHEME_TYPE')}]])">
-										<i class="fas fa-edit"></i>
-									</button>
-								</td>
-								<td th:each="entry : ${row}" th:if="${entry.key != 'is_match'}"
-									th:text="${entry.value}"></td>
+					<table id="dateListTb" class="table table-bordered table-hover"
+						style="width: 100%" th:if="${dateList != null}">
+						<thead>
+							<tr>
+								<th style="text-align: center; width: 50px;">S.no</th>
+								<th>Available Report Dates</th>
+								<th style="text-align: center;">CBS Data</th>
+								<th style="text-align: center;">Treasury Data</th>
 							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="row, stat : ${dateList}">
+								<td style="text-align: center;" th:text="${stat.count}"></td>
+								<td style="font-weight: bold; color: #376275;"
+									th:text="${row.get('Report Date')}"></td>
 
-							<tr th:if="${#lists.isEmpty(dynamicData)}">
-								<td colspan="20" class="text-center p-4"
-									style="color: #64748b; font-size: 13px;"><i
-									class="fas fa-search mb-2"
-									style="font-size: 18px; color: #cbd5e1;"></i><br> No
-									matching accounts found for "<strong><span
-										th:text="${keyword}"></span></strong>"</td>
+								<td style="text-align: center;"><a
+									th:if="${row.get('HAS_CBS_DATA') == true}"
+									th:href="@{/ALAccounts(date=${row.get('Report Date')},type='CBS')}"
+									class="btn btn-sm btn-primary text-white"
+									style="font-size: 12px; font-weight: bold;"> Open </a> <span
+									th:unless="${row.get('HAS_CBS_DATA') == true}"
+									class="text-danger" style="font-size: 12px; font-weight: bold;">
+										No data available </span></td>
+
+								<td style="text-align: center;"><a
+									th:if="${row.get('HAS_TREASURY_DATA') == true}"
+									th:href="@{/ALAccounts(date=${row.get('Report Date')},type='TREASURY')}"
+									class="btn btn-sm btn-primary text-white"
+									style="font-size: 12px; font-weight: bold;"> Open </a> <span
+									th:unless="${row.get('HAS_TREASURY_DATA') == true}"
+									class="text-danger" style="font-size: 12px; font-weight: bold;">
+										No data available </span></td>
+							</tr>
+							<tr th:if="${#lists.isEmpty(dateList)}">
+								<td colspan="4" class="text-center text-danger">No dates
+									available.</td>
 							</tr>
 						</tbody>
 					</table>
 
-				<div class="d-flex align-items-center justify-content-end"
-					th:if="${page != null and page.totalPages > 1}">
-					<div class="audit-pagination">
-						<a
-							th:href="@{/ALAccounts(page=${page.number - 1}, keyword=${keyword}, date=${selectedDate})}"
-							th:class="${page.first ? 'page-btn disabled' : 'page-btn'}">Previous</a>
-
-						<th:block th:if="${page.totalPages <= 5}">
-							<a th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
-								th:href="@{/ALAccounts(page=${i}, keyword=${keyword}, date=${selectedDate})}"
-								th:text="${i + 1}"
-								th:class="${page.number == i ? 'page-btn active' : 'page-btn'}">1</a>
-						</th:block>
-
-						<th:block th:if="${page.totalPages > 5}">
-							<a
-								th:href="@{/ALAccounts(page=0, keyword=${keyword}, date=${selectedDate})}"
-								th:text="1"
-								th:class="${page.number == 0 ? 'page-btn active' : 'page-btn'}">1</a>
-
-							<span th:if="${page.number > 2}"
-								style="padding: 6px; color: #64748b;">...</span>
-
-							<th:block
-								th:with="start=${page.number <= 2 ? 1 : (page.number >= page.totalPages - 3 ? page.totalPages - 4 : page.number - 1)}, end=${page.number <= 2 ? 3 : (page.number >= page.totalPages - 3 ? page.totalPages - 2 : page.number + 1)}">
-								<a th:each="i : ${#numbers.sequence(start, end)}"
-									th:href="@{/ALAccounts(page=${i}, keyword=${keyword}, date=${selectedDate})}"
-									th:text="${i + 1}"
-									th:class="${page.number == i ? 'page-btn active' : 'page-btn'}"></a>
-							</th:block>
-
-							<span th:if="${page.number < page.totalPages - 3}"
-								style="padding: 6px; color: #64748b;">...</span>
-
-							<a
-								th:href="@{/ALAccounts(page=${page.totalPages - 1}, keyword=${keyword}, date=${selectedDate})}"
-								th:text="${page.totalPages}"
-								th:class="${page.number == page.totalPages - 1 ? 'page-btn active' : 'page-btn'}"></a>
-						</th:block>
-
-						<a
-							th:href="@{/ALAccounts(page=${page.number + 1}, keyword=${keyword}, date=${selectedDate})}"
-							th:class="${page.last ? 'page-btn disabled' : 'page-btn'}">Next</a>
+					<div class="d-flex justify-content-between align-items-center mb-2"
+						th:if="${dynamicData != null}">
+						<div>
+							<input type="text" id="searchInput" class="audit-search-input"
+								placeholder="Search accounts...">
+						</div>
 					</div>
-				</div>
 
+					<table id="dynamicDataTb" class="table table-bordered table-hover"
+						style="width: 100%" th:if="${dynamicData != null}">
+						<thead>
+							<tr th:if="${not #lists.isEmpty(dynamicData)}">
+								<th th:if="${type != 'TREASURY'}" class="action-col no-sort"
+									style="width: 60px; text-align: center;">Action</th>
+
+								<th:block th:if="${type == 'CBS'}">
+									<th>GL Sub Head</th>
+									<th>GL Code</th>
+									<th>Account Number</th>
+									<th>Currency</th>
+									<th>SOL ID</th>
+									<th>Constitution Code</th>
+									<th>Legal Entity Type</th>
+									<th>Scheme Type</th>
+								</th:block>
+
+								<th:block th:if="${type == 'TREASURY'}">
+									<th>Account Number</th>
+									<th>Account Name</th>
+									<th>Currency</th>
+									<th>Amount</th>
+								</th:block>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="row : ${dynamicData}"
+								th:classappend="${row.get('is_match') == 1 ? 'table-success' : ''}">
+
+								<td th:if="${type != 'TREASURY'}" style="text-align: center;">
+									<button type="button" class="btn btn-sm btn-primary"
+										th:onclick="openMappingFlow([[${row.get('GL_SUB_HEAD_CODE')}]], [[${row.get('GL_CODE')}]], 
+                  						[[${row.get('ACCT_NUMBER')}]], [[${row.get('ACCT_CRNCY_CODE')}]], [[${row.get('SOL_ID')}]], 
+                   						[[${row.get('CONSTITUTION_CODE')}]], [[${row.get('LEGAL_ENTITY_TYPE')}]], [[${row.get('SCHEME_TYPE')}]])">
+										<i class="fas fa-edit"></i>
+									</button>
+								</td>
+
+								<th:block th:if="${type == 'CBS'}">
+									<td th:text="${row.get('GL_SUB_HEAD_CODE')}"></td>
+									<td th:text="${row.get('GL_CODE')}"></td>
+									<td th:text="${row.get('ACCT_NUMBER')}"></td>
+									<td th:text="${row.get('ACCT_CRNCY_CODE')}"></td>
+									<td th:text="${row.get('SOL_ID')}"></td>
+									<td th:text="${row.get('CONSTITUTION_CODE')}"></td>
+									<td th:text="${row.get('LEGAL_ENTITY_TYPE')}"></td>
+									<td th:text="${row.get('SCHEME_TYPE')}"></td>
+								</th:block>
+
+								<th:block th:if="${type == 'TREASURY'}">
+									<td th:text="${row.get('ACCT_NO')}"></td>
+									<td th:text="${row.get('ACCT_NAME')}"></td>
+									<td th:text="${row.get('CURRENCY')}"></td>
+									<td th:text="${row.get('AMOUNT_LC')}"></td>
+
+								</th:block>
+
+							</tr>
+						</tbody>
+					</table>
+				</div>
 			</div>
-</div>
+
 			<div class="card-footer text-center"
 				style="background-color: #376275;">
 				<button type="button" class="btn btn-xs btn-primary"
@@ -360,6 +406,7 @@ body.modal-open {
 
 		</div>
 	</div>
+
 	<div class="modal fade" id="successModal" tabindex="-1" role="dialog"
 		data-backdrop="static">
 		<div class="modal-dialog modal-dialog-centered modal-lg"
@@ -442,7 +489,6 @@ body.modal-open {
 		style="z-index: 1060;">
 		<div class="modal-dialog modal-dialog-centered" role="document"
 			style="max-width: 950px; width: 950px;">
-
 			<div class="modal-content" style="height: 650px;">
 				<div class="modal-header py-2"
 					style="background-color: #376275; color: white;">
@@ -455,15 +501,12 @@ body.modal-open {
 						<span>&times;</span>
 					</button>
 				</div>
-
 				<div class="modal-body" style="padding: 16px; overflow-y: auto;">
-
 					<div id="finalMapLoading" class="mt-3 text-center text-muted"
 						style="display: none; font-family: verdana; font-size: 13px;">
 						<i class="fas fa-spinner fa-spin"></i>&nbsp; Fetching existing
 						parameters...
 					</div>
-
 					<div id="existingMappingSection"
 						style="display: none; margin-bottom: 20px; background: #fff; padding: 10px; border: 1px solid #ced4da; border-radius: 4px;">
 						<h6
@@ -486,8 +529,7 @@ body.modal-open {
 										<th>Balance (LC)</th>
 									</tr>
 								</thead>
-								<tbody id="existingMappingBody">
-								</tbody>
+								<tbody id="existingMappingBody"></tbody>
 							</table>
 						</div>
 					</div>
@@ -705,6 +747,7 @@ body.modal-open {
 			</div>
 		</div>
 	</div>
+
 	<div class="modal fade" id="crudModal" tabindex="-1" role="dialog"
 		style="z-index: 1070;">
 		<div class="modal-dialog modal-dialog-centered"
@@ -788,93 +831,296 @@ body.modal-open {
 			</div>
 		</div>
 	</div>
+
 	<script th:inline="javascript">
-	$(document).ready(function() {
-	    
-	    const searchForm = document.getElementById('searchForm');
-	    const searchInput = document.getElementById('searchInput');
-	    const tableLoader = document.getElementById('tableLoader');
+		$(document)
+				.ready(
+						function() {
 
-	    function showLoader() { 
-	        if(tableLoader) tableLoader.classList.remove('hidden'); 
-	    }
+							if ($('#dynamicDataTb').length > 0) {
 
-	    function triggerServerRequest(params) {
-	        showLoader();
-	        
-	        const url = new URL(window.location.href);
-	        
-	        Object.keys(params).forEach(key => {
-	            if (params[key] === null || params[key] === '') {
-	                url.searchParams.delete(key);
-	            } else {
-	                url.searchParams.set(key, params[key]);
-	            }
-	        });
+								var dataTable = $('#dynamicDataTb')
+										.DataTable(
+												{
+													"paging" : true,
+													"pageLength" : 50,
+													"lengthChange" : false,
+													"searching" : true,
+													"info" : true,
+													"ordering" : true,
+													"columnDefs" : [ {
+														"orderable" : false,
+														"targets" : 0
+													} ],
+													"dom" : "<'table-responsive-custom'tr>"
+															+ "<'row mt-2'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+													"language" : {
+														"emptyTable" : "No matching accounts found.",
 
-	        url.searchParams.delete('page');
-	        window.location.replace(url.toString());
-	    }
+														"zeroRecords" : "No matching records found for your filters."
+													},
+													"initComplete" : function() {
+														var api = this.api();
 
-	    if (searchForm) {
-	        searchForm.addEventListener('submit', function(e) {
-	            e.preventDefault(); 
-	            triggerServerRequest({ keyword: searchInput.value });
-	        });
-	    }
+														api
+																.columns()
+																.every(
+																		function(
+																				colIdx) {
+																			var column = this;
+																			var headerCell = $(column
+																					.header());
 
-	    let typingTimer;
-	    if (searchInput) {
-	        searchInput.addEventListener('input', function () {
-	            clearTimeout(typingTimer);
-	            typingTimer = setTimeout(() => triggerServerRequest({ keyword: searchInput.value }), 800);
-	        });
+																			if (headerCell
+																					.hasClass('action-col'))
+																				return;
 
-	        if (searchInput.value) {
-	            searchInput.focus();
-	            const val = searchInput.value; 
-	            searchInput.value = ''; 
-	            searchInput.value = val;
-	        }
-	    }
-	    document.querySelectorAll('.page-btn').forEach(btn => {
-	        btn.addEventListener('click', function(e) {
-	            e.preventDefault(); 
-	            if(!this.classList.contains('disabled') && !this.classList.contains('active')) {
-	                
-	                showLoader();
-	                
-	                const targetHref = new URL(this.getAttribute('href'), window.location.origin);
-	                const targetPage = targetHref.searchParams.get('page');
-	                
-	                const currentUrl = new URL(window.location.href);
-	                if (targetPage !== null) {
-	                    currentUrl.searchParams.set('page', targetPage);
-	                }
-	                
-	                window.location.replace(currentUrl.toString());
-	            }
-	        });
-	    });
-	});
+																			var filterIcon = $('<i class="fas fa-filter ml-2" style="cursor:pointer; color:#cbd5e1; font-size:13px;"></i>');
+																			headerCell
+																					.append(filterIcon);
+
+																			var dropdownId = 'filter_dropdown_'
+																					+ colIdx;
+																			var dropdown = $('<div class="dt-custom-filter" id="' + dropdownId + '">'
+																					+ '<div class="dt-filter-list"></div>'
+																					+ '<div class="dt-filter-actions">'
+																					+ '<input type="text" class="dt-filter-input" placeholder="Add custom value...">'
+																					+ '<div class="d-flex justify-content-between">'
+																					+ '<button type="button" class="dt-filter-btn-apply" style="width: 48%;">Apply</button>'
+																					+ '<button type="button" class="dt-filter-btn-clear" style="width: 48%;">Clear</button>'
+																					+ '</div>'
+																					+ '</div>'
+																					+ '</div>');
+
+																			$(
+																					'body')
+																					.append(
+																							dropdown);
+
+																			var listContainer = dropdown
+																					.find('.dt-filter-list');
+
+																			column
+																					.data()
+																					.unique()
+																					.sort()
+																					.each(
+																							function(
+																									d,
+																									j) {
+																								if (d !== null
+																										&& d !== '') {
+																									var textVal = $(
+																											'<div>')
+																											.html(
+																													d)
+																											.text();
+																									listContainer
+																											.append('<label class="dt-filter-checkbox-item">'
+																													+ '<input type="checkbox" value="' + textVal + '"> '
+																													+ textVal
+																													+ '</label>');
+																								}
+																							});
+
+																			filterIcon
+																					.on(
+																							'click',
+																							function(
+																									e) {
+																								e
+																										.stopPropagation();
+																								$(
+																										'.dt-custom-filter')
+																										.not(
+																												dropdown)
+																										.hide();
+
+																								var offset = $(
+																										this)
+																										.offset();
+
+																								dropdown
+																										.css(
+																												{
+																													top : offset.top
+																															+ $(
+																																	this)
+																																	.outerHeight()
+																															+ 8
+																															+ "px",
+																													left : offset.left
+																															- 180
+																															+ "px"
+																												})
+																										.toggle();
+																							});
+
+																			dropdown
+																					.find(
+																							'.dt-filter-btn-apply')
+																					.on(
+																							'click',
+																							function(
+																									e) {
+																								e
+																										.stopPropagation();
+																								var selectedVals = [];
+
+																								listContainer
+																										.find(
+																												'input[type="checkbox"]:checked')
+																										.each(
+																												function() {
+																													selectedVals
+																															.push($.fn.dataTable.util
+																																	.escapeRegex($(
+																																			this)
+																																			.val()));
+																												});
+
+																								var customVal = dropdown
+																										.find(
+																												'.dt-filter-input')
+																										.val()
+																										.trim();
+																								if (customVal !== '') {
+																									selectedVals
+																											.push($.fn.dataTable.util
+																													.escapeRegex(customVal));
+																								}
+
+																								if (selectedVals.length > 0) {
+																									var regex = '^('
+																											+ selectedVals
+																													.join('|')
+																											+ ')$';
+																									column
+																											.search(
+																													regex,
+																													true,
+																													false)
+																											.draw();
+																									filterIcon
+																											.css(
+																													'color',
+																													'#ff8c00');
+																								} else {
+																									column
+																											.search(
+																													'')
+																											.draw();
+																									filterIcon
+																											.css(
+																													'color',
+																													'#cbd5e1');
+																								}
+																								dropdown
+																										.hide();
+																							});
+
+																			dropdown
+																					.find(
+																							'.dt-filter-btn-clear')
+																					.on(
+																							'click',
+																							function(
+																									e) {
+																								e
+																										.stopPropagation();
+																								listContainer
+																										.find(
+																												'input[type="checkbox"]')
+																										.prop(
+																												'checked',
+																												false);
+																								dropdown
+																										.find(
+																												'.dt-filter-input')
+																										.val(
+																												'');
+																								column
+																										.search(
+																												'')
+																										.draw();
+																								filterIcon
+																										.css(
+																												'color',
+																												'#cbd5e1');
+																								dropdown
+																										.hide();
+																							});
+
+																			dropdown
+																					.on(
+																							'click',
+																							function(
+																									e) {
+																								e
+																										.stopPropagation();
+																							});
+																		});
+
+														$(document)
+																.on(
+																		'click',
+																		function(
+																				e) {
+																			if (!$(
+																					e.target)
+																					.closest(
+																							'.dt-custom-filter, .fa-filter').length) {
+																				$(
+																						'.dt-custom-filter')
+																						.hide();
+																			}
+																		});
+													}
+												});
+								$(document)
+										.on(
+												'click',
+												function(e) {
+													if (!$(e.target)
+															.closest(
+																	'.dt-custom-filter, .fa-filter').length) {
+														$('.dt-custom-filter')
+																.hide();
+													}
+												});
+								$('#searchInput').on('keyup', function() {
+									dataTable.search(this.value).draw();
+								});
+							}
+
+							if ($('#dateListTb').length > 0) {
+								$('#dateListTb').DataTable({
+									"paging" : false,
+									"searching" : false,
+									"info" : false,
+									"ordering" : false
+								});
+							}
+						});
+
 		function goHome() {
 			window.location.href = '/BRF/BRFDashboard';
 		}
 
 		function goBack() {
 			var urlParams = new URLSearchParams(window.location.search);
-
 			window.history.back();
-
 		}
+
 		var _currentMapBtn = null;
 		var _currentExistingParams = [];
-		var _currentRowDetails = {}; 
+		var _currentRowDetails = {};
 
 		var SOL_ID_OPTIONS = [ '9001', '9002', '9003', '9004', '9005', '9008' ];
-		var CONST_CODE_OPTIONS = /*[[${constCodeOptions}]]*/ []; 
-		var LEGAL_ENTITY_OPTIONS = /*[[${legalEntityOptions}]]*/ [];
-		var SCHEME_TYPE_OPTIONS = /*[[${schemeTypeOptions}]]*/ [];
+		var CONST_CODE_OPTIONS = /*[[${constCodeOptions}]]*/[];
+		var LEGAL_ENTITY_OPTIONS = /*[[${legalEntityOptions}]]*/[];
+		var SCHEME_TYPE_OPTIONS = /*[[${schemeTypeOptions}]]*/[];
+
 		$(document).ready(
 				function() {
 					buildMultiMenu('mapSolIdMenu', 'mapSolIdBtn',
@@ -924,7 +1170,6 @@ body.modal-open {
 															|| item[1]);
 													var rCol = nvl(item.columnLabel
 															|| item[2]);
-
 													var ruleSolId = nvl(item[3]);
 													var ruleConst = nvl(item[4]);
 													var ruleLegal = nvl(item[5]);
@@ -984,29 +1229,23 @@ body.modal-open {
 													}
 
 													$mBody
-															.append('<tr>'
-																	+ '<td>'
+															.append('<tr><td>'
 																	+ rptCode
-																	+ '</td>'
-																	+ '<td>'
+																	+ '</td><td>'
 																	+ rRow
-																	+ '</td>'
-																	+ '<td>'
+																	+ '</td><td>'
 																	+ rCol
-																	+ '</td>'
-																	+ '<td>'
+																	+ '</td><td>'
 																	+ reasonHtml
 																	+ '</td>'
-																	+ '<td style="text-align:center;">'
-																	+ '<button type="button" class="btn btn-sm btn-primary " '
+																	+ '<td style="text-align:center;"><button type="button" class="btn btn-sm btn-primary " '
 																	+ 'onclick="processRowAction(this, \''
 																	+ rptCode
 																	+ '\', \''
 																	+ rRow
 																	+ '\', \''
 																	+ rCol
-																	+ '\')">Map</button>'
-																	+ '</td></tr>');
+																	+ '\')">Map</button></td></tr>');
 												});
 							} else {
 								$mBody
@@ -1030,7 +1269,6 @@ body.modal-open {
 						},
 						success : function(res) {
 							$('#successLoading').hide();
-
 							var dataArray = res.data || res.content || res;
 
 							if (dataArray && dataArray.length > 0) {
@@ -1047,7 +1285,6 @@ body.modal-open {
 															|| item[1]);
 													var rCol = nvl(item.columnLabel
 															|| item[2]);
-
 													var ruleSolId = nvl(item[3]);
 													var ruleConst = nvl(item[4]);
 													var ruleLegal = nvl(item[5]);
@@ -1108,29 +1345,23 @@ body.modal-open {
 													}
 
 													$tbody
-															.append('<tr>'
-																	+ '<td>'
+															.append('<tr><td>'
 																	+ rptCode
-																	+ '</td>'
-																	+ '<td>'
+																	+ '</td><td>'
 																	+ rRow
-																	+ '</td>'
-																	+ '<td>'
+																	+ '</td><td>'
 																	+ rCol
-																	+ '</td>'
-																	+ '<td>'
+																	+ '</td><td>'
 																	+ reasonHtml
 																	+ '</td>'
-																	+ '<td style="text-align:center;">'
-																	+ '<button type="button" class="btn btn-sm btn-primary" '
+																	+ '<td style="text-align:center;"><button type="button" class="btn btn-sm btn-primary" '
 																	+ 'onclick="processRowAction(this, \''
 																	+ rptCode
 																	+ '\', \''
 																	+ rRow
 																	+ '\', \''
 																	+ rCol
-																	+ '\')">Map</button>'
-																	+ '</td></tr>');
+																	+ '\')">Map</button></td></tr>');
 												});
 							} else {
 								$('#noDataMessage')
@@ -1148,9 +1379,11 @@ body.modal-open {
 						}
 					});
 		}
+
 		function nvl(val) {
 			return (val !== null && val !== undefined) ? val : '';
 		}
+
 		function processRowAction(btnElem, reportCode, rowLabel, colLabel) {
 			_currentMapBtn = btnElem;
 
@@ -1158,7 +1391,6 @@ body.modal-open {
 			$('#map_glSubHead').val(_currentRowDetails.glSubHead);
 			$('#map_accountId').val(_currentRowDetails.accountId);
 			$('#map_currency').val(_currentRowDetails.currency);
-
 			$('#map_reportCode').val(reportCode);
 			$('#map_rowLabel').val(rowLabel);
 			$('#map_colLabel').val(colLabel);
@@ -1200,19 +1432,19 @@ body.modal-open {
 								$('#btnAutoFillParams').show();
 								_currentExistingParams = res;
 								$.each(res, function(i, item) {
-									$tbody.append('<tr>' + '<td>'
-											+ nvl(item[0]) + '</td>' + '<td>'
+									$tbody.append('<tr><td>' + nvl(item[0])
+											+ '</td><td>'
 											+ nvl(item[1]).replace(/'/g, '')
-											+ '</td>' + '<td>'
+											+ '</td><td>'
 											+ nvl(item[2]).replace(/'/g, '')
-											+ '</td>' + '<td>'
+											+ '</td><td>'
 											+ nvl(item[3]).replace(/'/g, '')
-											+ '</td>' + '<td>'
+											+ '</td><td>'
 											+ nvl(item[4]).replace(/'/g, '')
-											+ '</td>' + '<td>' + nvl(item[5])
-											+ '</td>' + '<td>' + nvl(item[6])
-											+ '</td>' + '<td>' + nvl(item[7])
-											+ '</td>' + '</tr>');
+											+ '</td><td>' + nvl(item[5])
+											+ '</td><td>' + nvl(item[6])
+											+ '</td><td>' + nvl(item[7])
+											+ '</td></tr>');
 								});
 							} else {
 								$('#btnAutoFillParams').hide();
@@ -1222,14 +1454,11 @@ body.modal-open {
 					});
 		}
 
-
 		function resetMenu(menuId, btnId) {
 			$('.cb-' + menuId).prop('checked', false);
-
 			var $btn = $('#' + btnId);
 			var def = $btn.data('default') || '-- Select --';
 			$btn.text(def);
-
 			$('#' + menuId + ' input[type=checkbox][id$="_All"]').prop(
 					'checked', false);
 		}
@@ -1258,7 +1487,6 @@ body.modal-open {
 		function refreshFilterBtnLabel(idCode) {
 			var checked = $('.chk-filter-' + idCode + ':checked');
 			var btn = $('.filter-btn-' + idCode);
-
 			if (checked.length === 0) {
 				btn.text('-- Select --');
 			} else if (checked.length === 1) {
@@ -1301,8 +1529,7 @@ body.modal-open {
 							+ '<input type="text" class="form-control form-control-sm mb-2" placeholder="Search..." oninput="filterMultiSelect(this)">'
 							+ '<input type="checkbox" id="'
 							+ allId
-							+ '"'
-							+ ' onclick="multiMenuToggleAll(this,\''
+							+ '" onclick="multiMenuToggleAll(this,\''
 							+ menuId
 							+ '\',\''
 							+ btnId
@@ -1327,7 +1554,7 @@ body.modal-open {
 										+ btnId
 										+ '\')">'
 										+ ' <label for="' + safeId + '" style="font-family:verdana;font-size:12px;cursor:pointer;margin:0;">'
-										+ val + '</label>' + '</div>');
+										+ val + '</label></div>');
 					});
 		}
 
@@ -1390,9 +1617,7 @@ body.modal-open {
 					|| window._currentExistingParams.length === 0) {
 				return;
 			}
-
 			var params = window._currentExistingParams[0];
-
 			preSelectMenuValues('mapSolIdMenu', 'mapSolIdBtn', nvl(params[1]));
 			preSelectMenuValues('mapConstCodeMenu', 'mapConstCodeBtn',
 					nvl(params[2]));
@@ -1400,7 +1625,6 @@ body.modal-open {
 					nvl(params[3]));
 			preSelectMenuValues('mapSchemeTypeMenu', 'mapSchemeTypeBtn',
 					nvl(params[4]));
-
 			$('#mapHniNetworth').val(nvl(params[5]));
 			$('#mapTurnover').val(nvl(params[6]));
 			$('#mapBalanceLc').val(nvl(params[7]));
@@ -1429,7 +1653,6 @@ body.modal-open {
 
 			var rawRow = $('#map_rowLabel').val().trim();
 			var rawCol = $('#map_colLabel').val().trim();
-
 			var finalRow = (rawRow === '-') ? null : rawRow;
 			var finalCol = (rawCol === '-') ? null : rawCol;
 
@@ -1457,12 +1680,10 @@ body.modal-open {
 				success : function(res) {
 					$('#finalMapModal').modal('hide');
 					alert('Mapping saved successfully!');
-
 					if (window._currentMapBtn) {
 						$(window._currentMapBtn).removeClass('btn-primary')
 								.addClass('btn-secondary').prop('disabled',
 										true).html('Mapped');
-
 						window._currentMapBtn = null;
 					}
 				},
@@ -1472,18 +1693,16 @@ body.modal-open {
 				}
 			});
 		}
+
 		var PREFIX_ARRAY = [ '9001', '9002', '9003', '9004', '9005', '9008' ];
 
 		function openMappingFlow(glSubHead, glHead, accountId, currency, solId,
 				constCode, legalEntity, schemeType) {
-
 			var parsedAccountId = accountId;
 			if (parsedAccountId && parsedAccountId.length >= 4) {
 				var prefix = parsedAccountId.substring(0, 4);
-
 				if (PREFIX_ARRAY.includes(prefix)) {
 					parsedAccountId = parsedAccountId.substring(4);
-
 					while (parsedAccountId.startsWith('0')) {
 						parsedAccountId = parsedAccountId.substring(1);
 					}
@@ -1509,10 +1728,8 @@ body.modal-open {
 							accountId : parsedAccountId
 						},
 						success : function(isFound) {
-
 							if (isFound === true || isFound === "true") {
 								fetchAndShowSuccessDetails(glSubHead);
-
 							} else {
 								alert("Account Number not found in system. Please add it first.");
 								openQuickAddModal(parsedAccountId, glHead,
@@ -1528,12 +1745,10 @@ body.modal-open {
 		function openQuickAddModal(acctId, glHead, glSubHead, currency) {
 			$('#fldAccountDesc').val('');
 			$('#fldDataType').val('');
-
 			$('#fldAccountId').val(acctId);
 			$('#fldGlHead').val(glHead);
 			$('#fldGlSubHead').val(glSubHead);
 			$('#fldCurrency').val(currency);
-
 			$('#crudModal').modal('show');
 		}
 
@@ -1563,9 +1778,7 @@ body.modal-open {
 				success : function() {
 					$('#btnQuickSubmit').prop('disabled', false).text(
 							'Submit & Continue');
-
 					$('#crudModal').modal('hide');
-
 					fetchAndShowSuccessDetails(payload.glSubHeadCode);
 				},
 				error : function(xhr) {
@@ -1576,12 +1789,13 @@ body.modal-open {
 				}
 			});
 		}
+
 		$(document).ready(function() {
-		    $('#finalMapModal').on('hidden.bs.modal', function () {
-		        if (_currentRowDetails && _currentRowDetails.glSubHead) {
-		            fetchAndShowSuccessDetails(_currentRowDetails.glSubHead);
-		        }
-		    });
+			$('#finalMapModal').on('hidden.bs.modal', function() {
+				if (_currentRowDetails && _currentRowDetails.glSubHead) {
+					fetchAndShowSuccessDetails(_currentRowDetails.glSubHead);
+				}
+			});
 		});
 	</script>
 </body>

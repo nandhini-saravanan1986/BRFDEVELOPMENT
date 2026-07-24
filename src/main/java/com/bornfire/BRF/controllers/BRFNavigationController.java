@@ -2230,12 +2230,26 @@ html.append("</tbody></table></div>");
 		        Model model) {
 
 		    if (date == null || date.isEmpty()) {
-		        String sql = "SELECT TO_CHAR(report_date, 'DD-MM-YYYY') AS \"Report Date\" "
-		                   + "FROM general_master_table " 
-		                   + "GROUP BY report_date " 
-		                   + "ORDER BY report_date DESC";
-		        List<Map<String, Object>> distinctDates = jdbcTemplate.queryForList(sql);
+		        String sql = "SELECT TO_CHAR(m.report_date, 'DD-MM-YYYY') AS \"Report Date\", "
+		                   + "  CASE WHEN EXISTS (SELECT 1 FROM general_master_table c WHERE TO_CHAR(c.report_date, 'DD-MM-YYYY') = TO_CHAR(m.report_date, 'DD-MM-YYYY')) THEN 1 ELSE 0 END AS has_cbs, "
+		                   + "  CASE WHEN EXISTS (SELECT 1 FROM brf_treasury_master_tb t WHERE TO_CHAR(t.report_date, 'DD-MM-YYYY') = TO_CHAR(m.report_date, 'DD-MM-YYYY')) THEN 1 ELSE 0 END AS has_treasury "
+		                   + "FROM general_master_table m " 
+		                   + "GROUP BY m.report_date " 
+		                   + "ORDER BY m.report_date DESC";
+
+		        List<Map<String, Object>> rawDates = jdbcTemplate.queryForList(sql);
+		        List<Map<String, Object>> distinctDates = new ArrayList<>();
+
+		        for (Map<String, Object> row : rawDates) {
+		            Map<String, Object> newRow = new HashMap<>(row);
+		            newRow.put("HAS_CBS_DATA", ((Number) row.get("has_cbs")).intValue() == 1);
+		            newRow.put("HAS_TREASURY_DATA", ((Number) row.get("has_treasury")).intValue() == 1);
+		            distinctDates.add(newRow);
+		        }
+
 		        model.addAttribute("dateList", distinctDates);
+		        
+		        
 		    } else {
 
 		        try {
@@ -2277,27 +2291,14 @@ html.append("</tbody></table></div>");
 			                paramList.add(searchPattern);
 			                paramList.add(searchPattern);
 			            }
+			            String finalSql = baseSql + " ORDER BY \"is_match\" DESC";
+		                
+		                List<Map<String, Object>> detailedData = jdbcTemplate.queryForList(finalSql, paramList.toArray());
 
-			            String countSql = "SELECT COUNT(1) FROM (" + baseSql + ") count_table";
-			            Integer totalRecords = jdbcTemplate.queryForObject(countSql, Integer.class, paramList.toArray());
-			            if (totalRecords == null) totalRecords = 0;
-
-			            int offset = page * size;
-			            String paginatedSql = baseSql + " ORDER BY \"is_match\" DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-			            
-			            List<Object> paginationParams = new ArrayList<>(paramList);
-			            paginationParams.add(offset);
-			            paginationParams.add(size);
-
-			            List<Map<String, Object>> detailedData = jdbcTemplate.queryForList(paginatedSql, paginationParams.toArray());
-
-			            Pageable pageable = PageRequest.of(page, size);
-			            PageImpl<Map<String, Object>> pageData = new PageImpl<>(detailedData, pageable, totalRecords);
-
-			            model.addAttribute("selectedDate", date);
-			            model.addAttribute("keyword", keyword);
-			            model.addAttribute("dynamicData", detailedData);
-			            model.addAttribute("page", pageData);
+		                model.addAttribute("selectedDate", date);
+		                model.addAttribute("keyword", keyword);
+		                model.addAttribute("dynamicData", detailedData);
+		                
 						List<String> constCodeOptions = Arrays.asList("LLTCO", "DMCC", "FZC", "FZE", "FZCLL", "OFC",
 								"FZELL", "OPLLC", "PROPR", "SPLLC", "PROPM", "11512", "PVTCO", "PRTNR", "ESTB", "11505",
 								"33201", "FGNCO", "FZLLC", "PBPVT", "PJSC", "PRTNF", "61003", "ASSOC", "71001", "CGPSU",
@@ -2325,7 +2326,7 @@ html.append("</tbody></table></div>");
 						List<String> schemeTypeOptions = Arrays.asList("SBA", "CLA", "CAA", "LAA", "ODA", "DDA", "OAB",
 								"FBA", "PCA", "OAP", "TDA", "OSP");
 						model.addAttribute("schemeTypeOptions", schemeTypeOptions);
-
+						 model.addAttribute("type","CBS");
 			        } else if ("TREASURY".equalsIgnoreCase(type)) {
 
 		                String treasurySql = "SELECT t1.ACCT_NO, "
@@ -2348,10 +2349,7 @@ html.append("</tbody></table></div>");
 		                        + "FROM BRF4_MAPPING_TABLE m3 "
 		                        + "WHERE TO_CHAR(m3.REPORT_DATE,'DD-MM-YYYY') = ?)";
 
-						/*
-						 * List<Object> paramList = new ArrayList<>(); paramList.add(date);
-						 */
-		                
+						
 		                List<Object> paramList = new ArrayList<>();
 		                paramList.add(date); // Treasury report date
 		                paramList.add(date); // BRF1 report date
@@ -2371,49 +2369,19 @@ html.append("</tbody></table></div>");
 		                    paramList.add(searchPattern);
 		                    paramList.add(searchPattern);
 		                }
+		                String finalSql = treasurySql + " ORDER BY t1.ACCT_NO";
 
-		                String countSql = "SELECT COUNT(1) FROM (" + treasurySql + ")";
-
-		                Integer totalRecords = jdbcTemplate.queryForObject(
-		                        countSql,
-		                        Integer.class,
-		                        paramList.toArray());
-
-		                if (totalRecords == null) {
-		                    totalRecords = 0;
-		                }
-
-		                int offset = page * size;
-
-		                String paginatedSql = treasurySql
-		                        + " ORDER BY t1.ACCT_NO OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
-
-		                List<Object> paginationParams = new ArrayList<>(paramList);
-		                paginationParams.add(offset);
-		                paginationParams.add(size);
-
-						/*
-						 * List<Map<String, Object>> treasuryData =
-						 * jdbcTemplate.queryForList(paginatedSql, paginationParams.toArray());
-						 * 
-						 * Pageable pageable = PageRequest.of(page, size);
-						 */
-		                List<Map<String, Object>> treasuryData =
-		                        jdbcTemplate.queryForList(paginatedSql, paginationParams.toArray());
+		                List<Map<String, Object>> treasuryData = jdbcTemplate.queryForList(finalSql, paramList.toArray());
 
 		                System.out.println("Treasury Data:");
 		                for (Map<String, Object> row : treasuryData) {
 		                    System.out.println(row);
 		                }
 
-		                Pageable pageable = PageRequest.of(page, size);
-		                PageImpl<Map<String, Object>> pageData =
-		                        new PageImpl<>(treasuryData, pageable, totalRecords);
-
 		                model.addAttribute("selectedDate", date);
 		                model.addAttribute("keyword", keyword);
 		                model.addAttribute("dynamicData", treasuryData);
-		                model.addAttribute("page", pageData);
+		                model.addAttribute("type","TREASURY");
 		            }
 
 		        } catch (DataAccessException dbEx) {
